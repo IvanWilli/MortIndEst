@@ -1,9 +1,9 @@
 Package: MortIndEst
-Title: What the Package Does (One Line, Title Case)
+Title: Indirect estimates of adult mortality
 Version: 0.0.0.9000
 Authors@R: 
     person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: Indirect estimates of adult mortality based on intercensal population counts, sibling survival, widowhood survival, and other related methods.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
@@ -21,3 +21,4 @@ Imports:
     DemoTools,
     purrr,
     magrittr
+URL: https://ivanwilli.github.io/MortIndEst/
