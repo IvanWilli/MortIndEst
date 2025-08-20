@@ -1,0 +1,12 @@
+pandoc: 3.1.11
+pkgdown: 2.1.3
+pkgdown_sha: ~
+articles:
+  articles/ExtrapConstrained_CensusMethod: ExtrapConstrained_CensusMethod.html
+  articles/IntercensalSurvival: IntercensalSurvival.html
+  articles/Orphanhood: Orphanhood.html
+  articles/Siblings_Widowhood: Siblings_Widowhood.html
+last_built: 2025-08-20T14:59Z
+urls:
+  reference: https://ivanwilli.github.io/MortIndEst/reference
+  article: https://ivanwilli.github.io/MortIndEst/articles
