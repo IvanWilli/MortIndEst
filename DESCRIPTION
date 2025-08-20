@@ -2,8 +2,8 @@ Package: MortIndEst
 Title: Indirect estimates of adult mortality
 Version: 0.0.0.9000
 Authors@R:c(
-    person("Ivan", "Williams", "ivanwilliams1985@gmail.com", role = c("aut", "cre"))
-    person("Patrick", "Gerland", "pgerland@un.org", role = c("aut", "ctb"))) 
+    person("Ivan", "Williams", email = "ivanwilliams1985@gmail.com", role = c("aut", "cre")),
+    person("Patrick", "Gerland", email = "pgerland@un.org", role = c("aut", "ctb"))) 
 Description: Indirect estimates of adult mortality based on intercensal population counts, sibling survival, widowhood survival, and other related methods.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
