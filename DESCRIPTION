@@ -18,7 +18,9 @@ Imports:
     ggplot2,
     rms,
     MortCast,
-    DemoTools,
     purrr,
     magrittr
+Remotes:
+    timriffe/DemoTools
 URL: https://ivanwilli.github.io/MortIndEst/
+Config/Needs/website: rmarkdown

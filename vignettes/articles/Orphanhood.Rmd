@@ -1,0 +1,13 @@
+---
+title: "Orphanhood"
+---
+
+This is a vignette about using ... methods with this package
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
