@@ -35,10 +35,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/ExtrapConstrained_CensusMethod.html">Constrained Extrapolation and Census Method</a></li>
-    <li><a class="dropdown-item" href="articles/IntercensalSurvival.html">Intercensal survival methods</a></li>
-    <li><a class="dropdown-item" href="articles/Orphanhood.html">Orphanhood</a></li>
-    <li><a class="dropdown-item" href="articles/Siblings_Widowhood.html">Siblings and Widowhood</a></li>
+<li><a class="dropdown-item" href="articles/Adult%20mortality%20estimates.html">Estimates for a time series of {}_{45}q_{15}</a></li>
+    <li><a class="dropdown-item" href="articles/ExtrapConstrained_CensusMethod.html">Constrained Extrapolation and Census Method</a></li>
   </ul>
 </li>
       </ul>
@@ -54,9 +52,12 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="mortindest">MortIndEst<a class="anchor" aria-label="anchor" href="#mortindest"></a>
+<div class="page-header"><h1 id="mortality-indirect-estimates-mortindest">Mortality Indirect Estimates (MortIndEst)<a class="anchor" aria-label="anchor" href="#mortality-indirect-estimates-mortindest"></a>
 </h1></div>
-<p>Indirect mortality estimates</p>
+<p>This package includes several functions for indirect estimates, specially about adult mortality.</p>
+<p>Main development was done during World Population Prospects revision 2024 (source), with the goal to include as inputs in the B3 model (source).</p>
+<p>Functions included are related to intercensal survival estimates, orphanhood, siblings survival, widowhood survival, census method for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>15</mn></msub><msub><mi>q</mi><mn>60</mn></msub></mrow><annotation encoding="application/x-tex">{}_{15}q_{60}</annotation></semantics></math> and old ages extension of mortality rates. Some of the contents consists in R implementations of materials in IUSSP (2012) and Manual X (source).</p>
+<p>The idea of the package is to continue expanding its content, so suggestions are welcome. For other methods not included here you can see …</p>
 </div>
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
@@ -76,7 +77,8 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>First Last <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Ivan Williams <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Patrick Gerland <br><small class="roles"> Author, contributor </small>   </li>
 </ul>
 </div>
 
@@ -87,7 +89,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by First Last.</p>
+  <p>Developed by Ivan Williams, Patrick Gerland.</p>
 </div>
 
 <div class="pkgdown-footer-right">
