@@ -1,0 +1,44 @@
+---
+output: github_document
+bibliography: vignettes/articles/references.bib
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# MortIndEst
+
+This package includes several functions for indirect estimates, specially about adult mortality.
+
+Main development was done during World Population Prospects revision 2024, with the goal to include as inputs in the B3 model [@wpp2024].
+
+Functions included are related to intercensal survival estimates, orphanhood, siblings survival, widowhood survival, census method for ${}_{15}q_{60}$ and old ages extension of mortality rates. Some of the contents consists in R implementations of materials in @iussp2012 and @un_manualX.
+
+The idea of the package is to continue expanding its content, so suggestions are welcome. For other indirect methods not included here you can see [fertsestr](https://github.com/josehcms/fertestr), ...
+
+## Installation
+
+You can install the development version of MortIndEst from [GitHub](https://github.com/) with:
+
+```{r, eval=F}
+# install.packages("pak")
+pak::pak("IvanWilli/MortIndEst")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example, eval=F}
+library(MortIndEst)
+```
+
+## References

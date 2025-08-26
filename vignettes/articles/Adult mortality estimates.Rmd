@@ -2,7 +2,7 @@
 title: "Estimates for a time series of {}_{45}q_{15}"
 ---
 
-This is a vignette about using different methods to build the time series of {}*{45}q*{15} in *ACountry*. We will apply **intercensal survival, orphanhood, widowhood and siblings** survival methods for a variety of sources distributed along 1950-2023 years, with the goal to get a smoothed series.
+This is a vignette about using different methods to build the time series of {}*{45}q*{15} in Guatemala. We will apply **intercensal survival, orphanhood, widowhood and siblings** survival methods for a variety of sources distributed along 1950-2023 years, with the goal to get a smoothed series.
 
 ...
 
