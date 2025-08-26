@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   articles/Adult mortality estimates: Adult mortality estimates.html
   articles/ExtrapConstrained_CensusMethod: ExtrapConstrained_CensusMethod.html
-last_built: 2025-08-20T16:47Z
+last_built: 2025-08-26T12:43Z
 urls:
   reference: https://ivanwilli.github.io/MortIndEst/reference
   article: https://ivanwilli.github.io/MortIndEst/articles
