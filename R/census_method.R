@@ -1,14 +1,15 @@
-#' Intercensal survival estimates of 15q60 based on Li-Gerland (2012). Replicate examples from spreadsheet "OldMortPG.xls"
+#' Intercensal survival estimates of 15q60 based on Li-Gerland (2012).
 #' @description Adapted from matlab code provided from PG.
 #' @param c1 numeric vector. Population at observation 1.
 #' @param c2 numeric vector. Population at observation 2.
 #' @param age integer vector. Lower bound of age groups from first census. Last age is assumed as lower age open age group.
 #' @param date1 Either a \code{Date} class object or an unambiguous character string in the format \code{"YYYY-MM-DD"}. Reference date for the source (typically census or survey).
 #' @param date2 Same than date1 but for observation 2.
+#' @param shortcut logical. If reply matlab code from author. `FALSE` is the default, following the paper.
 #' @export
 #' @examples
 #' \dontrun{
-#' # Albania
+#' # Albania. Replicate examples from spreadsheet "OldMortPG.xls"
 #' alb_males <- census_method(c(1326536, 566784, 687820),
 #'                            c(1441428,848609,762845),
 #'                            c(60, 65, 70), "1981/3/1", "1998/3/2")
@@ -17,7 +18,7 @@
 #'                              c(60, 65, 70), "1981/3/1", "1998/3/2")
 #' c(alb_males$q60_15, alb_females$q60_15)
 #' }
-census_method<-function(c1, c2, age, date1, date2){
+census_method<-function(c1, c2, age, date1, date2, shortcut = F){
 
   # check input
   ages_scope <- c(60, 65, 70)
@@ -53,18 +54,20 @@ census_method<-function(c1, c2, age, date1, date2){
   # minimal adjustment
     S_hat <- (-a * b + L65/L60 + b * L70/L65) / (1+b^2)
     S_hat[2] <- a + b * S_hat[1]
-    ### in matlab code (more simplified, with w=1)
-    L_hat <- c()
-    L_hat[1] <- (L60+S_hat[1]*L65+S_hat[1]*S_hat[2]*L70) / (1+ S_hat[1]^2+S_hat[1]^2*S_hat[2]^2)
-    L_hat[2] <- L_hat[1] * S_hat[1]
-    L_hat[3] <- L_hat[2] * S_hat[2]
-    ### in paper
-    # w <- .5
-    # L_hat[1] <- w * (L60+S_hat[1]*L65+S_hat[1]*S_hat[2]*L70) / (1+ S_hat[1]^2+S_hat[1]^2*S_hat[2]^2) + (1-w) * L_hat[1],
-    # L_hat[2] <- w * S_hat[1] * (L60+S_hat[1]*L65+S_hat[1]*S_hat[2]*L70) / (1+ S_hat[1]^2+S_hat[1]^2*S_hat[2]^2) + (1-w) * L_hat[2],
-    # L_hat[3] <- w * S_hat[1] * S_hat[] * (L60+S_hat[1]*L65+S_hat[1]*S_hat[2]*L70) / (1+ S_hat[1]^2+S_hat[1]^2*S_hat[2]^2) + (1-w) * L_hat[3])
+    if(shortcut){
+      ### in matlab code (more simplified, with w=1)
+      L_hat <- c()
+      L_hat[1] <- (L60+S_hat[1]*L65+S_hat[1]*S_hat[2]*L70) / (1+ S_hat[1]^2+S_hat[1]^2*S_hat[2]^2)
+      L_hat[2] <- L_hat[1] * S_hat[1]
+      L_hat[3] <- L_hat[2] * S_hat[2]
+    }else{
+      ### in paper
+      w <- .5
+      L_hat[1] <- w * (L60+S_hat[1]*L65+S_hat[1]*S_hat[2]*L70) / (1+ S_hat[1]^2+S_hat[1]^2*S_hat[2]^2) + (1-w) * L_hat[1]
+      L_hat[2] <- w * S_hat[1] * (L60+S_hat[1]*L65+S_hat[1]*S_hat[2]*L70) / (1+ S_hat[1]^2+S_hat[1]^2*S_hat[2]^2) + (1-w) * L_hat[2]
+      L_hat[3] <- w * S_hat[1] * S_hat[] * (L60+S_hat[1]*L65+S_hat[1]*S_hat[2]*L70) / (1+ S_hat[1]^2+S_hat[1]^2*S_hat[2]^2) + (1-w) * L_hat[3]
+    }
   }
-
   # step 3: gompertz extension
   initial_values <- c(L_hat[1]/5, .02, .1) # from matlab code
   y_star <- pracma::fminsearch(min_L_gomp, initial_values, L = L_hat)$xmin

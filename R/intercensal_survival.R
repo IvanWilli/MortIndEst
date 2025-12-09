@@ -1,5 +1,5 @@
 #' Estimate adult mortality using cohort relationship between two censuses.
-#' @description This function implements a variety of methods. See `mhetod` argument for more details.
+#' @description This function implements a variety of methods. See `method` argument for more details.
 #' An option for considering HIV populations is using the Spectrum model (Stover and others, 2012).
 #' @param c1 numeric vector. Population counts in five-age groups, from first census with an exact reference date.
 #' @param c2 numeric vector. Population counts in five-age groups, from second census with an exact reference date.
@@ -47,7 +47,7 @@
 #' panama_match$rank_match %>% mutate(color = ifelse(age %in% c(10, 20, 35, 55, 65), "outlier", "used")) %>%
 #' panama_match$rank_match %>% filter(!age %in% c(10, 20, 35, 55, 65)) %>% summarise(mean(e0_interp))
 #' # to replicate this during the process, parameters ages_fit or e0_range_accept should be used
-#' intercensal_survival(
+#' panama_match_modif_ages <- intercensal_survival(
 #'   c1 = c(90071,76598,63635,54431,45634,37818,32179,28724,23974,20618,15068,11999,10283,6737,5242,6756),
 #'   c2 = c(114017,106944,85253,73381,63010,50924,40885,36115,29409,25360,21775,17632,13004,10061,6690,9873),
 #'   date1 = "1960/12/11",
@@ -89,30 +89,24 @@
 #'   method = "feeney",
 #'   ages_fit = 5,
 #'   mlt_e0_logit_feeney = 72.5)
-#' japan_feeney$rank_match
 #'
 #' # Preston (1983) logit - r. Indian Females 1961-1971 - OK e5 = 51
-#' load("intercensal_survival/all_censuses.rda")
-#' all_censuses %>% filter(LocName == "India", TimeLabel %in% c(1961,1971)) %>% distinct(TimeMid)
-#' c1 <- all_censuses %>%
-#'   filter(LocName == "India", TimeLabel == 1961, SexName == "Female") %>%
-#'   select(AgeStart, AgeSpan, DataValue)
-#' c2 <- all_censuses %>%
-#'   filter(LocName == "India", TimeLabel == 1971, SexName == "Female") %>%
-#'   select(AgeStart, AgeSpan, DataValue) %>%
-#'   mutate(AgeStart = pmin(AgeStart, 70)) %>%
-#'   group_by(AgeStart) %>% summarise(DataValue = sum(DataValue))
-#' intercensal_surv_Preston_logit_var_r(c1 = c1$DataValue,
-#'                                      c2 = c2$DataValue,
-#'                                      date1 = 1961.164,
-#'                                      date2 = 1971.249,
-#'                                      age1 = seq(0,70,5),
-#'                                      age2 = seq(0,70,5),
-#'                                      sex = "f",
-#'                                      mlt_family = "CD_South",
-#'                                      mlt_e0 = 50,
-#'                                      ages_fit = seq(5,65,5),
-#'                                      q0_5 = 1 - .776)
+#' india_preston <- intercensal_surv_Preston_logit_var_r(
+#'         c1 = c(32889570, 31569832, 23003038, 17262494, 19113102, 18031562,
+#'                14837941, 11846139, 10758321, 8310282, 7966324, 4540060, 5521764,
+#'                2374069, 4434064),
+#'        c2 = c(39050792, 40165344, 32193430, 22241264, 21524600, 20477162,
+#'              17892874, 15632259, 13264020, 10381364, 9489160, 5875138, 6893570,
+#'              3268044, 5664190),
+#'        date1 = 1961.164,
+#'        date2 = 1971.249,
+#'        age1 = seq(0,70,5),
+#'        age2 = seq(0,70,5),
+#'        sex = "f",
+#'        mlt_family = "CD_South",
+#'        mlt_e0 = 50,
+#'        ages_fit = seq(5,65,5),
+#'        q0_5 = 1 - .776)
 #'
 #' # variable-r (Preston-Bennet): PANAMA 1960-1970 from UNX (Table 186). - OK
 #' # It´s picked ages_fit 10:30 as Manual choose, because growing too much below that
@@ -128,7 +122,6 @@
 #'   mlt_family = "CD_West",
 #'   method = "var-r",
 #'   ages_fit = 10:30)
-#' panama_var_r$selected_level$mean_e0
 #' }
 
 # general function ---------------------------------------------------

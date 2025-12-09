@@ -2,9 +2,9 @@
 % Please edit documentation in R/census_method.R
 \name{census_method}
 \alias{census_method}
-\title{Intercensal survival estimates of 15q60 based on Li-Gerland (2012). Replicate examples from spreadsheet "OldMortPG.xls"}
+\title{Intercensal survival estimates of 15q60 based on Li-Gerland (2012).}
 \usage{
-census_method(c1, c2, age, date1, date2)
+census_method(c1, c2, age, date1, date2, shortcut = F)
 }
 \arguments{
 \item{c1}{numeric vector. Population at observation 1.}
@@ -16,13 +16,15 @@ census_method(c1, c2, age, date1, date2)
 \item{date1}{Either a \code{Date} class object or an unambiguous character string in the format \code{"YYYY-MM-DD"}. Reference date for the source (typically census or survey).}
 
 \item{date2}{Same than date1 but for observation 2.}
+
+\item{shortcut}{logical. If reply matlab code from author. \code{FALSE} is the default, following the paper.}
 }
 \description{
 Adapted from matlab code provided from PG.
 }
 \examples{
 \dontrun{
-# Albania
+# Albania. Replicate examples from spreadsheet "OldMortPG.xls"
 alb_males <- census_method(c(1326536, 566784, 687820),
                            c(1441428,848609,762845),
                            c(60, 65, 70), "1981/3/1", "1998/3/2")

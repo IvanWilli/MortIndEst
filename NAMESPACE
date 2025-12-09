@@ -2,6 +2,8 @@
 
 export("%>%")
 export(census_method)
+export(coherent_mx)
+export(egm)
 export(intercensal_surv_Preston_logit_var_r)
 export(intercensal_survival)
 export(lt_extrap_constrained)
