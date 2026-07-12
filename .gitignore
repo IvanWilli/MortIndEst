@@ -23,3 +23,9 @@ TestResults.xml
 .Rproj.user
 *.pdf
 docs
+
+# Legacy R code excluded from GitHub
+/R/old/
+
+# Raw or archived data excluded from GitHub
+/data/[Oo]ld/

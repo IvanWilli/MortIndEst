@@ -1,7 +1,67 @@
-# get a model lt from adjusted qx with Brass method using census CEB and CS.
-# Based on Manual X (United Nations, 1986). A good explanation in https://demographicestimation.iussp.org/content/indirect-estimation-child-mortality
-# Possibility to use Trussell and Palloni-Helligman variants too
-# author: IW
+#' Estimate child mortality with the Brass indirect method
+#'
+#' Estimate probabilities of dying in childhood from children ever born and
+#' children dead reported by women by age group. The function applies either the
+#' Trussell or Palloni-Helligman multipliers, locates each estimate in time, and
+#' interpolates the matching model life table level.
+#'
+#' @param CEB Numeric vector. Children ever born by women's age group.
+#' @param CD Numeric vector. Children dead by women's age group.
+#' @param W Numeric vector. Women by age group.
+#' @param age Numeric vector. Lower bounds of women's five-year age groups.
+#'   Default is \code{seq(15, 45, 5)}.
+#' @param variant Character. Multiplier variant to use. Options are
+#'   \code{"trussell"} and \code{"palloni_helligman"}.
+#' @param mlt_model Character. Model life table family. For \code{"trussell"},
+#'   use one of \code{"North"}, \code{"South"}, \code{"East"}, or
+#'   \code{"West"}. For \code{"palloni_helligman"}, use one of
+#'   \code{"Latin"}, \code{"Chilean"}, \code{"South_Asian"},
+#'   \code{"Far_East_Asian"}, or \code{"General"}. If \code{NULL},
+#'   \code{"West"} is assumed.
+#' @param Sex Character. Sex of the child mortality estimates in the model life
+#'   table, usually \code{"male"} or \code{"female"}. If \code{NULL},
+#'   \code{"male"} is assumed.
+#' @param date_obs Numeric. Reference date of the census or survey. Used to
+#'   compute \code{date_t}, the time location of each estimate.
+#' @param mam Numeric. Mean age at maternity. Used only with
+#'   \code{variant = "palloni_helligman"}. If \code{NULL}, 27 is assumed.
+#'
+#' @return
+#' A list with two data frames:
+#' \describe{
+#'   \item{mi_brass}{Brass estimates by women's age group, including the input
+#'   age, estimated survivorship \code{lx}, childhood mortality age \code{x},
+#'   time lag \code{t}, and reference date \code{date_t}.}
+#'   \item{mlts_interp}{Interpolated model life table rows matched to each
+#'   Brass estimate, including \code{mx_mlt}, \code{qx_mlt}, \code{lx_mlt}, and
+#'   \code{ex_mlt}.}
+#' }
+#'
+#' @references
+#' United Nations. 1983. \emph{Manual X: Indirect Techniques for Demographic
+#' Estimation}. United Nations, New York.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Panama example from UN Manual X (1983)
+#' panama <- data.frame(
+#'   age = seq(15, 45, 5),
+#'   W = c(2695, 2095, 1828, 1605, 1362, 1128, 930),
+#'   CEB = c(278, 1380, 2395, 3097, 3444, 3274, 2682),
+#'   CD = c(24, 77, 172, 236, 348, 394, 354)
+#' )
+#' im_brass(
+#'   CEB = panama$CEB,
+#'   CD = panama$CD,
+#'   W = panama$W,
+#'   age = panama$age,
+#'   mlt_model = "West",
+#'   Sex = "male",
+#'   date_obs = 1970
+#' )
+#' }
 im_brass <- function (CEB, CD, W,
                       age = seq(15, 45, 5),
                       variant = "trussell",
@@ -9,20 +69,6 @@ im_brass <- function (CEB, CD, W,
                       Sex = NULL,
                       date_obs = 0,
                       mam = NULL){
-  # panama example in manual x
-  # panama <- data.frame(
-  #   age = seq(15, 45, 5),
-  #   sex = rep("male", 7),
-  #   W = c(2695, 2095, 1828, 1605, 1362, 1128, 930),
-  #   CEB = c(278, 1380, 2395, 3097, 3444, 3274, 2682),
-  #   CD = c(24, 77, 172, 236, 348, 394, 354))
-  # W = panama$W
-  # CEB = panama$CEB
-  # CD = panama$CD
-  # age = panama$age
-  # Sex = "male"
-  # mam = 27
-
   if(is.null(Sex)) {Sex <- "male"; message("male assumed")}
   if(is.null(mlt_model)) {mlt_model <- "West"; message("west assumed")}
   coef_trussell <- data.frame(
@@ -76,15 +122,15 @@ im_brass <- function (CEB, CD, W,
     distances <- mlt$lx[mlt$age==la$x]-la$lx
     best_dist <- distances[abs(distances) %in% sort(abs(mlt$lx[mlt$age==la$x]-la$lx))[1:2]]
     w <- abs(best_dist)/sum(abs(best_dist))
-    levels <- (mlt[mlt$age == la$x, ] %>% mutate(dist = lx-la$lx) %>% filter(dist %in% best_dist))$e0
+    levels <- (mlt[mlt$age == la$x, ] %>% dplyr::mutate(dist = lx-la$lx) %>% dplyr::filter(dist %in% best_dist))$e0
     mlt_interp <- mlt %>%
-      summarise(mx_mlt = mx1[e0==levels[1]]*(1-w[1]) + mx1[e0==levels[2]]*w[1],
+      dplyr::summarise(mx_mlt = mx1[e0==levels[1]]*(1-w[1]) + mx1[e0==levels[2]]*w[1],
                 qx_mlt = qx1[e0==levels[1]]*(1-w[1]) + qx1[e0==levels[2]]*w[1],
                 lx_mlt = lx[e0==levels[1]]*(1-w[1])  + lx[e0==levels[2]]*w[1],
                 ex_mlt = ex1[e0==levels[1]]*(1-w[1]) + ex1[e0==levels[2]]*w[1], .by = age) %>%
-      rename(age_mlt = age) %>%
-      mutate(sex = Sex, x = la$x, lx = la$lx, date_t = la$date_t, .before = 1) %>%
-      mutate(age = la$age, .before = 1)
+      dplyr::rename(age_mlt = age) %>%
+      dplyr::mutate(sex = Sex, x = la$x, lx = la$lx, date_t = la$date_t, .before = 1) %>%
+      dplyr::mutate(age = la$age, .before = 1)
     return(mlt_interp)
   })
   return(list(mi_brass = lx, mlts_interp = mlts_interp))

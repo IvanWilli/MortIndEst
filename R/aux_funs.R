@@ -9,7 +9,6 @@ expit <- function(x) {
   return(exp(x)/(1 + exp(x)))
 }
 
-
 # level interpolation for any lt function ------------------------------------
 
 interp_level_mlt <- function(obs_data, mlt_data, var_interp = "e0", var_ref = "nSx"){
@@ -39,7 +38,7 @@ interp_level_mlt <- function(obs_data, mlt_data, var_interp = "e0", var_ref = "n
     dplyr::mutate(diff = min(abs(ref - var_ref_left), abs(ref - var_ref_right)),
                   interp = var_int_left + (ref - var_ref_left)/(var_ref_right - var_ref_left) * (var_int_right - var_int_left)) %>%
     dplyr::select(type, age, ref, var_ref_left, var_ref_right, var_int_left, var_int_right, interp) %>%
-    ungroup()
+    dplyr::ungroup()
 
   # rename
   colnames(data) <- c("type", "age", paste0(var_ref,"_obs"),

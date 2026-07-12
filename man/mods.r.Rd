@@ -3,16 +3,18 @@
 \docType{data}
 \name{mods.r}
 \alias{mods.r}
-\title{Spectrum model
-A list with Spectrum model for each sex (updated on ...)}
+\title{Spectrum mortality models}
 \format{
-An object of class \code{list} of length 2.
+A named list of length 2 with elements \code{female} and \code{male}.
+}
+\source{
+Spectrum mortality model files.
 }
 \usage{
 mods.r
 }
 \description{
-Spectrum model
-A list with Spectrum model for each sex (updated on ...)
+Fitted Spectrum mortality model components for female and male mortality
+estimation.
 }
 \keyword{datasets}

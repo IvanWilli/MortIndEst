@@ -2,7 +2,7 @@
 % Please edit documentation in R/coherent_mx.R
 \name{coherent_mx}
 \alias{coherent_mx}
-\title{coherent rate extension in older ages}
+\title{Extrapolate mortality rates coherently at older ages}
 \usage{
 coherent_mx(
   mx,
@@ -16,44 +16,63 @@ coherent_mx(
 )
 }
 \arguments{
-\item{method}{character. This indicates how to calculate \verb{e_\{OAG\}} with methods: \code{classical} (default), \code{H-C} or \code{Mitra} (Ediev, 2014).}
+\item{mx}{Data frame with mortality rates. It must contain \code{age},
+\code{nMx}, and \code{sex}. It may also contain \code{year}. The
+\code{age} column gives age lower bounds, \code{nMx} gives mortality
+rates, \code{sex} identifies sex groups, and \code{year} identifies the
+period when a time trend is fitted.}
 
-\item{nMx}{numeric. Vector of mortality rates in abridged or single age classes.}
+\item{law}{Character. Mortality law used for the transformed rates. Options
+are \code{"kannisto"} and \code{"gompertz"}.}
 
-\item{Age}{integer. Vector with lower bound for each age class (could be integer or abridged). Last age is assumed as lower age from open age group.}
+\item{fit.ages}{Integer or numeric vector. Ages used to fit the regression.
+If \code{NULL}, all ages in \code{mx} are used.}
 
-\item{Sex}{character. Either male \code{"m"}, or female \code{"f"}.}
+\item{estim.ages}{Integer or numeric vector. Ages to return after
+extrapolation. If \code{NULL}, all ages in \code{mx} are returned.}
 
-\item{extrapLaw}{character. Available options: \code{Gompertz} or \code{Kannisto}.}
+\item{method}{Character. Extrapolation method when only one year is supplied.
+Use \code{"coherent"} for a common age slope by sex, or
+\code{"convergent"} to force the second sex group to converge to the first
+at \code{age_conv}.}
 
-\item{eOAG}{numeric. An estimate of life expectancy in the input OAG age. If this has a value, then replace \code{method}.}
+\item{age_conv}{Numeric. Age where the second sex group converges to the
+first when \code{method = "convergent"}.}
 
-\item{OAnew}{integer. After extrapolating, pick a new OAG.}
+\item{fit.years}{Integer or numeric vector. Years used to fit the regression
+when \code{mx} contains more than one year. If \code{NULL}, all years are
+used.}
 
-\item{alpha}{numeric. Parameter for \code{H-C} method. Default values are automatically selected for input OAG.}
-
-\item{beta}{numeric. Parameter for \code{H-C} method. Default values are automatically selected for input OAG.}
-
-\item{r}{numeric. Parameter for \code{H-C} and \code{Mitra} methods. Annual growth rate of the population in the open age interval.}
-
-\item{x_hat}{numeric. Parameter for \code{Mitra} method. Mean age of the population in the open age interval.}
+\item{estim.years}{Integer or numeric vector. Years to return when \code{mx}
+contains more than one year. If \code{NULL}, all years are returned.}
+}
+\value{
+A data frame with observed rates below the first estimated age and fitted or
+extrapolated rates for \code{estim.ages}. Columns include \code{age},
+\code{nMx}, \code{sex}, and \code{year} when a year dimension is supplied.
 }
 \description{
-Based on cokannisto function from Mostcast package (Ševčíková, 2023), extend to gompertz law and with time.
+Based on the coherent Kannisto idea used in the \pkg{MortCast} package,
+extended here to allow a Gompertz law and an optional period trend.
+}
+\details{
+Fit a simple old-age mortality model to observed rates and predict rates for
+selected ages, sexes, and optionally years. Rates are transformed with either
+a Gompertz log transform or a Kannisto logit transform before fitting a
+linear model.
 }
 \examples{
-\dontrun{
-# Pakistan - 1968-1971 - males - OAG=65 - HLD (2020)
-nMx <- c(0.13328, 0.01539, 0.0031, 0.00155, 0.00169, 0.00185, 0.00201,
-         0.0024, 0.00289, 0.00367, 0.00498, 0.00736, 0.01214, 0.02301, 0.0879)
-Age <- c(0L, 1L, 5L, 10L, 15L, 20L, 25L, 30L, 35L, 40L, 45L, 50L, 55L, 60L, 65L)
-fit_extrap_constr <- lt_extrap_constrained(nMx, Age, OAnew = 100, extrapLaw = "Gompertz")
-fit_extrap_constr$ex[fit_extrap_constr$Age == 65] - (1/nMx[Age == 65])
-# if some other value is required on e(65), like 10. The function forces extrapolation to fit that value.
-nMx <- c(0.13328, 0.01539, 0.0031, 0.00155, 0.00169, 0.00185, 0.00201,
-         0.0024, 0.00289, 0.00367, 0.00498, 0.00736, 0.01214, 0.02301, 0.0879)
-Age <- c(0L, 1L, 5L, 10L, 15L, 20L, 25L, 30L, 35L, 40L, 45L, 50L, 55L, 60L, 65L)
-fit_extrap_constr <- lt_extrap_constrained(nMx, Age, OAnew = 100, extrapLaw = "Gompertz", eOAG = 10)$lt
-fit_extrap_constr$ex[fit_extrap_constr$Age == 65] - 10
-}
+mx <- data.frame(
+  age = rep(seq(60, 80, 5), 2),
+  sex = rep(c("f", "m"), each = 5),
+  nMx = c(0.020, 0.035, 0.060, 0.100, 0.160,
+          0.030, 0.050, 0.080, 0.130, 0.200)
+)
+
+coherent_mx(
+  mx,
+  law = "gompertz",
+  fit.ages = seq(60, 80, 5),
+  estim.ages = seq(60, 100, 5)
+)
 }

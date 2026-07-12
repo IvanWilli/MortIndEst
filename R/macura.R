@@ -12,7 +12,7 @@
 # functions -------------------------------------------------------------------------
 
 # main function
-orphanhood_macura_proxy <- function(NO, age_NO, date, pi, 
+orphanhood_macura <- function(NO, age_NO, date, pi, 
                                     mlt_family = "CD_West",
                                     mlt_e0 = 60, 
                                     mlt_5q0 = NULL,

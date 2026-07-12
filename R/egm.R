@@ -79,7 +79,7 @@ egm <- function(y, x, d, yb = NULL, alpha = NULL){
 
   # return aged x for stock counts. mark as probably not extincted
   pop_egm <- pop_egm_Lexis %>%
-    left_join(pop_egm_Lexis %>%
+    dplyr::left_join(pop_egm_Lexis %>%
                 dplyr::summarise(max_x = max(x), .by = yb)) %>%
     dplyr::mutate(AgeDeath105 = max_x >= 105) %>%
     dplyr::filter(lexis_segment == "vertical") %>%
@@ -91,16 +91,16 @@ egm <- function(y, x, d, yb = NULL, alpha = NULL){
 
 # ejemplo -----------------------------------------------------------------
 
-# con planilla "CHL_GenExtintas.xlsx"
-library(tidyverse)
-matrix_period_deaths <- readxl::read_xlsx("CHL_GenExtintas.xlsx", range = "A2:AI122")
-table_period_deaths <- matrix_period_deaths %>%
-  pivot_longer(`1990`:`2023`, names_to = "year", values_to = "deaths") %>%
-  rename(age = Edad)
-pop_egm <- egm(y = table_period_deaths$year %>% as.integer(),
-               x = table_period_deaths$age %>% as.integer(),
-               d = table_period_deaths$deaths %>% as.numeric())
-pop_egm %>%
-  filter(y == 1992, AgeDeath105) %>%
-  ggplot(aes(x, pop)) +
-  geom_line()
+# # con planilla "CHL_GenExtintas.xlsx"
+# library(tidyverse)
+# matrix_period_deaths <- readxl::read_xlsx("CHL_GenExtintas.xlsx", range = "A2:AI122")
+# table_period_deaths <- matrix_period_deaths %>%
+#   pivot_longer(`1990`:`2023`, names_to = "year", values_to = "deaths") %>%
+#   rename(age = Edad)
+# pop_egm <- egm(y = table_period_deaths$year %>% as.integer(),
+#                x = table_period_deaths$age %>% as.integer(),
+#                d = table_period_deaths$deaths %>% as.numeric())
+# pop_egm %>%
+#   filter(y == 1992, AgeDeath105) %>%
+#   ggplot(aes(x, pop)) +
+#   geom_line()

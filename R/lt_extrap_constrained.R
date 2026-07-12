@@ -41,7 +41,7 @@ lt_extrap_constrained <- function(nMx, Age,
 ){
 
   # initial settings
-  if(is_abridged(Age)) complete = FALSE else complete = TRUE
+  if(DemoTools::is_abridged(Age)) complete = FALSE else complete = TRUE
   extrapFrom <- max(Age)
   Sex <- match.arg(Sex, c("m", "f"))
   method <- match.arg(method, c("classical", "H-C", "Mitra"))

@@ -18,7 +18,6 @@
 #' @export
 #' @examples
 #' \dontrun{
-
 #' # Bolivia 1975. Example from UN Manual X.
 #' manualX_bolivia_male <- widowhood_one(prop_not_widowed = c(0.9798, 0.9729, 0.9514, 0.9170, 0.8735, 0.8195, 0.7054, 0.6520),
 #'                                       age = seq(20, 55, 5),

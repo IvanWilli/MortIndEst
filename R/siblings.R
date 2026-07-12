@@ -2,10 +2,10 @@
 #' @description Follows IUSSP(2012) template implementation for estimate adult mortality from siblings data, based on Timæus, Zaba and Ali (2001).
 #' The function also include the possibility to match the closest model life table (not using Brass logit given a pattern as default method), for some specific family (if no family is set, then return results for all CD and UN).
 #' An option for considering HIV populations is using the Spectrum model (Stover and others, 2012).
-#' #' @param prop_not_dead numeric vector. Population proportion of respondents with mother/father alive, by age groups.
+#' @param prop_not_dead numeric vector. Population proportion of respondents with siblings alive, by age groups.
 #' @param date Either a \code{Date} class object or an unambiguous character string in the format \code{"YYYY-MM-DD"}. Reference date for the source (typically census or survey).
-#' @param age integer vector. Lower bound of age groups from first census. Last age is assumed as lower age open age group.
-#' @param sex_siblings logical. Either `TRUE` for maternal orphanhood (default) or `FALSE` for paternal orphanhood.
+#' @param age integer vector. Lower bound of age groups from census. Last age is assumed as lower age from the open age group.
+#' @param sex_siblings character. "m" for male siblings, "f" for female siblings. Default is "f" given that most of the data is for sisters.
 #' @param mlt_data_input data.frame. If is `NULL` then model life tables is used, available from \code{Morcast} package. But specific pattern can be included (`l_x` must be included see examples).
 #' @param mlt_family character. Options: "CD_East", "CD_North", "CD_South", "CD_West", "UN_Chilean", "UN_Far_Eastern", "UN_General", "UN_Latin_American", "UN_South_Asian". If `NULL` returns for all.
 #' @param brass_logit logical. Doing a level smoothing with 1-parameter logit Brass.
@@ -97,7 +97,7 @@ siblings_one <- function(prop_not_dead,
     if(!is.HIV){
       mlt_data <- MortCast::MLTlookup %>%
         filter(type %in% mlt_family, sex == ifelse(sex_siblings == "f", 2, 1)) %>%
-        mutate(lx = lx/1e5, age_resp = "all")
+        dplyr::mutate(lx = lx/1e5, age_resp = "all")
       # e0 should be rounded to proximate available level
       brass_logit_e0 <- mlt_data %>% filter(e0 == round(brass_logit_e0/2.5,0)*2.5)
     # HIV
@@ -107,7 +107,7 @@ siblings_one <- function(prop_not_dead,
       #  create a range of patterns, given prev, art and 5q0.
       this_sex <- ifelse(sex_siblings == "f", "female", "male")
       comb <- expand.grid(age = age, q15_45 = seq(.1,.9,.1))
-      mlt_data <- map2_df(comb$age, comb$q15_45, function(x, y){
+      mlt_data <- purrr::map2_df(comb$age, comb$q15_45, function(x, y){
         hiv_svd_comp_x <- predictNQX(this_sex,
                                      cm = brass_logit_5q0[age == x],
                                      am = y,
@@ -116,17 +116,17 @@ siblings_one <- function(prop_not_dead,
                                      adult = "q45") %>% pull()
         lx_hiv_svd_comp_x <- lt_id_q_l(expit(hiv_svd_comp_x))
         lt_abridged(lx = lx_hiv_svd_comp_x[c(0,1,seq(5,100,5))+1], Age = c(0,1,seq(5,100,5))) %>%
-          mutate(type = "HIVSpectrum", age_resp = x) %>%
-          group_by(type, age_resp) %>%
-          mutate(e0 = ex[Age == 0])}) %>%
-        select(age_resp, type, e0, age = Age, lx) %>%
-        mutate(lx = lx/1e5)
+          dplyr::mutate(type = "HIVSpectrum", age_resp = x) %>%
+          dplyr::group_by(type, age_resp) %>%
+          dplyr::mutate(e0 = ex[Age == 0])}) %>%
+        dplyr::select(age_resp, type, e0, age = Age, lx) %>%
+        dplyr::mutate(lx = lx/1e5)
       # if apply Brass, then look closer level
       if(brass_logit){
         brass_logit_e0 <- mlt_data %>%
-          group_by(type, age_resp) %>%
-          filter(abs(e0-brass_logit_e0) == min(abs(e0-brass_logit_e0))) %>%
-          distinct(type, age_resp, e0)
+          dplyr::group_by(type, age_resp) %>%
+          dplyr::filter(abs(e0-brass_logit_e0) == min(abs(e0-brass_logit_e0))) %>%
+          dplyr::distinct(type, age_resp, e0)
       }
     }
   # custom mlt
@@ -139,19 +139,19 @@ siblings_one <- function(prop_not_dead,
   # compute probabilities to be matched against observed data
   y <- 15
   this_mlt_family <- mlt_data %>%
-    group_by(age_resp, type, e0) %>%
-    mutate(ly = lx[age==y], py_n = pmin(lx/ly, 1)) %>%
-    select(age_resp, type, age, e0, lx_mlt = lx, ly_mlt = ly, py_n_mlt = py_n) %>%
-    ungroup() %>% arrange(age_resp, type, e0, age)
+    dplyr::group_by(age_resp, type, e0) %>%
+    dplyr::mutate(ly = lx[age==y], py_n = pmin(lx/ly, 1)) %>%
+    dplyr::select(age_resp, type, age, e0, lx_mlt = lx, ly_mlt = ly, py_n_mlt = py_n) %>%
+    dplyr::ungroup() %>% dplyr::arrange(age_resp, type, e0, age)
 
   # estimate conditional probabilities of survival using coefficients
   sibl_data <- data.frame(age = age, prop_not_dead = prop_not_dead, n = age + 5) %>%
-    left_join(timaeus_coeff, by = c("n" = "age" )) %>%
-    mutate(age_mean = age + age_int/2,
+    dplyr::left_join(timaeus_coeff, by = c("n" = "age" )) %>%
+    dplyr::mutate(age_mean = age + age_int/2,
            sex_siblings = sex_siblings,
            py_n = aS + bS * prop_not_dead) %>%
-    filter(between(py_n, 0, 1)) %>%
-    mutate(time = aT - bT * log(prop_not_dead),
+    dplyr::filter(between(py_n, 0, 1)) %>%
+    dplyr::mutate(time = aT - bT * log(prop_not_dead),
            time_location = date - time)
 
   # no guarantee probability btwn 0 and 1
@@ -163,47 +163,47 @@ siblings_one <- function(prop_not_dead,
     # HIV and no custom input mlt
     if(is.HIV & is.null(mlt_data_input)){
       mlt_closest <- sibl_data %>%
-        left_join(this_mlt_family %>% inner_join(brass_logit_e0, by = c("age_resp", "type", "e0")),
+        dplyr::left_join(this_mlt_family %>% inner_join(brass_logit_e0, by = c("age_resp", "type", "e0")),
                   by = c("age" = "age_resp", "n" = "age")) %>%
-        ungroup %>% arrange(age, type, e0) %>%
-        mutate(alpha = -.5*log(1+(py_n/lx_mlt-1/ly_mlt)/(1-py_n)))
+        dplyr::ungroup() %>% dplyr::arrange(age, type, e0) %>%
+        dplyr::mutate(alpha = -.5*log(1+(py_n/lx_mlt-1/ly_mlt)/(1-py_n)))
 
       # lx estimate
       lx_out <- mlt_closest %>% select(-lx_mlt, -ly_mlt, -py_n_mlt) %>%
-        left_join(this_mlt_family %>% inner_join(brass_logit_e0, by = c("age_resp", "type", "e0")) %>%
+        dplyr::left_join(this_mlt_family %>% inner_join(brass_logit_e0, by = c("age_resp", "type", "e0")) %>%
                     select(age_resp, type, e0, age_mlt = age, lx_mlt),
                   by = c("age" = "age_resp", "type", "e0")) %>%
-        mutate(lx_interp = 1 - logit_inv(alpha + logit(1-lx_mlt)))
+        dplyr::mutate(lx_interp = 1 - logit_inv(alpha + logit(1-lx_mlt)))
 
     # no HIV or custom input mlt
     }else{
     mlt_closest <- sibl_data %>%
-      left_join(this_mlt_family %>%
+      dplyr::left_join(this_mlt_family %>%
                   filter(e0 == unique(brass_logit_e0$e0)), by = c("n" = "age")) %>%
-      ungroup %>% arrange(type, e0, age) %>%
-      mutate(alpha = -.5*log(1+(py_n/lx_mlt-1/ly_mlt)/(1-py_n)))
+      dplyr::ungroup() %>% arrange(type, e0, age) %>%
+      dplyr::mutate(alpha = -.5*log(1+(py_n/lx_mlt-1/ly_mlt)/(1-py_n)))
 
     # lx estimate
-    lx_out <- mlt_closest %>% select(-lx_mlt, -ly_mlt, -py_n_mlt) %>%
-      left_join(this_mlt_family %>%
-                  filter(e0 == unique(brass_logit_e0$e0)) %>%
-                  select(type, e0, age_mlt = age, lx_mlt), by = c("type", "e0")) %>%
-      mutate(lx_interp = 1 - logit_inv(alpha + logit(1-lx_mlt)))
+    lx_out <- mlt_closest %>% dplyr::select(-lx_mlt, -ly_mlt, -py_n_mlt) %>%
+      dplyr::left_join(this_mlt_family %>%
+                  dplyr::filter(e0 == unique(brass_logit_e0$e0)) %>%
+                  dplyr::select(type, e0, age_mlt = age, lx_mlt), by = c("type", "e0")) %>%
+      dplyr::mutate(lx_interp = 1 - logit_inv(alpha + logit(1-lx_mlt)))
     }
   }else{
     # find level for each npy
-    obs_data <- sibl_data %>% select(age_resp = age, age = n, py_n)
-    mlt_data <- this_mlt_family %>% select(type,  age, e0, py_n = py_n_mlt)
-    mlt_closest <- map_dfr(obs_data$age_resp, function(x){
-      obs_data_x <- obs_data %>% filter(age_resp == x) %>% select(-age_resp)
+    obs_data <- sibl_data %>% dplyr::select(age_resp = age, age = n, py_n)
+    mlt_data <- this_mlt_family %>% dplyr::select(type,  age, e0, py_n = py_n_mlt)
+    mlt_closest <- purrr::map_dfr(obs_data$age_resp, function(x){
+      obs_data_x <- obs_data %>% dplyr::filter(age_resp == x) %>% select(-age_resp)
       interp_level_mlt(obs_data_x, mlt_data, "e0", "py_n") %>% mutate(age_resp = x)
     })
 
     # interpolated lx for each respondent age
     lx_out <- sibl_data %>% filter(!is.na(py_n)) %>%
-      left_join(mlt_closest %>% select(type, age_resp, e0_interp), by = c("age" = "age_resp")) %>%
+      dplyr::left_join(mlt_closest %>% select(type, age_resp, e0_interp), by = c("age" = "age_resp")) %>%
       split(list(.$age, .$type), drop = TRUE) %>%
-      map_df(function(X){
+      dplyr::map_df(function(X){
         obs_data <- data.frame(age = c(0,1,seq(5,100,5)), e0 = X$e0_interp)
         mlt_data <- this_mlt_family %>% select(type,  age, e0, lx = lx_mlt) %>% filter(type == unique(X$type))
         mlt_closest <- interp_level_mlt(obs_data, mlt_data, "lx", "e0")
@@ -213,10 +213,12 @@ siblings_one <- function(prop_not_dead,
 
   # return adult index
   adult_mort <- lx_out %>% select(type, age, time_location, age_mlt, lx_interp) %>%
-    group_by_at(vars(-c(age_mlt, lx_interp))) %>%
-    summarise(q15_45 = 1-lx_interp[age_mlt==60]/lx_interp[age_mlt==15],
-              q15_35 = 1-lx_interp[age_mlt==50]/lx_interp[age_mlt==15], .groups = "keep") %>%
-    ungroup()
+    dplyr::group_by_at(vars(-c(age_mlt, lx_interp))) %>%
+    dplyr::summarise(q15_25 = 1-lx_interp[age_mlt==40]/lx_interp[age_mlt==15],
+              q15_35 = 1-lx_interp[age_mlt==50]/lx_interp[age_mlt==15], 
+              q15_45 = 1-lx_interp[age_mlt==60]/lx_interp[age_mlt==15],
+              .groups = "keep") %>%
+    dplyr::ungroup()
 
   # list of results to return
   return(list(adult_mort_index = adult_mort,

@@ -21,9 +21,11 @@ siblings_one(
 )
 }
 \arguments{
-\item{age}{integer vector. Lower bound of age groups from first census. Last age is assumed as lower age open age group.}
+\item{prop_not_dead}{numeric vector. Population proportion of respondents with siblings alive, by age groups.}
 
-\item{sex_siblings}{logical. Either \code{TRUE} for maternal orphanhood (default) or \code{FALSE} for paternal orphanhood.}
+\item{age}{integer vector. Lower bound of age groups from census. Last age is assumed as lower age from the open age group.}
+
+\item{sex_siblings}{character. "m" for male siblings, "f" for female siblings. Default is "f" given that most of the data is for sisters.}
 
 \item{date}{Either a \code{Date} class object or an unambiguous character string in the format \code{"YYYY-MM-DD"}. Reference date for the source (typically census or survey).}
 
@@ -47,7 +49,6 @@ siblings_one(
 Follows IUSSP(2012) template implementation for estimate adult mortality from siblings data, based on Timæus, Zaba and Ali (2001).
 The function also include the possibility to match the closest model life table (not using Brass logit given a pattern as default method), for some specific family (if no family is set, then return results for all CD and UN).
 An option for considering HIV populations is using the Spectrum model (Stover and others, 2012).
-#' @param prop_not_dead numeric vector. Population proportion of respondents with mother/father alive, by age groups.
 }
 \examples{
 \dontrun{

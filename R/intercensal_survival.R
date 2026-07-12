@@ -669,7 +669,7 @@ intercensal_surv_var_r <- function(c1,
 # from Manual X, r-var method
 # from Michael Lachanski (mikelach@sas.upenn.edu)
 lt_ManualX_variable_r <- function(age, Nx1, Nx2, ts, radix = 1000, full_lt = T){
-  DT <- data.table(age, Nx1, Nx2, ts, radix, key = "age")
+  DT <- data.table::data.table(age, Nx1, Nx2, ts, radix, key = "age")
 
   # set rho parameters - taken from Table 185 on page 219 in Manual X.
   if (max(age) >= 85)     { a = 0.006; b =  2.68;  c = 0.006 }
@@ -682,63 +682,60 @@ lt_ManualX_variable_r <- function(age, Nx1, Nx2, ts, radix = 1000, full_lt = T){
   else if (max(age) >= 50){ a = 0.205; b = 18.28;  c = 0.235 }
   else if (max(age)  < 50){ a = 0.229; b = 20.43;  c = 0.258 }
 
-  DT_lt <-
-    DT %>%
-    # easier to just keep track of two n's follow Preston et al. (2001), p.186 - 187
-    .[ ,  `:=`
-       (
-         # Step 1: adjustment for net intercensal migration and territorial coverage
-         # Step 2: calculation of age-specific intercensal growth rates
-         # This function computes the intercensal age-specific growth rate.
-         n_r_x  = log(Nx2/Nx1)/ts,
-         # Step 3: calculation of average intercensal age distribution.
-         nNx_mid = (Nx1 + Nx2)/2,
-         # The above function takes the mean of exactly two scalars.
-         n_before = age - shift(age, type = "lag", n = 1, fill = 0),
-         n_after = shift(age, type = "lead", n = 1, fill = 0) - age
-       )
-    ] %>%
-    .[age >= 10, `:=` (N1_10_plus = sum(Nx1), N2_10_plus = sum(Nx2))] %>%
-    .[age >= 45, `:=` (N1_45_plus = sum(Nx1), N2_45_plus = sum(Nx2))] %>%
-    # make variables used for Step 4
-    .[ , `:=` (nNx_mid_10plus = 0.5*(N1_10_plus + N2_10_plus),
-               nNx_mid_45plus = 0.5*(N1_45_plus + N2_45_plus),
-               r10plus = log(N2_10_plus/N1_10_plus)/ts)
-    ] %>%
-    # Preston deals with the open interval by assuming that there is an age or duration
-    # equidistant from the last two durations. At the final duration, everyone dies.
-    .[nrow(DT) , n_after  := n_before]  %>%
-    # Step 4: cumulation of age-specific growth rates from age 5 upward.
-    .[ , Rx := 0.5*n_after*n_r_x + cumsum(n_before*shift(n_r_x, fill= 0))]
+  DT_lt <- data.table::copy(DT)
+  DT_lt[,
+    `:=`(
+      # Step 1: adjustment for net intercensal migration and territorial coverage
+      # Step 2: calculation of age-specific intercensal growth rates
+      n_r_x = log(Nx2 / Nx1) / ts,
+      # Step 3: calculation of average intercensal age distribution.
+      nNx_mid = (Nx1 + Nx2) / 2,
+      # The above function takes the mean of exactly two scalars.
+      n_before = age - data.table::shift(age, type = "lag", n = 1, fill = 0),
+      n_after = data.table::shift(age, type = "lead", n = 1, fill = 0) - age
+    )
+  ]
+  DT_lt[age >= 10, `:=`(N1_10_plus = sum(Nx1), N2_10_plus = sum(Nx2))]
+  DT_lt[age >= 45, `:=`(N1_45_plus = sum(Nx1), N2_45_plus = sum(Nx2))]
+  DT_lt[,
+    `:=`(
+      nNx_mid_10plus = 0.5 * (N1_10_plus + N2_10_plus),
+      nNx_mid_45plus = 0.5 * (N1_45_plus + N2_45_plus),
+      r10plus = log(N2_10_plus / N1_10_plus) / ts
+    )
+  ]
+  # Preston deals with the open interval by assuming that there is an age or duration
+  # equidistant from the last two durations. At the final duration, everyone dies.
+  DT_lt[nrow(DT_lt), n_after := n_before]
+  # Step 4: cumulation of age-specific growth rates from age 5 upward.
+  DT_lt[, Rx := 0.5 * n_after * n_r_x + cumsum(n_before * data.table::shift(n_r_x, fill = 0))]
 
   if(full_lt == F){
-    DT_lt[nrow(DT),  n_r_x := NA_real_] %>%
-      .[ ,
-         Rx := 0.5*n_before*replace_na(n_r_x, 0) +
-           cumsum(shift(n_before, fill = 0)*shift(n_r_x, fill= 0))]   %>%
-      # only in Preston (1983) does he do this.
-      .[1, Rx :=NA_real_]
+    DT_lt[nrow(DT_lt), n_r_x := NA_real_]
+    DT_lt[, Rx := 0.5 * n_before * replace_na(n_r_x, 0) +
+             cumsum(data.table::shift(n_before, fill = 0) * data.table::shift(n_r_x, fill = 0))]
+    # only in Preston (1983) does he do this.
+    DT_lt[1, Rx := NA_real_]
   }
-  DT_lt %>%
-    # Accumulation function: Rx is what Preston calls it in Manual X
-    .[ , rho := a + b*r10plus + c*log(nNx_mid_45plus/nNx_mid_10plus)] %>%
-    .[nrow(DT) , Rx := Rx  + rho] %>%
-    # Step 5: reduction of age distribution to a stationary form.
-    .[ ,  Lx_star := nNx_mid*exp(Rx)] %>%
-    # Step 6: calculation of the expectation of life.
-    .[               , lx := 1/(n_before + n_after)*(Lx_star + shift(Lx_star))] %>%
-    .[               , temp_lx := shift(lx, n = 1, type = "lead")] %>%
-    .[1              , lx := fifelse(radix > temp_lx, radix, temp_lx)] %>%
-    .[1              , lx := fifelse(full_lt == F, NA_real_, lx)] %>%
-    .[nrow(DT)       , lx := fifelse(full_lt == F, NA_real_, lx)] %>%
-    .[  , temp_lx := NULL] %>%
-    # DemoTools only cares about some columns of lifetable based on example
-    # https://timriffe.github.io/DemoTools/articles/lifetables_with_demotools.html
-    .[         , ndx := lx - shift(lx, n = 1, type = "lead")] %>%
-    .[nrow(DT) , ndx := lx ]   %>%
-    .[         , Tx := revcumsumSkipNA(Lx_star)] %>%
-    .[         , Sx := lx/lx[1]] %>%
-    .[         , ex := Tx/lx]
+  # Accumulation function: Rx is what Preston calls it in Manual X
+  DT_lt[, rho := a + b * r10plus + c * log(nNx_mid_45plus / nNx_mid_10plus)]
+  DT_lt[nrow(DT_lt), Rx := Rx + rho]
+  # Step 5: reduction of age distribution to a stationary form.
+  DT_lt[, Lx_star := nNx_mid * exp(Rx)]
+  # Step 6: calculation of the expectation of life.
+  DT_lt[, lx := 1 / (n_before + n_after) * (Lx_star + data.table::shift(Lx_star))]
+  DT_lt[, temp_lx := data.table::shift(lx, n = 1, type = "lead")]
+  DT_lt[1, lx := data.table::fifelse(radix > temp_lx, radix, temp_lx)]
+  DT_lt[1, lx := data.table::fifelse(full_lt == F, NA_real_, lx)]
+  DT_lt[nrow(DT_lt), lx := data.table::fifelse(full_lt == F, NA_real_, lx)]
+  DT_lt[, temp_lx := NULL]
+  # DemoTools only cares about some columns of lifetable based on example
+  # https://timriffe.github.io/DemoTools/articles/lifetables_with_demotools.html
+  DT_lt[, ndx := lx - data.table::shift(lx, n = 1, type = "lead")]
+  DT_lt[nrow(DT_lt), ndx := lx]
+  DT_lt[, Tx := revcumsumSkipNA(Lx_star)]
+  DT_lt[, Sx := lx / lx[1]]
+  DT_lt[, ex := Tx / lx]
   if(full_lt == F){DT_lt[age > 50 , ex := NA_real_] }
 
 
