@@ -9,7 +9,6 @@ License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
 Depends: 
     R (>= 3.5)
 LazyData: true
@@ -26,3 +25,4 @@ Remotes:
     timriffe/DemoTools
 URL: https://ivanwilli.github.io/MortIndEst/
 Config/Needs/website: rmarkdown
+Config/roxygen2/version: 8.0.0

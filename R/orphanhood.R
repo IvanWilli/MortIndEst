@@ -561,7 +561,7 @@ orphanhood_two <- function(prop1_not_orphan, prop2_not_orphan,
       lx_out <- mlt_closest  %>%
         mutate(alpha = -.5*log(1+(pz_yplusn/lx_mlt-1/lz_mlt)/(1-pz_yplusn))) %>%
         select(-lx_mlt) %>%
-        left_join(this_mlt_family%>% filter(e0 == brass_logit_e0) %>%
+        left_join(this_mlt_family %>% filter(e0 == brass_logit_e0) %>%
                     select(type, e0, age_mlt = age, lx_mlt), by = c("type", "e0")) %>%
         mutate(logit_mlt_lx = logit(1-lx_mlt),
                lx_interp =  1 - logit_inv( alpha + logit(1-lx_mlt))) %>%
