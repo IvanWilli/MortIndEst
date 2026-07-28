@@ -5,6 +5,7 @@ bibliography: references.bib
 
 ```{r, include = FALSE}
 # add a comment
+pkgload::load_all()
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>", warnings = FALSE, messages = FALSE
@@ -45,7 +46,6 @@ Data that we need (both loaded with the package):
 - Census population by five age-groups and sex in consecutive census
 
 ```{r}
-library(MortIndest)
 library(dplyr)
 library(ggplot2)
 loc_name <- "Brazil"

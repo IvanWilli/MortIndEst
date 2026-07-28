@@ -20,7 +20,8 @@ Imports:
     rms,
     MortCast,
     purrr,
-    magrittr
+    magrittr,
+    pkgload
 Remotes:
     timriffe/DemoTools
 URL: https://ivanwilli.github.io/MortIndEst/

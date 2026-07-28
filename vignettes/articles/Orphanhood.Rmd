@@ -4,7 +4,7 @@ bibliography: references.bib
 ---
 
 ```{r, include = FALSE}
-devtools::load_all()
+pkgload::load_all()
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -69,7 +69,6 @@ head(mac_wpp22)
 We join both data sources in one just for convenience, and select only relevant variables, avoiding duplicate survey rows. Our main type of indicator is "Proportion of the population with *mother* alive" and "Proportion of the population with *father* alive" (are filtered by ID in `DemoData` format), mening proportion not orphaned.
 
 ```{r}
-library(MortIndest)
 library(dplyr)
 library(ggplot2)
 orp_data <- Orphanhood_DB |>
