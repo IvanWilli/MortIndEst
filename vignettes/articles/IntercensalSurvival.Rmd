@@ -4,6 +4,7 @@ bibliography: references.bib
 ---
 
 ```{r, include = FALSE}
+# add a comment
 devtools::load_all()
 knitr::opts_chunk$set(
   collapse = TRUE,
