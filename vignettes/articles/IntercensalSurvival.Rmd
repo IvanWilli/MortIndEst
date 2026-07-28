@@ -47,6 +47,7 @@ Data that we need (both loaded with the package):
 
 ```{r}
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 loc_name <- "Brazil"
 census_data <- all_censuses |>
