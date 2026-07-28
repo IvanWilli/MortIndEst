@@ -6,8 +6,7 @@ bibliography: references.bib
 ```{r, include = FALSE}
 # add a comment
 # devtools::load_all()
-library(dplyr)
-library(ggplot2)
+pkgload::load_all()
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>", warnings = FALSE, messages = FALSE
@@ -48,9 +47,9 @@ Data that we need (both loaded with the package):
 - Census population by five age-groups and sex in consecutive census
 
 ```{r}
-# library(tidyverse)
+library(dplyr)
+library(ggplot2)
 loc_name <- "Brazil"
-load("data/all_censuses.rda")
 census_data <- all_censuses |>
   filter(LocName == loc_name, SexName %in% c("Female", "Male")) |>
   arrange(SexName, TimeMid, AgeStart) |>
@@ -61,7 +60,6 @@ census_data <- all_censuses |>
 - Life table information about infant/child mortality and $e_0$ (some methods requiere additional information)
 
 ```{r}
-load("data/lt5_wpp24_brazil.rda")
 head(lt5_wpp24_brazil, 2)
 ```
 
