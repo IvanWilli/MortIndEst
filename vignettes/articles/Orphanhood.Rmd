@@ -4,7 +4,7 @@ bibliography: references.bib
 ---
 
 ```{r, include = FALSE}
-# devtools::load_all()
+devtools::load_all()
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -54,7 +54,7 @@ These two-survey approaches use variable-(r) adjustments, usually refer estimate
 
 Data that we need (both loaded with the package) are 
 
-- `Orphanhood_DB`: census and survey information about survival parents by age and sex of respondants.
+- `Orphanhood_DB_full`: census and survey information about survival parents by age and sex of respondants.
 
 ```{r}
 head(Orphanhood_DB)
@@ -72,7 +72,7 @@ We join both data sources in one just for convenience, and select only relevant 
 library(tidyverse)
 orp_data <- Orphanhood_DB |>
   filter(
-    LocName == loc_name,
+    LocName == "Brazil",
     LocAreaTypeID == 2,
     AgeLabel != "Total",
     IndicatorID %in% c(101, 102),
@@ -107,9 +107,6 @@ two_grid <- one_grid |>
   filter(!is.na(date2), trunc(date1) != trunc(date2), date2 - date1 < 30) |>
   crossing(variant = c("two_timaeus", "two_preston_chen"))
 ```
-
-
-# application
 
 We loop over the combinations of sex/one-two/interval/coefficients/mlt with `pmap` from the `map` family functions. If you want to see in detail the application to some census pair (not looping in an industrial scale as here) see the `orphanhood` documentation.
 
@@ -187,9 +184,20 @@ two_runs <- pmap(two_grid, \(parent, date1, date2, sex_resp, variant) {
     )
   }, error = \(e) list(result = NULL, error = conditionMessage(e)))
 })
+# bind results from the two methods
+results_df <- bind_rows(
+  map2_dfr(one_runs, seq_len(nrow(one_grid)), \(x, i) {
+    if (is.null(x$result)) return(NULL)
+    x$result |> mutate(run_id = paste0("one_", i), .before = 1)
+  }),
+  map2_dfr(two_runs, seq_len(nrow(two_grid)), \(x, i) {
+    if (is.null(x$result)) return(NULL)
+    x$result |> mutate(run_id = paste0("two_", i), .before = 1)
+  })
+)
 ```
 
-# results
+# Results
 
 First we can take a look to combinations that did not work, and if we see something we need to loof for the reason (can exists quality problems in census data, or some issue arrangin the data, etc.). In this case we see an error realted to the age requirements of the Timaeus coefficients in the two observation method.
 
@@ -205,8 +213,8 @@ head(issues_df)
 There are many ways to get summary information from the results. We choose here to get min/max and inter-quartil percentiles for each sex, method and census-pair.
 
 ```{r}
-dispersion_df <- results_df |>
-  mutate(name = if_else(variant == "one_census",
+dispersion_df <- results_df %>%
+  mutate(name = ifelse(variant == "one_census",
                         paste0(source, " ", Year),
                         paste0(source, " ", trunc(date1), "-", trunc(date2))),
          time_point = round(time_location, 2)) |>
@@ -225,14 +233,14 @@ We plot the results agaist WPP24 results (which in some way already is consideri
 The various data sources available for Brazil make it possible to apply the different methods discussed above, distinguishing both the sex of the parent and the sex of the respondent. As expected, fewer observations are available for fathers, a common limitation noted previously. Estimates based on the 1950 Census appear to underestimate the mortality level by around 50% and yield values similar to those observed several decades later; these estimates should therefore probably be discarded. Estimates based on a single observation show, for women, a declining trend and a slightly lower mortality level than WPP 2024 [@UnitedNations2024], with a larger bias when the respondents are men. Estimates based on two observations do not appear to improve performance for women. For men, however, they seem to provide one potentially useful estimate based on the 1991–1996 surveys.
 
 ```{r}
-wpp_q15_45_df <- lt5_wwp24 |>
+wpp_q15_45_df <- lt5_wwp24_brazil |>
   filter(LocID == loc_id, Sex %in% c("Female", "Male")) |>
   summarise(q15_45_wpp = 1 - lx[AgeGrpStart == 60] / lx[AgeGrpStart == 15],
             .by = c(Sex, Time))
 
 ggplot(
   dispersion_df |>
-    mutate(Sex = if_else(parent == "mother", "Female", "Male"),
+    mutate(Sex = ifelse(parent == "mother", "Female", "Male"),
            sex_resp = paste0(sex_resp, " Respondent")),
   aes(time_point, q15_45_med, color = variant)
 ) +
@@ -255,3 +263,5 @@ ggplot(
   ) +
   theme_minimal(base_size = 13)
 ```
+
+# References

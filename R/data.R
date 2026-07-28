@@ -22,19 +22,19 @@
 #' @source United Nations structured demographic data extract.
 "all_censuses"
 
-#' WPP 2024 five-year life tables
+#' WPP 2024 five-year life tables for Brazil
 #'
-#' Country-level five-year life table values from the 2024 World Population
+#' Brazil Country-level five-year life table values from the 2024 World Population
 #' Prospects extract.
 #'
-#' @format A `data.frame` with 3,256 rows and 29 columns:
+#' @format A `data.frame` with 29 columns:
 #' \describe{
 #'   \item{SortOrder, LocID, VarID, Time, SexID, AgeGrpStart, AgeGrpSpan}{Integer identifiers and time or age fields.}
 #'   \item{Notes, ISO3_code, ISO2_code, LocTypeName, Location, Variant, Sex, AgeGrp}{Character metadata fields.}
 #'   \item{MidPeriod, mx, qx, px, lx, dx, Lx, Sx, Tx, ex, ax}{Numeric life table values.}
 #' }
 #' @source United Nations World Population Prospects 2024.
-"lt5_wwp24_country"
+"lt5_wpp24_brazil"
 
 #' WPP 2022 mean age of childbearing
 #'
