@@ -69,7 +69,9 @@ head(mac_wpp22)
 We join both data sources in one just for convenience, and select only relevant variables, avoiding duplicate survey rows. Our main type of indicator is "Proportion of the population with *mother* alive" and "Proportion of the population with *father* alive" (are filtered by ID in `DemoData` format), mening proportion not orphaned.
 
 ```{r}
-library(tidyverse)
+library(MortIndest)
+library(dplyr)
+library(ggplot2)
 orp_data <- Orphanhood_DB |>
   filter(
     LocName == "Brazil",
@@ -111,6 +113,7 @@ two_grid <- one_grid |>
 We loop over the combinations of sex/one-two/interval/coefficients/mlt with `pmap` from the `map` family functions. If you want to see in detail the application to some census pair (not looping in an industrial scale as here) see the `orphanhood` documentation.
 
 ```{r}
+library(purrr)
 # one observation method
 one_runs <- pmap(one_grid, \(TimeMid, parent, sex_resp, n_age) {
   tryCatch({
