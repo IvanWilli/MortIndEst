@@ -46,7 +46,7 @@ Data that we need (both loaded with the package):
 - Census population by five age-groups and sex in consecutive census
 
 ```{r}
-library(tidyverse)
+# library(tidyverse)
 loc_name <- "Brazil"
 census_data <- all_censuses |>
   filter(LocName == loc_name, SexName %in% c("Female", "Male")) |>
