@@ -6,6 +6,8 @@ bibliography: references.bib
 ```{r, include = FALSE}
 # add a comment
 # devtools::load_all()
+library(dplyr)
+library(ggplot2)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>", warnings = FALSE, messages = FALSE
