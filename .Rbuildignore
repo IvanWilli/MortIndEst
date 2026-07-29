@@ -1,5 +1,7 @@
 ^MortIndEst\.Rproj$
 ^\.Rproj\.user$
+^\.Renviron$
+^\.tmp$
 ^\.git$
 ^_pkgdown\.yml$
 ^docs$
