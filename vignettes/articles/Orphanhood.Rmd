@@ -236,7 +236,7 @@ The various data sources available for Brazil make it possible to apply the diff
 
 ```{r}
 wpp_q15_45_df <- lt5_wpp24_brazil |>
-  filter(LocID == loc_id, Sex %in% c("Female", "Male")) |>
+  filter(Sex %in% c("Female", "Male")) |>
   summarise(q15_45_wpp = 1 - lx[AgeGrpStart == 60] / lx[AgeGrpStart == 15],
             .by = c(Sex, Time))
 
