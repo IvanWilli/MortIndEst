@@ -71,7 +71,7 @@ We join both data sources in one just for convenience, and select only relevant 
 ```{r}
 library(dplyr)
 library(tidyr)
-librayr(stringr)
+library(stringr)
 library(ggplot2)
 orp_data <- Orphanhood_DB |>
   filter(
