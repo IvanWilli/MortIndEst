@@ -235,7 +235,7 @@ We plot the results agaist WPP24 results (which in some way already is consideri
 The various data sources available for Brazil make it possible to apply the different methods discussed above, distinguishing both the sex of the parent and the sex of the respondent. As expected, fewer observations are available for fathers, a common limitation noted previously. Estimates based on the 1950 Census appear to underestimate the mortality level by around 50% and yield values similar to those observed several decades later; these estimates should therefore probably be discarded. Estimates based on a single observation show, for women, a declining trend and a slightly lower mortality level than WPP 2024 [@UnitedNations2024], with a larger bias when the respondents are men. Estimates based on two observations do not appear to improve performance for women. For men, however, they seem to provide one potentially useful estimate based on the 1991–1996 surveys.
 
 ```{r}
-wpp_q15_45_df <- lt5_wwp24_brazil |>
+wpp_q15_45_df <- lt5_wpp24_brazil |>
   filter(LocID == loc_id, Sex %in% c("Female", "Male")) |>
   summarise(q15_45_wpp = 1 - lx[AgeGrpStart == 60] / lx[AgeGrpStart == 15],
             .by = c(Sex, Time))
