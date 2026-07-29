@@ -11,6 +11,11 @@ Roxygen: list(markdown = TRUE)
 Depends: 
     R (>= 3.5)
 LazyData: true
+Suggests:
+    DemoTools,
+    DemoToolsData,
+    knitr,
+    rmarkdown
 Imports:
     data.table,
     dplyr,
@@ -23,6 +28,9 @@ Imports:
     purrr,
     magrittr,
     pkgload
+Remotes:
+    timriffe/DemoTools,
+    timriffe/DemoToolsData
 URL: https://ivanwilli.github.io/MortIndEst/
 Config/Needs/website: rmarkdown
 Config/roxygen2/version: 8.0.0
