@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Orphanhood • MortIndEst</title>
+<title>Orphanhood method for adult mortality: an application to Brazil • MortIndEst</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Orphanhood">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Orphanhood method for adult mortality: an application to Brazil">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -34,9 +34,8 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/ExtrapConstrained_CensusMethod.html">Constrained Extrapolation and Census Method</a></li>
-    <li><a class="dropdown-item" href="../articles/IntercensalSurvival.html">Intercensal survival methods</a></li>
-    <li><a class="dropdown-item" href="../articles/Orphanhood.html">Orphanhood</a></li>
-    <li><a class="dropdown-item" href="../articles/Siblings_Widowhood.html">Siblings and Widowhood</a></li>
+    <li><a class="dropdown-item" href="../articles/IntercensalSurvival.html">Intercensal survival method for adult mortality: an application to Brazil</a></li>
+    <li><a class="dropdown-item" href="../articles/Orphanhood.html">Orphanhood method for adult mortality: an application to Brazil</a></li>
   </ul>
 </li>
       </ul>
@@ -57,7 +56,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Orphanhood</h1>
+      <h1>Orphanhood method for adult mortality: an application to Brazil</h1>
             
       
 
@@ -66,18 +65,631 @@
 
     
     
-<p>This is a vignette about using … methods with this package</p>
-  </main>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p>Orphanhood information is commonly collected in censuses and surveys
+through questions such as whether a person’s biological mother or father
+is still alive. Questions about mothers are more frequent than questions
+about fathers. In censuses, they are usually asked across all age
+groups, whereas surveys such as the DHS often restrict them to the
+youngest age groups. These data have been widely used in countries with
+incomplete vital statistics. IPUMS standardized orphanhood variables and
+made harmonized modules and questionnaire images available <span class="citation">(IPUMS 2026)</span>, while the DHS program provides
+access to survey data and documentation.</p>
+<p>The underlying demographic logic is that the parental survival status
+reported by children contains information on adult mortality. If all
+mothers gave birth at age 25, a respondent aged (n) would provide direct
+information on ({}<em>nq</em>{25}). In reality, fertility is distributed
+across ages, so the age pattern of childbearing must be taken into
+account. Timæus <span class="citation">(1992)</span> therefore modeled
+adult survival using the proportion of respondents with a surviving
+mother or father, ({}<em>5S</em>{n-5}), together with the mean age of
+childbearing.</p>
+<p>For women, the method estimates survival for (n) years from age 25
+using</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mi>n</mi></msub><msub><mi>p</mi><mn>25</mn></msub><mi>a</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>b</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mtext mathvariant="normal">MAC</mtext><mo>+</mo><mi>c</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><msub><mrow></mrow><mn>5</mn></msub><msub><mi>S</mi><mrow><mi>n</mi><mo>−</mo><mn>5</mn></mrow></msub><mo>,</mo></mrow><annotation encoding="application/x-tex">
+{}_np_{25}
+a(n)+b(n),\text{MAC}+c(n),{}_5S_{n-5},
+</annotation></semantics></math></p>
+<p>where the coefficients vary by five-year respondent age group. For
+fathers, the corresponding equation begins at age 35 and uses a
+different set of coefficients. The coefficients were derived from
+simulated combinations of Brass relational mortality models and Booth’s
+relational Gompertz fertility model <span class="citation">(Booth
+1984)</span>. Thus, the method can be applied under a range of mortality
+and fertility regimes rather than under a single fixed demographic
+pattern.</p>
+<p>For example, if 80% of women aged 20–24 report that their mother is
+still alive and the mean age of childbearing is 27, the coefficients for
+ages 25–29 can be used to obtain</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>25</mn></msub><msub><mi>p</mi><mn>25</mn></msub><mo>−</mo><mn>0.1808</mn><mo>+</mo><mn>0.00586</mn><mo>×</mo><mn>27</mn><mo>+</mo><mn>1.0267</mn><mo>×</mo><mn>0.8</mn><mn>0.79878</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">
+{}_{25}p_{25}
+-0.1808+0.00586\times27+1.0267\times0.8
+0.79878.
+</annotation></semantics></math></p>
+<p>This implies a probability of dying over the previous 25 years of
+approximately 20%, under the assumption that fertility and mortality
+remained constant over that period. The coefficient attached to mean age
+of childbearing is positive because, for a given proportion with a
+surviving parent, later childbearing implies that parents are younger
+and therefore more likely to be alive <span class="citation">(Preston et
+al. 2001)</span>.</p>
+<p>The method also locates each estimate at a specific reference date
+rather than automatically assigning it to the midpoint of the exposure
+interval. The resulting time lag depends on respondent age, the
+fertility pattern, and the age schedule of mortality. Older respondents
+provide information on older parents who have been exposed to mortality
+risks for longer periods. Since each respondent age group yields a
+separate estimate of ({}<em>np</em>{25}), inconsistencies may arise
+across ages. Each estimate should therefore be mapped onto a standard
+mortality pattern, evaluated, and retained only when it provides
+demographically plausible information <span class="citation">(United
+Nations Population Division 1983)</span>.</p>
+<p>The main limitations include the adoption effect <span class="citation">(Timæus 1991)</span>, age misreporting, uncertainty
+about parental identity or survival status, and the greater weight
+assigned to high-fertility adults because they have more children
+available to respond. HIV/AIDS can also cause underestimation because
+infected women tend to have lower fertility and infected children may
+die before the survey; Timæus and Nunn <span class="citation">(1997)</span> proposed a correction based on HIV
+prevalence, reduced fertility, and vertical transmission. When two
+observations are available, cohort changes in orphanhood can be used to
+estimate parental survival more directly. For example,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>10</mn></msub><msub><mi>p</mi><mn>49.5</mn></msub><mfrac><mrow><msub><mrow></mrow><mn>32.5</mn></msub><msub><mi>p</mi><mn>27</mn></msub></mrow><mrow><msub><mrow></mrow><mn>22.5</mn></msub><msub><mi>p</mi><mn>27</mn></msub></mrow></mfrac><mfrac><mn>0.6</mn><mn>0.8</mn></mfrac><mn>0.75</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">
+{}_{10}p_{49.5}
+\frac{{}_{32.5}p_{27}}{{}_{22.5}p_{27}}
+\frac{0.6}{0.8}
+0.75.
+</annotation></semantics></math></p>
+<p>These two-survey approaches use variable-(r) adjustments, usually
+refer estimates to the midpoint between observations, and retain
+cohort-specific estimates separately in order to assess statistical
+uncertainty <span class="citation">(Timæus 1991; Preston et al. 2001;
+Moultrie et al. 2013; Preston and Chen 1984)</span>. Although we do not
+apply it here, you can find an adaptation of the Macura (1984) method in
+the <code>orphanhood_macura</code> function.</p>
+</div>
+<div class="section level2">
+<h2 id="input-data">Input data<a class="anchor" aria-label="anchor" href="#input-data"></a>
+</h2>
+<p>Data that we need (both loaded with the package) are</p>
+<ul>
+<li>
+<code>Orphanhood_DB_full</code>: census and survey information about
+survival parents by age and sex of respondants.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Orphanhood_DB</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                                                               IndicatorName</span></span>
+<span><span class="co">#&gt;                                                                      &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1: Proportion of the population with mother alive by age and sex - abridged</span></span>
+<span><span class="co">#&gt; 2: Proportion of the population with mother alive by age and sex - abridged</span></span>
+<span><span class="co">#&gt; 3: Proportion of the population with mother alive by age and sex - abridged</span></span>
+<span><span class="co">#&gt; 4: Proportion of the population with mother alive by age and sex - abridged</span></span>
+<span><span class="co">#&gt; 5: Proportion of the population with mother alive by age and sex - abridged</span></span>
+<span><span class="co">#&gt; 6: Proportion of the population with mother alive by age and sex - abridged</span></span>
+<span><span class="co">#&gt;    IndicatorID     LocName LocID StructuredDataID LocTypeName LocTypeID RegName</span></span>
+<span><span class="co">#&gt;          &lt;num&gt;      &lt;char&gt; &lt;num&gt;            &lt;num&gt;      &lt;char&gt;     &lt;num&gt;   &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:         101 Afghanistan     4        382635629     Country         5      NA</span></span>
+<span><span class="co">#&gt; 2:         101 Afghanistan     4        382635630     Country         5      NA</span></span>
+<span><span class="co">#&gt; 3:         101 Afghanistan     4        382635631     Country         5      NA</span></span>
+<span><span class="co">#&gt; 4:         101 Afghanistan     4        382635632     Country         5      NA</span></span>
+<span><span class="co">#&gt; 5:         101 Afghanistan     4        382635633     Country         5      NA</span></span>
+<span><span class="co">#&gt; 6:         101 Afghanistan     4        382635634     Country         5      NA</span></span>
+<span><span class="co">#&gt;    RegID AreaName AreaID LocAreaTypeName LocAreaTypeID</span></span>
+<span><span class="co">#&gt;    &lt;num&gt;    &lt;num&gt;  &lt;num&gt;          &lt;char&gt;         &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:     0       NA      0      Whole area             2</span></span>
+<span><span class="co">#&gt; 2:     0       NA      0      Whole area             2</span></span>
+<span><span class="co">#&gt; 3:     0       NA      0      Whole area             2</span></span>
+<span><span class="co">#&gt; 4:     0       NA      0      Whole area             2</span></span>
+<span><span class="co">#&gt; 5:     0       NA      0      Whole area             2</span></span>
+<span><span class="co">#&gt; 6:     0       NA      0      Whole area             2</span></span>
+<span><span class="co">#&gt;                    SubGroupTypeName SubGroupTypeID SubGroupID1</span></span>
+<span><span class="co">#&gt;                              &lt;char&gt;          &lt;num&gt;       &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: Total / All groups / Whole group              2           2</span></span>
+<span><span class="co">#&gt; 2: Total / All groups / Whole group              2           2</span></span>
+<span><span class="co">#&gt; 3: Total / All groups / Whole group              2           2</span></span>
+<span><span class="co">#&gt; 4: Total / All groups / Whole group              2           2</span></span>
+<span><span class="co">#&gt; 5: Total / All groups / Whole group              2           2</span></span>
+<span><span class="co">#&gt; 6: Total / All groups / Whole group              2           2</span></span>
+<span><span class="co">#&gt;           SubGroupName SubGroupCombinationID SubGroupTypeSortOrder</span></span>
+<span><span class="co">#&gt;                 &lt;char&gt;                 &lt;num&gt;                 &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: Total or All groups                     0                     3</span></span>
+<span><span class="co">#&gt; 2: Total or All groups                     0                     3</span></span>
+<span><span class="co">#&gt; 3: Total or All groups                     0                     3</span></span>
+<span><span class="co">#&gt; 4: Total or All groups                     0                     3</span></span>
+<span><span class="co">#&gt; 5: Total or All groups                     0                     3</span></span>
+<span><span class="co">#&gt; 6: Total or All groups                     0                     3</span></span>
+<span><span class="co">#&gt;    IndicatorShortName DataCatalogID DataProcessTypeID DataProcessType</span></span>
+<span><span class="co">#&gt;                &lt;char&gt;         &lt;num&gt;            &lt;char&gt;          &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:       pMotherAlive          5045            Survey          Survey</span></span>
+<span><span class="co">#&gt; 2:       pMotherAlive          5045            Survey          Survey</span></span>
+<span><span class="co">#&gt; 3:       pMotherAlive          5045            Survey          Survey</span></span>
+<span><span class="co">#&gt; 4:       pMotherAlive          5045            Survey          Survey</span></span>
+<span><span class="co">#&gt; 5:       pMotherAlive          5045            Survey          Survey</span></span>
+<span><span class="co">#&gt; 6:       pMotherAlive          5045            Survey          Survey</span></span>
+<span><span class="co">#&gt;    DataProcessTypeSort DataProcess DataProcessID DataProcessSort</span></span>
+<span><span class="co">#&gt;                  &lt;num&gt;      &lt;char&gt;         &lt;num&gt;           &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:                   3      DHS-NS            48              16</span></span>
+<span><span class="co">#&gt; 2:                   3      DHS-NS            48              16</span></span>
+<span><span class="co">#&gt; 3:                   3      DHS-NS            48              16</span></span>
+<span><span class="co">#&gt; 4:                   3      DHS-NS            48              16</span></span>
+<span><span class="co">#&gt; 5:                   3      DHS-NS            48              16</span></span>
+<span><span class="co">#&gt; 6:                   3      DHS-NS            48              16</span></span>
+<span><span class="co">#&gt;                      DataCatalogName DataCatalogShortName ReferencePeriod</span></span>
+<span><span class="co">#&gt;                               &lt;char&gt;               &lt;char&gt;          &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1: Afghanistan 2010 Mortality Survey     2010 DHS Special            2010</span></span>
+<span><span class="co">#&gt; 2: Afghanistan 2010 Mortality Survey     2010 DHS Special            2010</span></span>
+<span><span class="co">#&gt; 3: Afghanistan 2010 Mortality Survey     2010 DHS Special            2010</span></span>
+<span><span class="co">#&gt; 4: Afghanistan 2010 Mortality Survey     2010 DHS Special            2010</span></span>
+<span><span class="co">#&gt; 5: Afghanistan 2010 Mortality Survey     2010 DHS Special            2010</span></span>
+<span><span class="co">#&gt; 6: Afghanistan 2010 Mortality Survey     2010 DHS Special            2010</span></span>
+<span><span class="co">#&gt;    ReferenceYearStart ReferenceYearEnd ReferenceYearMid       FieldWorkStart</span></span>
+<span><span class="co">#&gt;                 &lt;num&gt;            &lt;num&gt;            &lt;num&gt;               &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:               2010             2010           2010.5 4/1/2010 12:00:00 AM</span></span>
+<span><span class="co">#&gt; 2:               2010             2010           2010.5 4/1/2010 12:00:00 AM</span></span>
+<span><span class="co">#&gt; 3:               2010             2010           2010.5 4/1/2010 12:00:00 AM</span></span>
+<span><span class="co">#&gt; 4:               2010             2010           2010.5 4/1/2010 12:00:00 AM</span></span>
+<span><span class="co">#&gt; 5:               2010             2010           2010.5 4/1/2010 12:00:00 AM</span></span>
+<span><span class="co">#&gt; 6:               2010             2010           2010.5 4/1/2010 12:00:00 AM</span></span>
+<span><span class="co">#&gt;              FieldWorkEnd FieldWorkMiddle DataCatalogNote DataSourceID</span></span>
+<span><span class="co">#&gt;                    &lt;char&gt;           &lt;num&gt;          &lt;char&gt;        &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 12/31/2010 12:00:00 AM         2010.62                        44606</span></span>
+<span><span class="co">#&gt; 2: 12/31/2010 12:00:00 AM         2010.62                        44606</span></span>
+<span><span class="co">#&gt; 3: 12/31/2010 12:00:00 AM         2010.62                        44606</span></span>
+<span><span class="co">#&gt; 4: 12/31/2010 12:00:00 AM         2010.62                        44606</span></span>
+<span><span class="co">#&gt; 5: 12/31/2010 12:00:00 AM         2010.62                        44606</span></span>
+<span><span class="co">#&gt; 6: 12/31/2010 12:00:00 AM         2010.62                        44606</span></span>
+<span><span class="co">#&gt;                                                                                                                                                 DataSourceAuthor</span></span>
+<span><span class="co">#&gt;                                                                                                                                                           &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1: Afghan Public Health Institute, Central Statistics Organization , ICF Macro , Indian Institute of Health Management Research , World Health Organization/EMRO</span></span>
+<span><span class="co">#&gt; 2: Afghan Public Health Institute, Central Statistics Organization , ICF Macro , Indian Institute of Health Management Research , World Health Organization/EMRO</span></span>
+<span><span class="co">#&gt; 3: Afghan Public Health Institute, Central Statistics Organization , ICF Macro , Indian Institute of Health Management Research , World Health Organization/EMRO</span></span>
+<span><span class="co">#&gt; 4: Afghan Public Health Institute, Central Statistics Organization , ICF Macro , Indian Institute of Health Management Research , World Health Organization/EMRO</span></span>
+<span><span class="co">#&gt; 5: Afghan Public Health Institute, Central Statistics Organization , ICF Macro , Indian Institute of Health Management Research , World Health Organization/EMRO</span></span>
+<span><span class="co">#&gt; 6: Afghan Public Health Institute, Central Statistics Organization , ICF Macro , Indian Institute of Health Management Research , World Health Organization/EMRO</span></span>
+<span><span class="co">#&gt;    DataSourceYear                    DataSourceName</span></span>
+<span><span class="co">#&gt;             &lt;num&gt;                            &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:           2010 Afghanistan Mortality Survey 2010</span></span>
+<span><span class="co">#&gt; 2:           2010 Afghanistan Mortality Survey 2010</span></span>
+<span><span class="co">#&gt; 3:           2010 Afghanistan Mortality Survey 2010</span></span>
+<span><span class="co">#&gt; 4:           2010 Afghanistan Mortality Survey 2010</span></span>
+<span><span class="co">#&gt; 5:           2010 Afghanistan Mortality Survey 2010</span></span>
+<span><span class="co">#&gt; 6:           2010 Afghanistan Mortality Survey 2010</span></span>
+<span><span class="co">#&gt;                  DataSourceShortName DataSourceSort DataStatusName DataStatusID</span></span>
+<span><span class="co">#&gt;                               &lt;char&gt;          &lt;num&gt;         &lt;char&gt;        &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: Afghanistan Mortality Survey 2010              0          Final            1</span></span>
+<span><span class="co">#&gt; 2: Afghanistan Mortality Survey 2010              0          Final            1</span></span>
+<span><span class="co">#&gt; 3: Afghanistan Mortality Survey 2010              0          Final            1</span></span>
+<span><span class="co">#&gt; 4: Afghanistan Mortality Survey 2010              0          Final            1</span></span>
+<span><span class="co">#&gt; 5: Afghanistan Mortality Survey 2010              0          Final            1</span></span>
+<span><span class="co">#&gt; 6: Afghanistan Mortality Survey 2010              0          Final            1</span></span>
+<span><span class="co">#&gt;    DataStatusSort StatisticalConceptName StatisticalConceptID</span></span>
+<span><span class="co">#&gt;             &lt;num&gt;                 &lt;char&gt;                &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:              2               De-facto                    2</span></span>
+<span><span class="co">#&gt; 2:              2               De-facto                    2</span></span>
+<span><span class="co">#&gt; 3:              2               De-facto                    2</span></span>
+<span><span class="co">#&gt; 4:              2               De-facto                    2</span></span>
+<span><span class="co">#&gt; 5:              2               De-facto                    2</span></span>
+<span><span class="co">#&gt; 6:              2               De-facto                    2</span></span>
+<span><span class="co">#&gt;    StatisticalConceptSort    SexName SexID SexSort AgeID AgeUnit AgeStart</span></span>
+<span><span class="co">#&gt;                     &lt;num&gt;     &lt;char&gt; &lt;num&gt;   &lt;num&gt; &lt;num&gt;  &lt;char&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:                      1 Both sexes     3       3   702    Year        5</span></span>
+<span><span class="co">#&gt; 2:                      1 Both sexes     3       3   703    Year       10</span></span>
+<span><span class="co">#&gt; 3:                      1 Both sexes     3       3   704    Year       15</span></span>
+<span><span class="co">#&gt; 4:                      1 Both sexes     3       3   705    Year       20</span></span>
+<span><span class="co">#&gt; 5:                      1 Both sexes     3       3   706    Year       25</span></span>
+<span><span class="co">#&gt; 6:                      1 Both sexes     3       3   707    Year       30</span></span>
+<span><span class="co">#&gt;    AgeEnd AgeSpan AgeMid AgeLabel AgeSort agesort DataTypeGroupName</span></span>
+<span><span class="co">#&gt;     &lt;num&gt;   &lt;num&gt;  &lt;num&gt;   &lt;char&gt;   &lt;num&gt;   &lt;num&gt;            &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:     10       5    7.5      5-9      69       0            Direct</span></span>
+<span><span class="co">#&gt; 2:     15       5   12.5    10-14     133       0            Direct</span></span>
+<span><span class="co">#&gt; 3:     20       5   17.5    15-19     190       0            Direct</span></span>
+<span><span class="co">#&gt; 4:     25       5   22.5    20-24     263       0            Direct</span></span>
+<span><span class="co">#&gt; 5:     30       5   27.5    25-29     306       0            Direct</span></span>
+<span><span class="co">#&gt; 6:     35       5   32.5    30-34     330       0            Direct</span></span>
+<span><span class="co">#&gt;    DataTypeGroupID DataTypeName DataTypeID DataTypeSort      ModelType</span></span>
+<span><span class="co">#&gt;              &lt;num&gt;       &lt;char&gt;      &lt;num&gt;        &lt;num&gt;         &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:               3       Direct         16           11 Not applicable</span></span>
+<span><span class="co">#&gt; 2:               3       Direct         16           11 Not applicable</span></span>
+<span><span class="co">#&gt; 3:               3       Direct         16           11 Not applicable</span></span>
+<span><span class="co">#&gt; 4:               3       Direct         16           11 Not applicable</span></span>
+<span><span class="co">#&gt; 5:               3       Direct         16           11 Not applicable</span></span>
+<span><span class="co">#&gt; 6:               3       Direct         16           11 Not applicable</span></span>
+<span><span class="co">#&gt;    ModelPatternFamilyName ModelPatternFamilyID        ModelPatternName</span></span>
+<span><span class="co">#&gt;                    &lt;char&gt;                &lt;num&gt;                  &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:         Not applicable                   15 Not applicable (Direct)</span></span>
+<span><span class="co">#&gt; 2:         Not applicable                   15 Not applicable (Direct)</span></span>
+<span><span class="co">#&gt; 3:         Not applicable                   15 Not applicable (Direct)</span></span>
+<span><span class="co">#&gt; 4:         Not applicable                   15 Not applicable (Direct)</span></span>
+<span><span class="co">#&gt; 5:         Not applicable                   15 Not applicable (Direct)</span></span>
+<span><span class="co">#&gt; 6:         Not applicable                   15 Not applicable (Direct)</span></span>
+<span><span class="co">#&gt;    ModelPatternID DataReliabilityName DataReliabilityID DataReliabilitySort</span></span>
+<span><span class="co">#&gt;             &lt;num&gt;              &lt;char&gt;             &lt;num&gt;               &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:             40                Fair                 5                   2</span></span>
+<span><span class="co">#&gt; 2:             40                Fair                 5                   2</span></span>
+<span><span class="co">#&gt; 3:             40                Fair                 5                   2</span></span>
+<span><span class="co">#&gt; 4:             40                Fair                 5                   2</span></span>
+<span><span class="co">#&gt; 5:             40                Fair                 5                   2</span></span>
+<span><span class="co">#&gt; 6:             40                Fair                 5                   2</span></span>
+<span><span class="co">#&gt;    PeriodTypeName PeriodTypeID PeriodGroupName PeriodGroupID PeriodStart</span></span>
+<span><span class="co">#&gt;            &lt;char&gt;        &lt;num&gt;          &lt;char&gt;         &lt;num&gt;       &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:             RP            6               0           433           0</span></span>
+<span><span class="co">#&gt; 2:             RP            6               0           433           0</span></span>
+<span><span class="co">#&gt; 3:             RP            6               0           433           0</span></span>
+<span><span class="co">#&gt; 4:             RP            6               0           433           0</span></span>
+<span><span class="co">#&gt; 5:             RP            6               0           433           0</span></span>
+<span><span class="co">#&gt; 6:             RP            6               0           433           0</span></span>
+<span><span class="co">#&gt;    PeriodEnd PeriodSpan PeriodMiddle Weight TimeUnit  TimeStart    TimeEnd</span></span>
+<span><span class="co">#&gt;        &lt;num&gt;      &lt;num&gt;        &lt;num&gt;  &lt;num&gt;   &lt;char&gt;     &lt;char&gt;     &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:         0          0            0     NA     year 15/08/2010 15/08/2010</span></span>
+<span><span class="co">#&gt; 2:         0          0            0     NA     year 15/08/2010 15/08/2010</span></span>
+<span><span class="co">#&gt; 3:         0          0            0     NA     year 15/08/2010 15/08/2010</span></span>
+<span><span class="co">#&gt; 4:         0          0            0     NA     year 15/08/2010 15/08/2010</span></span>
+<span><span class="co">#&gt; 5:         0          0            0     NA     year 15/08/2010 15/08/2010</span></span>
+<span><span class="co">#&gt; 6:         0          0            0     NA     year 15/08/2010 15/08/2010</span></span>
+<span><span class="co">#&gt;    TimeDuration  TimeMid TimeLabel FootNoteID    id         SeriesID DataValue</span></span>
+<span><span class="co">#&gt;           &lt;num&gt;    &lt;num&gt;    &lt;char&gt;      &lt;num&gt; &lt;num&gt;           &lt;char&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:            0 2010.619      2010          0     1 1041324512495107 0.9867798</span></span>
+<span><span class="co">#&gt; 2:            0 2010.619      2010          0     1 1041324512495107 0.9712740</span></span>
+<span><span class="co">#&gt; 3:            0 2010.619      2010          0     1 1041324512495107 0.9490994</span></span>
+<span><span class="co">#&gt; 4:            0 2010.619      2010          0     1 1041324512495107 0.9216962</span></span>
+<span><span class="co">#&gt; 5:            0 2010.619      2010          0     1 1041324512495107 0.8639209</span></span>
+<span><span class="co">#&gt; 6:            0 2010.619      2010          0     1 1041324512495107 0.7899554</span></span></code></pre></div>
+<ul>
+<li>
+<code>mac_wpp22</code>: mean age of childbearing from an external
+source, in this case from WPP 2022 revision. Consider here that onet
+hing is the mean age at risk of childearing (calculated from asfr) and
+other thing is the population weighted, taht only considers observed
+mothers and fathers. In general those looks similar in value.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mac_wpp22</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">#&gt;   LocID  Year parent   mac</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     4  <span style="text-decoration: underline;">1</span>950 mother  29.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     4  <span style="text-decoration: underline;">1</span>950 father  36.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     4  <span style="text-decoration: underline;">1</span>951 mother  29.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     4  <span style="text-decoration: underline;">1</span>951 father  36.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     4  <span style="text-decoration: underline;">1</span>952 mother  29.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>     4  <span style="text-decoration: underline;">1</span>952 father  36.6</span></span></code></pre></div>
+<p>We join both data sources in one just for convenience, and select
+only relevant variables, avoiding duplicate survey rows. Our main type
+of indicator is “Proportion of the population with <em>mother</em>
+alive” and “Proportion of the population with <em>father</em> alive”
+(are filtered by ID in <code>DemoData</code> format), mening proportion
+not orphaned.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     filter, lag</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="va">orp_data</span> <span class="op">&lt;-</span> <span class="va">Orphanhood_DB</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>    <span class="va">LocName</span> <span class="op">==</span> <span class="st">"Brazil"</span>,</span>
+<span>    <span class="va">LocAreaTypeID</span> <span class="op">==</span> <span class="fl">2</span>,</span>
+<span>    <span class="va">AgeLabel</span> <span class="op">!=</span> <span class="st">"Total"</span>,</span>
+<span>    <span class="va">IndicatorID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">101</span>, <span class="fl">102</span><span class="op">)</span>,</span>
+<span>    <span class="va">AgeEnd</span> <span class="op">&gt;=</span> <span class="fl">0</span>,</span>
+<span>    <span class="va">DataValue</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    parent <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">IndicatorName</span>, <span class="st">"mother"</span><span class="op">)</span>, <span class="st">"mother"</span>, <span class="st">"father"</span><span class="op">)</span>,</span>
+<span>    Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">trunc</a></span><span class="op">(</span><span class="va">TimeMid</span><span class="op">)</span>,</span>
+<span>    age <span class="op">=</span> <span class="va">AgeStart</span>,</span>
+<span>    sex_resp <span class="op">=</span> <span class="va">SexName</span>,</span>
+<span>    prop_not_orphan <span class="op">=</span> <span class="va">DataValue</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">LocID</span>, <span class="va">LocName</span>, <span class="va">DataSourceShortName</span>, <span class="va">DataProcessType</span>, <span class="va">IndicatorName</span>,</span>
+<span>         <span class="va">TimeLabel</span>, <span class="va">TimeMid</span>, <span class="va">Year</span>, <span class="va">sex_resp</span>, <span class="va">parent</span>, <span class="va">age</span>, <span class="va">prop_not_orphan</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">mac_wpp22</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LocID"</span>, <span class="st">"Year"</span>, <span class="st">"parent"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="application">Application<a class="anchor" aria-label="anchor" href="#application"></a>
+</h2>
+<p>First we need to organize the one and pair-census comparison. FOr the
+cas of two observations, there is a version of coefficients, one from
+Ttimaeus and other from Perton &amp; Chen. As in
+<code>intercensal_survvial</code>, when <code>mlt_family = NULL</code>
+all the eleven model life table families are considered as pattern (see
+<code><a href="https://rdrr.io/pkg/DemoToolsData/man/modelLTx1.html" class="external-link">DemoToolsData::modelLTx1</a></code>).</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">one_grid</span> <span class="op">&lt;-</span> <span class="va">orp_data</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">TimeMid</span>, <span class="va">parent</span>, <span class="va">sex_resp</span>, name <span class="op">=</span> <span class="st">"n_age"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">two_grid</span> <span class="op">&lt;-</span> <span class="va">one_grid</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">parent</span>, <span class="va">sex_resp</span>, <span class="va">TimeMid</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">parent</span>, <span class="va">sex_resp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>date2 <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lead</a></span><span class="op">(</span><span class="va">TimeMid</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span>date1 <span class="op">=</span> <span class="va">TimeMid</span>, <span class="va">date2</span>, <span class="va">sex_resp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">date2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">trunc</a></span><span class="op">(</span><span class="va">date1</span><span class="op">)</span> <span class="op">!=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">trunc</a></span><span class="op">(</span><span class="va">date2</span><span class="op">)</span>, <span class="va">date2</span> <span class="op">-</span> <span class="va">date1</span> <span class="op">&lt;</span> <span class="fl">30</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand.html" class="external-link">crossing</a></span><span class="op">(</span>variant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"two_timaeus"</span>, <span class="st">"two_preston_chen"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>We loop over the combinations of
+sex/one-two/interval/coefficients/mlt with <code>pmap</code> from the
+<code>map</code> family functions. If you want to see in detail the
+application to some census pair (not looping in an industrial scale as
+here) see the <code>orphanhood</code> documentation.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span>
+<span><span class="co"># one observation method</span></span>
+<span><span class="va">one_runs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pmap.html" class="external-link">pmap</a></span><span class="op">(</span><span class="va">one_grid</span>, \<span class="op">(</span><span class="va">TimeMid</span>, <span class="va">parent</span>, <span class="va">sex_resp</span>, <span class="va">n_age</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">orp_data</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">parent</span> <span class="op">==</span> <span class="va">.env</span><span class="op">$</span><span class="va">parent</span>, <span class="va">TimeMid</span> <span class="op">==</span> <span class="va">.env</span><span class="op">$</span><span class="va">TimeMid</span>, <span class="va">sex_resp</span> <span class="op">==</span> <span class="va">.env</span><span class="op">$</span><span class="va">sex_resp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span></span>
+<span>    <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/orphanhood_one.html">orphanhood_one</a></span><span class="op">(</span></span>
+<span>      prop_not_orphan <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">prop_not_orphan</span>,</span>
+<span>      age <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">age</span>,</span>
+<span>      maternal <span class="op">=</span> <span class="op">(</span><span class="va">parent</span> <span class="op">==</span> <span class="st">"mother"</span><span class="op">)</span>,</span>
+<span>      mac <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">mac</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>      date <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>      mlt_family <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>      verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>      result <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">adult_mort_index</span> <span class="op">|&gt;</span></span>
+<span>        <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>          variant <span class="op">=</span> <span class="st">"one_census"</span>,</span>
+<span>          source <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">DataProcessType</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>          Year <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">TimeLabel</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>          date1 <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>          date2 <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>          parent <span class="op">=</span> <span class="va">parent</span>,</span>
+<span>          sex_resp <span class="op">=</span> <span class="va">sex_resp</span>,</span>
+<span>          .before <span class="op">=</span> <span class="fl">1</span></span>
+<span>        <span class="op">)</span>,</span>
+<span>      error <span class="op">=</span> <span class="cn">NA_character_</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span>, error <span class="op">=</span> \<span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>result <span class="op">=</span> <span class="cn">NULL</span>, error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co"># two observations method</span></span>
+<span><span class="va">two_runs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pmap.html" class="external-link">pmap</a></span><span class="op">(</span><span class="va">two_grid</span>, \<span class="op">(</span><span class="va">parent</span>, <span class="va">date1</span>, <span class="va">date2</span>, <span class="va">sex_resp</span>, <span class="va">variant</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">orp_data</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimeMid</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">date1</span>, <span class="va">date2</span><span class="op">)</span>, <span class="va">sex_resp</span> <span class="op">==</span> <span class="va">.env</span><span class="op">$</span><span class="va">sex_resp</span>, <span class="va">parent</span> <span class="op">==</span> <span class="va">.env</span><span class="op">$</span><span class="va">parent</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">TimeMid</span>, <span class="va">age</span><span class="op">)</span></span>
+<span>    <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>      prop1_not_orphan <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">prop_not_orphan</span><span class="op">[</span><span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span> <span class="op">==</span> <span class="va">date1</span><span class="op">]</span>,</span>
+<span>      prop2_not_orphan <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">prop_not_orphan</span><span class="op">[</span><span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span> <span class="op">==</span> <span class="va">date2</span><span class="op">]</span>,</span>
+<span>      age1 <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">age</span><span class="op">[</span><span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span> <span class="op">==</span> <span class="va">date1</span><span class="op">]</span>,</span>
+<span>      age2 <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">age</span><span class="op">[</span><span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span> <span class="op">==</span> <span class="va">date2</span><span class="op">]</span>,</span>
+<span>      date1 <span class="op">=</span> <span class="va">date1</span>,</span>
+<span>      date2 <span class="op">=</span> <span class="va">date2</span>,</span>
+<span>      maternal <span class="op">=</span> <span class="op">(</span><span class="va">parent</span> <span class="op">==</span> <span class="st">"mother"</span><span class="op">)</span>,</span>
+<span>      mac1 <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">mac</span><span class="op">[</span><span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span> <span class="op">==</span> <span class="va">date1</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>      mac2 <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">mac</span><span class="op">[</span><span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span> <span class="op">==</span> <span class="va">date2</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>      mlt_family <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>      verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="op">)</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">variant</span> <span class="op">==</span> <span class="st">"two_preston_chen"</span><span class="op">)</span> <span class="va">args</span><span class="op">$</span><span class="va">method</span> <span class="op">&lt;-</span> <span class="st">"preston_chen"</span></span>
+<span>    <span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">orphanhood_two</span>, <span class="va">args</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>      result <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">adult_mort_index</span> <span class="op">|&gt;</span></span>
+<span>        <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>          source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">DataProcessType</span><span class="op">[</span><span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span> <span class="op">==</span> <span class="va">date1</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="st">"-"</span>,</span>
+<span>                          <span class="va">x</span><span class="op">$</span><span class="va">DataProcessType</span><span class="op">[</span><span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span> <span class="op">==</span> <span class="va">date2</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>          Year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">TimeLabel</span><span class="op">[</span><span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span> <span class="op">==</span> <span class="va">date1</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="st">"-"</span>,</span>
+<span>                        <span class="va">x</span><span class="op">$</span><span class="va">TimeLabel</span><span class="op">[</span><span class="va">x</span><span class="op">$</span><span class="va">TimeMid</span> <span class="op">==</span> <span class="va">date2</span><span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>          variant <span class="op">=</span> <span class="va">variant</span>,</span>
+<span>          date1 <span class="op">=</span> <span class="va">date1</span>,</span>
+<span>          date2 <span class="op">=</span> <span class="va">date2</span>,</span>
+<span>          parent <span class="op">=</span> <span class="va">parent</span>,</span>
+<span>          sex_resp <span class="op">=</span> <span class="va">sex_resp</span>,</span>
+<span>          time_location <span class="op">=</span> <span class="op">(</span><span class="va">date1</span> <span class="op">+</span> <span class="va">date2</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span>,</span>
+<span>          .before <span class="op">=</span> <span class="fl">1</span></span>
+<span>        <span class="op">)</span>,</span>
+<span>      error <span class="op">=</span> <span class="cn">NA_character_</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span>, error <span class="op">=</span> \<span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>result <span class="op">=</span> <span class="cn">NULL</span>, error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(age_yplus_n)`</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(age_yplus_n)`</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(age_yplus_n)`</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(age_yplus_n)`</span></span>
+<span><span class="co"># bind results from the two methods</span></span>
+<span><span class="va">results_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map2_dfr</a></span><span class="op">(</span><span class="va">one_runs</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">one_grid</span><span class="op">)</span><span class="op">)</span>, \<span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">result</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span>    <span class="va">x</span><span class="op">$</span><span class="va">result</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>run_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"one_"</span>, <span class="va">i</span><span class="op">)</span>, .before <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map2_dfr</a></span><span class="op">(</span><span class="va">two_runs</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">two_grid</span><span class="op">)</span><span class="op">)</span>, \<span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">result</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span>    <span class="va">x</span><span class="op">$</span><span class="va">result</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>run_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"two_"</span>, <span class="va">i</span><span class="op">)</span>, .before <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
+</h2>
+<p>First we can take a look to combinations that did not work, and if we
+see something we need to loof for the reason (can exists quality
+problems in census data, or some issue arrangin the data, etc.). In this
+case we see an error realted to the age requirements of the Timaeus
+coefficients in the two observation method.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">issues_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
+<span>  <span class="va">one_grid</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>error <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_chr</a></span><span class="op">(</span><span class="va">one_runs</span>, <span class="st">"error"</span><span class="op">)</span>, variant <span class="op">=</span> <span class="st">"one_census"</span><span class="op">)</span>,</span>
+<span>  <span class="va">two_grid</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>error <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_chr</a></span><span class="op">(</span><span class="va">two_runs</span>, <span class="st">"error"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">error</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">issues_df</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    TimeMid parent   sex_resp n_age</span></span>
+<span><span class="co">#&gt;      &lt;num&gt; &lt;char&gt;     &lt;char&gt; &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1:      NA father Both sexes    NA</span></span>
+<span><span class="co">#&gt; 2:      NA father     Female    NA</span></span>
+<span><span class="co">#&gt; 3:      NA father       Male    NA</span></span>
+<span><span class="co">#&gt; 4:      NA mother Both sexes    NA</span></span>
+<span><span class="co">#&gt; 5:      NA mother     Female    NA</span></span>
+<span><span class="co">#&gt; 6:      NA mother       Male    NA</span></span>
+<span><span class="co">#&gt;                                                                         error</span></span>
+<span><span class="co">#&gt;                                                                        &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1: For applying this method you need adult ages for respondants (IUSSP, 2012)</span></span>
+<span><span class="co">#&gt; 2: For applying this method you need adult ages for respondants (IUSSP, 2012)</span></span>
+<span><span class="co">#&gt; 3: For applying this method you need adult ages for respondants (IUSSP, 2012)</span></span>
+<span><span class="co">#&gt; 4: For applying this method you need adult ages for respondants (IUSSP, 2012)</span></span>
+<span><span class="co">#&gt; 5: For applying this method you need adult ages for respondants (IUSSP, 2012)</span></span>
+<span><span class="co">#&gt; 6: For applying this method you need adult ages for respondants (IUSSP, 2012)</span></span>
+<span><span class="co">#&gt;        variant    date1    date2</span></span>
+<span><span class="co">#&gt;         &lt;char&gt;    &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: two_timaeus 1991.791 1996.331</span></span>
+<span><span class="co">#&gt; 2: two_timaeus 1991.791 1996.331</span></span>
+<span><span class="co">#&gt; 3: two_timaeus 1991.791 1996.331</span></span>
+<span><span class="co">#&gt; 4: two_timaeus 1991.791 1996.331</span></span>
+<span><span class="co">#&gt; 5: two_timaeus 1991.791 1996.331</span></span>
+<span><span class="co">#&gt; 6: two_timaeus 1991.791 1996.331</span></span></code></pre></div>
+<p>There are many ways to get summary information from the results. We
+choose here to get min/max and inter-quartil percentiles for each sex,
+method and census-pair.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dispersion_df</span> <span class="op">&lt;-</span> <span class="va">results_df</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">variant</span> <span class="op">==</span> <span class="st">"one_census"</span>,</span>
+<span>                        <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">source</span>, <span class="st">" "</span>, <span class="va">Year</span><span class="op">)</span>,</span>
+<span>                        <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">source</span>, <span class="st">" "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">trunc</a></span><span class="op">(</span><span class="va">date1</span><span class="op">)</span>, <span class="st">"-"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">trunc</a></span><span class="op">(</span><span class="va">date2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         time_point <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">time_location</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
+<span>    q15_45_min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">q15_45</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    q15_45_p25 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">q15_45</span>, <span class="fl">0.25</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    q15_45_med <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">q15_45</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    q15_45_p75 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">q15_45</span>, <span class="fl">0.75</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    q15_45_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">q15_45</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">parent</span>, <span class="va">sex_resp</span>, <span class="va">source</span>, <span class="va">variant</span>, <span class="va">name</span>, <span class="va">time_point</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p>We plot the results agaist WPP24 results (which in some way already
+is considering the estimates).</p>
+<p>The various data sources available for Brazil make it possible to
+apply the different methods discussed above, distinguishing both the sex
+of the parent and the sex of the respondent. As expected, fewer
+observations are available for fathers, a common limitation noted
+previously. Estimates based on the 1950 Census appear to underestimate
+the mortality level by around 50% and yield values similar to those
+observed several decades later; these estimates should therefore
+probably be discarded. Estimates based on a single observation show, for
+women, a declining trend and a slightly lower mortality level than WPP
+2024 <span class="citation">(United Nations, Department of Economic and
+Social Affairs, Population Division 2024)</span>, with a larger bias
+when the respondents are men. Estimates based on two observations do not
+appear to improve performance for women. For men, however, they seem to
+provide one potentially useful estimate based on the 1991–1996
+surveys.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">wpp_q15_45_df</span> <span class="op">&lt;-</span> <span class="va">lt5_wpp24_brazil</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Sex</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Female"</span>, <span class="st">"Male"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>q15_45_wpp <span class="op">=</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">lx</span><span class="op">[</span><span class="va">AgeGrpStart</span> <span class="op">==</span> <span class="fl">60</span><span class="op">]</span> <span class="op">/</span> <span class="va">lx</span><span class="op">[</span><span class="va">AgeGrpStart</span> <span class="op">==</span> <span class="fl">15</span><span class="op">]</span>,</span>
+<span>            .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">Sex</span>, <span class="va">Time</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span></span>
+<span>  <span class="va">dispersion_df</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">parent</span> <span class="op">==</span> <span class="st">"mother"</span>, <span class="st">"Female"</span>, <span class="st">"Male"</span><span class="op">)</span>,</span>
+<span>           sex_resp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">sex_resp</span>, <span class="st">" Respondent"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">time_point</span>, <span class="va">q15_45_med</span>, color <span class="op">=</span> <span class="va">variant</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_linerange</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="va">q15_45_p25</span>, ymax <span class="op">=</span> <span class="va">q15_45_p75</span><span class="op">)</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2.5</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>shape <span class="op">=</span> <span class="va">name</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">wpp_q15_45_df</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>time_point <span class="op">=</span> <span class="va">Time</span> <span class="op">+</span> <span class="fl">.5</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time_point</span>, y <span class="op">=</span> <span class="va">q15_45_wpp</span><span class="op">)</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>    linewidth <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>    linetype <span class="op">=</span> <span class="st">"dashed"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">Sex</span><span class="op">)</span>, rows <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">sex_resp</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    col <span class="op">=</span> <span class="st">"Model"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Year"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"q(15,45)"</span>,</span>
+<span>    shape <span class="op">=</span> <span class="st">"Data source"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Guatemala parental orphanhood estimates"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">13</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: The shape palette can deal with a maximum of 6 discrete values because more</span></span>
+<span><span class="co">#&gt; than 6 becomes difficult to discriminate</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> you have requested 9 values. Consider specifying shapes manually if you need</span></span>
+<span><span class="co">#&gt;   that many of them.</span></span>
+<span><span class="co">#&gt; Warning: Removed 17 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
+<p><img src="Orphanhood_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="700"></p>
+</div>
+<div class="section level2">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Booth1984" class="csl-entry">
+Booth, Heather. 1984. <span>“Transforming <span>Gompertz</span>’s
+Function for Fertility Analysis: The Development of a Standard for the
+Relational <span>Gompertz</span> Function.”</span> <em>Population
+Studies</em> 38 (3): 495–506. <a href="https://doi.org/10.1080/00324728.1984.10410306" class="external-link">https://doi.org/10.1080/00324728.1984.10410306</a>.
+</div>
+<div id="ref-IPUMS2026" class="csl-entry">
+IPUMS. 2026. <em><span>IPUMS International</span>: Harmonized
+International Census Data</em>. Institute for Social Research; Data
+Innovation, University of Minnesota; Online database and documentation.
+<a href="https://international.ipums.org/international/" class="external-link">https://international.ipums.org/international/</a>.
+</div>
+<div id="ref-IUSSP2013" class="csl-entry">
+Moultrie, Tom A., Rob E. Dorrington, Allan G. Hill, Kenneth Hill, Ian M.
+Timæus, and Basia Zaba, eds. 2013. <em>Tools for Demographic
+Estimation</em>. International Union for the Scientific Study of
+Population. <a href="https://demographicestimation.iussp.org/" class="external-link">https://demographicestimation.iussp.org/</a>.
+</div>
+<div id="ref-PrestonChen1998" class="csl-entry">
+Preston, Samuel H., and N. Chen. 1984. <em>Two Census Orphanhood Methods
+for Estimating Adult Mortality, with Applications to Latin America</em>.
+United Nations.
+</div>
+<div id="ref-Preston2001" class="csl-entry">
+Preston, Samuel H., Patrick Heuveline, and Michel Guillot. 2001.
+<em>Demography: Measuring and Modeling Population Processes</em>.
+Blackwell.
+</div>
+<div id="ref-Timaeus1991" class="csl-entry">
+Timæus, Ian M. 1991. <span>“Estimation of Mortality from Orphanhood in
+Adulthood.”</span> <em>Demography</em> 28 (2): 213–27. <a href="https://doi.org/10.2307/2061276" class="external-link">https://doi.org/10.2307/2061276</a>.
+</div>
+<div id="ref-Timaeus1992" class="csl-entry">
+Timæus, Ian M. 1992. <span>“Estimation of Adult Mortality from Paternal
+Orphanhood: A Reassessment and a New Approach.”</span> <em>Population
+Bulletin of the United Nations</em>, no. 33: 47–63. <a href="https://www.un.org/development/desa/pd/sites/www.un.org.development.desa.pd/files/files/documents/2020/Jan/un_1992_population_bulletin_33.pdf" class="external-link">https://www.un.org/development/desa/pd/sites/www.un.org.development.desa.pd/files/files/documents/2020/Jan/un_1992_population_bulletin_33.pdf</a>.
+</div>
+<div id="ref-TimaeusNunn1997" class="csl-entry">
+Timæus, Ian M., and Andrew J. Nunn. 1997. <span>“Measurement of Adult
+Mortality in Populations Affected by <span>AIDS</span>: An Assessment of
+the Orphanhood Method.”</span> <em>Health Transition Review</em> 7
+(Supplement 2): 23–43. <a href="https://www.jstor.org/stable/40652324" class="external-link">https://www.jstor.org/stable/40652324</a>.
+</div>
+<div id="ref-UnitedNations2024" class="csl-entry">
+United Nations, Department of Economic and Social Affairs, Population
+Division. 2024. <em>World Population Prospects 2024</em>. Online
+edition. <a href="https://population.un.org/wpp/" class="external-link">https://population.un.org/wpp/</a>.
+</div>
+<div id="ref-UnitedNations1983" class="csl-entry">
+United Nations Population Division. 1983. <em>Manual x: Indirect
+Techniques for Demographic Estimation</em>. Population Studies 81.
+Department of International Economic; Social Affairs; United Nations. <a href="https://www.un.org/development/desa/pd/sites/www.un.org.development.desa.pd/files/files/documents/2020/Jan/un_1983_manual_x_-_indirect_techniques_for_demographic_estimation.pdf" class="external-link">https://www.un.org/development/desa/pd/sites/www.un.org.development.desa.pd/files/files/documents/2020/Jan/un_1983_manual_x_-_indirect_techniques_for_demographic_estimation.pdf</a>.
+</div>
+</div>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by First Last.</p>
+  <p>Developed by Ivan Williams, Patrick Gerland.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

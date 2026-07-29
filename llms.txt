@@ -1,0 +1,115 @@
+# MortIndEst
+
+This package includes several functions for indirect estimates,
+specially about adult mortality.
+
+Main development was done during World Population Prospects revision
+2024, with the goal to include as inputs in the B3 model (United
+Nations: Department of Economic and Social Affairs 2024).
+
+Functions included are related to intercensal survival estimates,
+orphanhood, siblings survival, widowhood survival, census method for
+$`{}_{15}q_{60}`$ and old ages extension of mortality rates. Some of the
+contents consists in R implementations of materials in Moultrie et al.
+(2012) and United Nations (1983).
+
+The idea of the package is to continue expanding its content, so
+suggestions are welcome. For other indirect methods not included here
+you can see [fertsestr](https://github.com/josehcms/fertestr), …
+
+## Installation
+
+You can install the development version of MortIndEst from
+[GitHub](https://github.com/) with:
+
+``` r
+
+# install.packages("pak")
+# pak::pak("IvanWilli/MortIndEst")
+```
+
+## References
+
+Moultrie, Tom A., Rob E. Dorrington, Allan G. Hill, Kenneth Hill, Ian M.
+Timæus, and Basia Zaba, eds. 2012. *Tools for Demographic Estimation*.
+International Union for the Scientific Study of Population (IUSSP).
+<https://demographicestimation.iussp.org/>.
+
+United Nations. 1983. *Manual x: Indirect Techniques for Demographic
+Estimation*. Population Studies 81. United Nations.
+<https://www.un.org/development/desa/pd/sites/www.un.org.development.desa.pd/files/files/documents/2020/Jan/un_1983_manual_x.pdf>.
+
+United Nations: Department of Economic and Social Affairs. 2024. *World
+Population Prospects 2024*. United Nations.
+<https://population.un.org/wpp/>.
+
+# Package index
+
+## All functions
+
+- [`Orphanhood_DB`](https://ivanwilli.github.io/MortIndEst/reference/Orphanhood_DB.md)
+  : Orphanhood database
+
+- [`all_censuses`](https://ivanwilli.github.io/MortIndEst/reference/all_censuses.md)
+  : Census population database
+
+- [`census_method()`](https://ivanwilli.github.io/MortIndEst/reference/census_method.md)
+  : Intercensal survival estimates of 15q60 based on Li-Gerland (2012).
+
+- [`coherent_mx()`](https://ivanwilli.github.io/MortIndEst/reference/coherent_mx.md)
+  : Extrapolate mortality rates coherently at older ages
+
+- [`egm()`](https://ivanwilli.github.io/MortIndEst/reference/egm.md) :
+  Extinct Generation Method (EGM) from Lexis-square deaths
+
+- [`im_brass()`](https://ivanwilli.github.io/MortIndEst/reference/im_brass.md)
+  : Estimate child mortality with the Brass indirect method
+
+- [`intercensal_surv_Preston_logit_var_r()`](https://ivanwilli.github.io/MortIndEst/reference/intercensal_surv_Preston_logit_var_r.md)
+  :
+
+  Estimate life expectancy at age 5 (`e(5)`) using cohort relationship
+  between two censuses, based on r-variable methods.
+
+- [`intercensal_survival()`](https://ivanwilli.github.io/MortIndEst/reference/intercensal_survival.md)
+  : Estimate adult mortality using cohort relationship between two
+  censuses.
+
+- [`lt5_wpp24_brazil`](https://ivanwilli.github.io/MortIndEst/reference/lt5_wpp24_brazil.md)
+  : WPP 2024 five-year life tables for Brazil
+
+- [`lt_extrap_constrained()`](https://ivanwilli.github.io/MortIndEst/reference/lt_extrap_constrained.md)
+  : Extrapolate mortality by age, constrained to a life expectancy
+  value.
+
+- [`mac_wpp22`](https://ivanwilli.github.io/MortIndEst/reference/mac_wpp22.md)
+  : WPP 2022 mean age of childbearing
+
+- [`mods.r`](https://ivanwilli.github.io/MortIndEst/reference/mods.r.md)
+  : Spectrum mortality models
+
+- [`orphanhood_one()`](https://ivanwilli.github.io/MortIndEst/reference/orphanhood_one.md)
+  : Estimate adult mortality with one survey/census from orphanhood
+  data.
+
+- [`orphanhood_two()`](https://ivanwilli.github.io/MortIndEst/reference/orphanhood_two.md)
+  : Estimate adult mortality with two survey/census observations from
+  orphanhood data.
+
+- [`siblings_one()`](https://ivanwilli.github.io/MortIndEst/reference/siblings_one.md)
+  : Estimate adult mortality with one survey/census from sibling
+  survival data.
+
+- [`widowhood_one()`](https://ivanwilli.github.io/MortIndEst/reference/widowhood_one.md)
+  : Estimate adult mortality with one survey/census from widowhood data.
+
+# Articles
+
+### All vignettes
+
+- [Constrained Extrapolation and Census
+  Method](https://ivanwilli.github.io/MortIndEst/articles/ExtrapConstrained_CensusMethod.md):
+- [Intercensal survival method for adult mortality: an application to
+  Brazil](https://ivanwilli.github.io/MortIndEst/articles/IntercensalSurvival.md):
+- [Orphanhood method for adult mortality: an application to
+  Brazil](https://ivanwilli.github.io/MortIndEst/articles/Orphanhood.md):

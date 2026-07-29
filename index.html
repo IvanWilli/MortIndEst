@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Indirect estimates of adult mortality • MortIndEst</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Indirect estimates of adult mortality">
 <meta name="description" content="Indirect estimates of adult mortality based on intercensal population counts, sibling survival, widowhood survival, and other related methods.">
@@ -35,8 +35,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/Adult%20mortality%20estimates.html">Estimates for a time series of {}_{45}q_{15}</a></li>
-    <li><a class="dropdown-item" href="articles/ExtrapConstrained_CensusMethod.html">Constrained Extrapolation and Census Method</a></li>
+<li><a class="dropdown-item" href="articles/ExtrapConstrained_CensusMethod.html">Constrained Extrapolation and Census Method</a></li>
+    <li><a class="dropdown-item" href="articles/IntercensalSurvival.html">Intercensal survival method for adult mortality: an application to Brazil</a></li>
+    <li><a class="dropdown-item" href="articles/Orphanhood.html">Orphanhood method for adult mortality: an application to Brazil</a></li>
   </ul>
 </li>
       </ul>
@@ -64,27 +65,20 @@
 <p>You can install the development version of MortIndEst from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"IvanWilli/MortIndEst"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
-</h2>
-<p>This is a basic example which shows you how to solve a common problem:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ivanwilli.github.io/MortIndEst/">MortIndEst</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># pak::pak("IvanWilli/MortIndEst")</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-iussp2012" class="csl-entry">
-Moultrie, Tom A., Rob E. Dorrington, Allan G. Hill, Kenneth Hill, Ian M. Timæus, and Basia Zaba, eds. 2012. <em>Tools for Demographic Estimation</em>. Paris: International Union for the Scientific Study of Population (IUSSP). <a href="https://demographicestimation.iussp.org/" class="external-link uri">https://demographicestimation.iussp.org/</a>.
+Moultrie, Tom A., Rob E. Dorrington, Allan G. Hill, Kenneth Hill, Ian M. Timæus, and Basia Zaba, eds. 2012. <em>Tools for Demographic Estimation</em>. International Union for the Scientific Study of Population (IUSSP). <a href="https://demographicestimation.iussp.org/" class="external-link uri">https://demographicestimation.iussp.org/</a>.
 </div>
 <div id="ref-un_manualX" class="csl-entry">
-United Nations. 1983. <em>Manual x: Indirect Techniques for Demographic Estimation</em>. Population Studies 81. New York: United Nations. <a href="https://www.un.org/development/desa/pd/sites/www.un.org.development.desa.pd/files/files/documents/2020/Jan/un_1983_manual_x.pdf" class="external-link uri">https://www.un.org/development/desa/pd/sites/www.un.org.development.desa.pd/files/files/documents/2020/Jan/un_1983_manual_x.pdf</a>.
+United Nations. 1983. <em>Manual x: Indirect Techniques for Demographic Estimation</em>. Population Studies 81. United Nations. <a href="https://www.un.org/development/desa/pd/sites/www.un.org.development.desa.pd/files/files/documents/2020/Jan/un_1983_manual_x.pdf" class="external-link uri">https://www.un.org/development/desa/pd/sites/www.un.org.development.desa.pd/files/files/documents/2020/Jan/un_1983_manual_x.pdf</a>.
 </div>
 <div id="ref-wpp2024" class="csl-entry">
-United Nations: Department of Economic and Social Affairs. 2024. “World Population Prospects 2024.” United Nations. <a href="https://population.un.org/wpp/" class="external-link uri">https://population.un.org/wpp/</a>.
+United Nations: Department of Economic and Social Affairs. 2024. <em>World Population Prospects 2024</em>. United Nations. <a href="https://population.un.org/wpp/" class="external-link uri">https://population.un.org/wpp/</a>.
 </div>
 </div>
 </div>
@@ -92,7 +86,7 @@ United Nations: Department of Economic and Social Affairs. 2024. “World Popula
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li>`use_mit_license()`, `use_gpl3_license()` or friends to pick a license</li>
+<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
 </ul>
 </div>
 
@@ -123,7 +117,7 @@ United Nations: Department of Economic and Social Affairs. 2024. “World Popula
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

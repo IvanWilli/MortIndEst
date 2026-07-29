@@ -1,0 +1,162 @@
+# Estimate adult mortality with one survey/census from orphanhood data.
+
+Follows IUSSP (2012) implementation for estimate adult mortality from
+orphanhood data, based in Timæus (1992). The function also include the
+possibility to match the closest model life table (not using Brass logit
+given a pattern as default method), for some specific family (if no
+family is set, then return results for all CD and UN). Two options for
+considering HIV populations: one is following Timæus and Nunn (1997)
+(implemented in IUSSP (2012)), and other is using the Spectrum model
+(Stover and others, 2012). The last needs additional data on
+`HIV_prop_partner`, `HIV_art`.
+
+## Usage
+
+``` r
+orphanhood_one(
+  prop_not_orphan,
+  age,
+  maternal = TRUE,
+  mac = NULL,
+  date = NULL,
+  mlt_data_input = NULL,
+  mlt_family = "CD_West",
+  brass_logit = FALSE,
+  brass_logit_e0 = 60,
+  brass_logit_5q0 = NULL,
+  HIV_prev_antenatal = NULL,
+  HIV_vert_transm = 1/3,
+  HIV_fert_ratio = 3/4,
+  HIV_parents_surv = c(0.5, 0.75, rep(1, length(age) - 2)),
+  HIV_prop_partner = 1/2,
+  HIV_prev = NULL,
+  HIV_art = NULL,
+  e0_accept = c(20, 100),
+  verbose = TRUE
+)
+```
+
+## Arguments
+
+- prop_not_orphan:
+
+  numeric vector. Population proportion of respondents with
+  mother/father alive, by age groups.
+
+- age:
+
+  integer vector. Lower bound of age groups from first census. Last age
+  is assumed as lower age from the open age group.
+
+- maternal:
+
+  logical. Either `TRUE` for maternal orphanhood (default) or `FALSE`
+  for paternal orphanhood.
+
+- mac:
+
+  numeric. Mean age at childbearing for mothers/fathers.
+
+- date:
+
+  Either a `Date` class object or an unambiguous character string in the
+  format `"YYYY-MM-DD"`. Reference date for the source (typically census
+  or survey).
+
+- mlt_data_input:
+
+  data.frame. If is `NULL` then model life tables is used, available
+  from `Morcast` package. But specific pattern can be included (`l_x`
+  must be included, see examples).
+
+- mlt_family:
+
+  character. Options: "CD_East", "CD_North", "CD_South", "CD_West",
+  "UN_Chilean", "UN_Far_Eastern", "UN_General", "UN_Latin_American",
+  "UN_South_Asian". If `NULL` returns results for all.
+
+- brass_logit:
+
+  logical. Doing a level smoothing with 1-parameter logit Brass.
+
+- brass_logit_e0:
+
+  numeric. Life expectancy at birth when `brass_logit` is `TRUE`.
+
+- brass_logit_5q0:
+
+  numeric. Find best level when `brass_logit_e0` is `NULL`. If this is
+  not `NULL`, then implied level replaces `brass_logit_e0`.
+
+- HIV_prev_antenatal:
+
+  numeric. Estimates of the prevalence by age of HIV infection among
+  women attending antenatal clinics. If some value is assigned, then
+  will be assumed AIDS variation of the method.
+
+- HIV_vert_transm:
+
+  numeric. Estimate of proportion of infants who acquire HIV from their
+  mothers.
+
+- HIV_fert_ratio:
+
+  numeric. Estimate of relative level of fertility among HIV-positive
+  women compared with HIV-negative women.
+
+- HIV_prop_partner:
+
+  numeric. Estimate of the proportion of men with infected female
+  partner.
+
+- e0_accept:
+
+  integer vector. Range acceptable when calculating the median of
+  implied level by age (avoid non-possible extrapolations). By deafult
+  between 20 and 100.
+
+- HIV_prev_males:
+
+  numeric. Estimates of population-based estimate of HIV prevalence
+  among men by age. If some value is assigned, then will be assumed AIDS
+  variation of the method.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Examples from IUUSP Tools for Demographic Estimation
+# Orhpanhood 1 census
+# Maternal orphanhood - Male respondents - Irak ("AM_Orphanhood_OneCensus_Basic - Iraq_v2.xlsx")
+standard_iusssp <- data.frame(age = seq(15, 85, 5),
+                              lx = c(0.8868,0.8763,0.8621,0.8467,0.8296,0.8094,0.7845, 0.7527,0.7096,0.6515,0.5724,0.4700,0.3443,0.2101,0.0962))
+irak_1997 <- orphanhood_one(prop_not_orphan = c(0.9918,0.9819,0.9665,0.9415,0.9005,0.8374,0.7678,0.6380,0.4941),
+               age = seq(5, 45, 5),
+               mac = 28.2807464,
+               date = 1997.79,
+               mlt_data_input = standard_iusssp,
+               brass_logit = TRUE)
+publ_rr <- data.frame(
+  age = seq(5, 45, 5),
+  q15_45 = c(0.072, 0.085, 0.096, 0.110, 0.126, 0.143, 0.137, 0.159, 0.167),
+  Date     = c(1994.2, 1992.1, 1990.1, 1988.5, 1987.0, 1985.9, 1985.5, NA, NA))
+round(publ_rr$q15_45-irak_1997$adult_mort_index$q15_45, 2)
+# Orphanhood HIV
+# maternal Kenya HIV 1999 ("AM_Orphanhood_OneCensus_AIDS Kenya_v2.xlsx")
+standard_iusssp_aids <- data.frame(age = seq(15, 85, 5),
+                                   lx = c(0.8847,0.8603, 0.8173,0.7677, 0.7247,0.6913, 0.6645,0.6281, 0.5783,0.5110, 0.4225,0.3149, 0.2012,0.1021, 0.0377))
+kenya_1999_maternal_aids <- orphanhood_one(
+  prop_not_orphan = c(0.9732, 0.9560, 0.9336, 0.9080, 0.8771, 0.8244, 0.7691, 0.6685, 0.5653),
+  age = seq(5, 45, 5),
+  mac = 26.75048387,
+  maternal = TRUE,
+  date = 1999.64,
+  mlt_data_input = standard_iusssp_aids,
+  brass_logit = TRUE,
+  HIV_prev_antenatal = c(.07, .01, rep(0,7)),
+  HIV_vert_transm = 1/3,
+  HIV_fert_ratio = 3/4)$adult_mort_index
+rr_45q15 <- c(0.368, 0.179, 0.183, 0.189, 0.183, 0.185, 0.165, 0.161, 0.139)
+round((kenya_1999_maternal_aids$q15_45/rr_45q15)-1,2)
+} # }
+```

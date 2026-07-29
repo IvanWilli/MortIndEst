@@ -1,0 +1,54 @@
+# Intercensal survival estimates of 15q60 based on Li-Gerland (2012).
+
+Adapted from matlab code provided from PG.
+
+## Usage
+
+``` r
+census_method(c1, c2, age, date1, date2, shortcut = F)
+```
+
+## Arguments
+
+- c1:
+
+  numeric vector. Population at observation 1.
+
+- c2:
+
+  numeric vector. Population at observation 2.
+
+- age:
+
+  integer vector. Lower bound of age groups from first census. Last age
+  is assumed as lower age open age group.
+
+- date1:
+
+  Either a `Date` class object or an unambiguous character string in the
+  format `"YYYY-MM-DD"`. Reference date for the source (typically census
+  or survey).
+
+- date2:
+
+  Same than date1 but for observation 2.
+
+- shortcut:
+
+  logical. If reply matlab code from author. `FALSE` is the default,
+  following the paper.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Albania. Replicate examples from spreadsheet "OldMortPG.xls"
+alb_males <- census_method(c(1326536, 566784, 687820),
+                           c(1441428,848609,762845),
+                           c(60, 65, 70), "1981/3/1", "1998/3/2")
+alb_females <- census_method(c(929401,435774,487321),
+                             c(1241433,698000,624473),
+                             c(60, 65, 70), "1981/3/1", "1998/3/2")
+c(alb_males$q60_15, alb_females$q60_15)
+} # }
+```
