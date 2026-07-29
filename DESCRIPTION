@@ -20,11 +20,10 @@ Imports:
     data.table,
     dplyr,
     tidyr,
+    stringr,
     ggplot2,
     rms,
     MortCast,
-    DemoTools,
-    DemoToolsData,
     purrr,
     magrittr,
     pkgload
