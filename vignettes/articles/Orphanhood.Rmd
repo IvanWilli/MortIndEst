@@ -133,7 +133,6 @@ one_runs <- pmap(one_grid, \(TimeMid, parent, sex_resp, n_age) {
     list(
       result = out$adult_mort_index |>
         mutate(
-          loc_name = loc_name,
           variant = "one_census",
           source = x$DataProcessType[1],
           Year = x$TimeLabel[1],
@@ -171,7 +170,6 @@ two_runs <- pmap(two_grid, \(parent, date1, date2, sex_resp, variant) {
     list(
       result = out$adult_mort_index |>
         mutate(
-          loc_name = loc_name,
           source = paste0(x$DataProcessType[x$TimeMid == date1][1], "-",
                           x$DataProcessType[x$TimeMid == date2][1]),
           Year = paste0(x$TimeLabel[x$TimeMid == date1][1], "-",
