@@ -2,9 +2,10 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
+  articles/ExtinctGenerationMethods: ExtinctGenerationMethods.html
   articles/IntercensalSurvival: IntercensalSurvival.html
   articles/Orphanhood: Orphanhood.html
-last_built: 2026-07-29T17:55Z
+last_built: 2026-08-07T19:06Z
 urls:
   reference: https://ivanwilli.github.io/MortIndEst/reference
   article: https://ivanwilli.github.io/MortIndEst/articles

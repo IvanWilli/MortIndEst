@@ -5,7 +5,10 @@ at the beginning of each year. Inputs are
 calendar year y, age at the Lexis square x, and deaths
 d in each square. Cohort (year of birth, yb) can be supplied
 directly, or derived by splitting each Lexis square into upper/lower
-triangles using alpha."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+triangles using alpha.
+Compute cohort population counts by accumulating deaths along cohort lines
+in a Lexis diagram. Population stocks are located at the beginning of each
+calendar year."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
@@ -38,6 +41,9 @@ triangles using alpha."><!-- mathjax --><script src="https://cdnjs.cloudflare.co
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/ExtinctGenerationMethods.html">Extinct generation methods: an application to Argentina</a>
+    </li>
+    <li>
       <a href="../articles/IntercensalSurvival.html">Intercensal survival method for adult mortality: an application to Brazil</a>
     </li>
     <li>
@@ -66,10 +72,15 @@ calendar year <code>y</code>, age at the Lexis square <code>x</code>, and deaths
 <code>d</code> in each square. Cohort (year of birth, <code>yb</code>) can be supplied
 directly, or derived by splitting each Lexis square into upper/lower
 triangles using <code>alpha</code>.</p>
+<p>Compute cohort population counts by accumulating deaths along cohort lines
+in a Lexis diagram. Population stocks are located at the beginning of each
+calendar year.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">egm</span><span class="op">(</span><span class="va">y</span>, <span class="va">x</span>, <span class="va">d</span>, yb <span class="op">=</span> <span class="cn">NULL</span>, alpha <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">egm</span><span class="op">(</span><span class="va">y</span>, <span class="va">x</span>, <span class="va">d</span>, yb <span class="op">=</span> <span class="cn">NULL</span>, alpha <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">egm</span><span class="op">(</span><span class="va">y</span>, <span class="va">x</span>, <span class="va">d</span>, yb <span class="op">=</span> <span class="cn">NULL</span>, alpha <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -77,28 +88,24 @@ triangles using <code>alpha</code>.</p>
 
 
 <dl><dt id="arg-y">y<a class="anchor" aria-label="anchor" href="#arg-y"></a></dt>
-<dd><p>Integer or numeric vector. Calendar year (Lexis square).</p></dd>
+<dd><p>Numeric vector. Calendar year.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>Integer or numeric vector. Age (Lexis square).</p></dd>
+<dd><p>Numeric vector. Age in the Lexis square.</p></dd>
 
 
 <dt id="arg-d">d<a class="anchor" aria-label="anchor" href="#arg-d"></a></dt>
-<dd><p>Numeric vector. Deaths in the Lexis square \((y, x)\).</p></dd>
+<dd><p>Numeric vector. Deaths in the Lexis square.</p></dd>
 
 
 <dt id="arg-yb">yb<a class="anchor" aria-label="anchor" href="#arg-yb"></a></dt>
-<dd><p>Integer or numeric vector (optional). Year of birth (cohort).
-If supplied, it must be the same length as <code>y</code>/<code>x</code>/<code>d</code> and
-will be used directly (no triangle split). If <code>NULL</code>, <code>yb</code> is
-derived from <code>y</code> and <code>x</code> using <code>alpha</code>.</p></dd>
+<dd><p>Numeric vector (optional). Year of birth. If NULL, cohort deaths
+are obtained by splitting each square using <code>alpha</code>.</p></dd>
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
-<dd><p>Numeric scalar in \([0, 1]\) (optional). Upper triangle share
-used to split Lexis squares when <code>yb</code> is <code>NULL</code>. Default is
-<code>0.5</code>. Ignored when <code>yb</code> is provided.</p></dd>
+<dd><p>Numeric between 0 and 1. Upper-triangle share. Default 0.5.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -120,7 +127,9 @@ used to split Lexis squares when <code>yb</code> is <code>NULL</code>. Default i
 cumulative deaths.</p></dd>
 
 
-</dl></div>
+</dl><p>A data frame with <code>yb</code>, <code>x</code>, <code>y</code>,
+<code>AgeDeath105</code>, and reconstructed population <code>pop</code>.</p>
+    </div>
     <div id="details">
     <h2>Details</h2>
     <p>The extinct generation method reconstructs cohort population size at age
