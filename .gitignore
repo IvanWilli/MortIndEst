@@ -26,6 +26,7 @@ docs
 
 # Legacy R code excluded from GitHub
 /R/old/
+/dev
 
 # Raw or archived data excluded from GitHub
 /data/[Oo]ld/

@@ -3,42 +3,60 @@
 
 # compute error -----------------------------------------------------------
 get_error_sq <- function(param, x, pop1, pop2, n,
-                         m_age_fit = NULL, age_fit = 80,
+                         age_fit = NULL, 
+                         age_obs = NULL, m_obs = NULL,
                          law, OA){
 
   # browser()
   b <- param[1]
-  ages <- 1:(length(age_fit:120)-1)
+  ages <- 1:(length(age_obs:120)-1)
   if(law == "gompertz"){
-    a <- m_age_fit
+    a <- m_obs
     m_hat <- a * exp(b*ages)
   }
   if(law == "kannisto"){
-    a <- m_age_fit/(1-m_age_fit)
+    a <- m_obs/(1-m_obs)
     m_hat <- (a * exp(b * ages))/(1 + a * exp(b * ages))
   }
-  lt <- lt_single_mx(Age = age_fit:120, nMx = c(m_age_fit, m_hat), OAnew = OA)
-  pop_proj_hat <- surv_pop(x[x >= age_fit],
-                           pop0 = pop1[x >= age_fit],
-                           S = c(lt$Sx[-1], lt$Sx[lt$Age == OA]),
+  lt <- DemoTools::lt_single_mx(Age = age_obs:120, nMx = c(m_obs, m_hat), OAnew = OA)
+  S <- c(lt$Sx[-1], lt$Sx[lt$Age == OA])
+  S[is.na(S)] <- 0
+  pop_proj_hat <- surv_pop(x[x >= age_obs],
+                           pop0 = pop1[x >= age_obs],
+                           S = S,
                            t = n)
   # browser()
-  pop2_cum <- rev(cumsum(rev(pop2)))[x >= (age_fit+n)]
+  pop2_cum <- rev(cumsum(rev(pop2)))[x >= (age_obs+n)]
   pop2_hat <- pop_proj_hat[,ncol(pop_proj_hat)][(n+1):nrow(pop_proj_hat)]
   pop2_cum_hat <- rev(cumsum(rev(pop2_hat)))
   stopifnot(length(pop2_cum_hat) == length(pop2_cum))
-  error <- sum(((pop2_cum - pop2_cum_hat)/pop2_cum)^2)
+  # plot(pop2_cum); points(pop2_cum_hat, col = 2)
+  x2 <- x[x >= (age_obs+n)]
+  # pop2_cum[x2 == age_fit]; pop2_cum_hat[x2 == age_fit]
+  error <- abs(pop2_cum[x2 == age_fit] - pop2_cum_hat[x2 == age_fit])
   return(error)
 }
+
+# x = pop1$Age
+# pop1 = pop1$pop
+# pop2 = pop2$pop
+# n = 10
+# age_fit = 80
+# age_obs = 60
+# m_obs = .015
+# law = "gompertz"
+# lower = .0001
+# upper = .6
 
 
 # optim -------------------------------------------------------------------
 # optimize parameters to fit pop2 from pop 1, given a specific law and age
-law_fit_old_pop <- function(x, pop1, pop2, n = 10,
-                            age_fit = 80,
-                            m_age_fit = NULL,
+law_fit_old_pop <- function(x, pop1, pop2, n = NULL,
+                            age_fit = NULL,
+                            age_obs = NULL,
+                            m_obs = NULL,
                             law = "gompertz",
-                            lower = .2, upper = .6){
+                            lower = .0001, upper = .6){
 
   # browser()
   # set OA with data
@@ -53,39 +71,40 @@ law_fit_old_pop <- function(x, pop1, pop2, n = 10,
                         pop2 = pop2,
                         n = n,
                         age_fit = age_fit,
-                        m_age_fit = m_age_fit,
+                        age_obs = age_obs,
+                        m_obs = m_obs,
                         OA = OA)
 
   # what pop arrives
-  b_hat <- get_optim$minimum
-  ages <- 1:(length(age_fit:120)-1)
+  b <- get_optim$minimum
+  ages <- 1:(length(age_obs:120)-1)
   if(law == "gompertz"){
-    a <- m_age_fit
-    m_hat <- a * exp(b_hat*ages)
+    a <- m_obs
+    m_hat <- a * exp(b*ages)
   }
   if(law == "kannisto"){
-    a <- m_age_fit/(1-m_age_fit)
-    m_hat <- (a * exp(b_hat * ages))/(1 + a * exp(b_hat * ages))
+    a <- m_obs/(1-m_obs)
+    m_hat <- (a * exp(b * ages))/(1 + a * exp(b * ages))
   }
-  lt <- lt_single_mx(Age = age_fit:120, nMx = c(m_age_fit, m_hat), OAnew = OA)
-  pop_proj_hat <- surv_pop(x[x >= age_fit],
-                           pop0 = pop1[x >= age_fit],
-                           S = c(lt$Sx[-1], lt$Sx[lt$Age == OA]),
+  lt <- DemoTools::lt_single_mx(Age = age_obs:120, nMx = c(m_obs, m_hat), OAnew = OA)
+  S <- c(lt$Sx[-1], lt$Sx[lt$Age == OA])
+  S[is.na(S)] <- 0
+  pop_proj_hat <- surv_pop(x[x >= age_obs],
+                           pop0 = pop1[x >= age_obs],
+                           S = S,
                            t = n)
-  pop2_cum <- rev(cumsum(rev(pop2)))[x %in% (age_fit+n)]
-  pop2_hat <- pop_proj_hat[,ncol(pop_proj_hat)]
-  pop2_cum_hat <- rev(cumsum(rev(pop2_hat)))[n+1]
-  pop2_result <- data.frame(age = age_fit,
-                            pop2 = pop2_cum,
-                            pop2_fit = pop2_cum_hat,
-                            ex_fit = lt$ex[lt$Age==age_fit])
-
+  pop2_cum <- rev(cumsum(rev(pop2)))[x >= (age_obs+n)]
+  pop2_hat <- pop_proj_hat[,ncol(pop_proj_hat)][(n+1):nrow(pop_proj_hat)]
+  pop2_cum_hat <- rev(cumsum(rev(pop2_hat)))
+  x2 <- x[x >= (age_obs+n)]
+  # pop2_cum[x2 == age_fit]; pop2_cum_hat[x2 == age_fit]
+  error <- abs(pop2_cum[x2 == age_fit] - pop2_cum_hat[x2 == age_fit])
+  pop2_result <- data.frame(age = x2,
+                            pop2 = c(-diff(pop2_cum), last(pop2_cum)), 
+                            pop2_fit = c(-diff(pop2_cum_hat), last(pop2_cum_hat)))
   # output
-  return(list(params = c(b_hat),
-              pop2_fit_cum = pop2_result,
-              pop2_fit = data.frame(x = x[x >= age_fit],
-                                    pop2 = pop2[x >= age_fit],
-                                    pop2_hat = pop2_hat),
+  return(list(params = b,
+              pop2_fit = pop2_result,
               lt = lt,
               optim_info = get_optim)
   )

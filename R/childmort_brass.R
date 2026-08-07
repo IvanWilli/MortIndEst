@@ -3,7 +3,7 @@
 #' Estimate probabilities of dying in childhood from children ever born and
 #' children dead reported by women by age group. The function applies either the
 #' Trussell or Palloni-Helligman multipliers, locates each estimate in time, and
-#' interpolates the matching model life table level.
+#' interpolates the matching model life table level. Based on Manual X (UN, 1984)
 #'
 #' @param CEB Numeric vector. Children ever born by women's age group.
 #' @param CD Numeric vector. Children dead by women's age group.
@@ -46,23 +46,27 @@
 #' @examples
 #' \dontrun{
 #' # Panama example from UN Manual X (1983)
+#' # table 49
 #' panama <- data.frame(
-#'   age = seq(15, 45, 5),
-#'   W = c(2695, 2095, 1828, 1605, 1362, 1128, 930),
-#'   CEB = c(278, 1380, 2395, 3097, 3444, 3274, 2682),
-#'   CD = c(24, 77, 172, 236, 348, 394, 354)
-#' )
-#' im_brass(
-#'   CEB = panama$CEB,
-#'   CD = panama$CD,
-#'   W = panama$W,
-#'   age = panama$age,
-#'   mlt_model = "West",
-#'   Sex = "male",
-#'   date_obs = 1970
-#' )
+#'  age = seq(15, 45, 5),
+#'  W = c(2695, 2095, 1828, 1605, 1362, 1128, 930),
+#'  CEB = c(278, 1380, 2395, 3097, 3444, 3274, 2682),
+#'  CD = c(24, 77, 172, 236, 348, 394, 354)
+#'  )
+#' panama_estimate <- childmort_brass(
+#'  CEB = panama$CEB,
+#'  CD = panama$CD,
+#'  W = panama$W,
+#'  age = panama$age,
+#'  mlt_model = "West",
+#'  Sex = "male",
+#'  date_obs = 1976
+#')
+#'# table 53
+#' manual_x_rr <- c(0.0952, 0.0580, 0.0707, 0.0757, 0.1021, 0.1201, 0.1308)
+#' all(round(panama_estimate$qx_estimate$qx,4) == manual_x_rr)
 #' }
-im_brass <- function (CEB, CD, W,
+childmort_brass <- function (CEB, CD, W,
                       age = seq(15, 45, 5),
                       variant = "trussell",
                       mlt_model = NULL,
@@ -112,13 +116,18 @@ im_brass <- function (CEB, CD, W,
 
   # q estimate
   qx <- k * Dx
-  lx <- data.frame(age = age, lx = 1 - qx, x = c(1, 2, 3, 5, 10, 15, 20), t, date_t = date_obs - t)
+  lx_out <- data.frame(
+    age = age, 
+    lx = 1 - qx, 
+    qx = qx,
+    x = c(1, 2, 3, 5, 10, 15, 20), 
+    t, date_t = date_obs - t)
   # what mlt to use
   mlt <- subset(DemoToolsData::modelLTx1, family == mlt_model & sex == Sex) %>%
     dplyr::mutate(lx = lx1/lx1[1], .by = c(source, family, sex, e0))
   # interpolate for each census age
-  mlts_interp <- purrr::map_df(1:nrow(lx), function(i){
-    la <- lx[i,]
+  mlts_interp <- purrr::map_df(1:nrow(lx_out), function(i){
+    la <- lx_out[i,]
     distances <- mlt$lx[mlt$age==la$x]-la$lx
     best_dist <- distances[abs(distances) %in% sort(abs(mlt$lx[mlt$age==la$x]-la$lx))[1:2]]
     w <- abs(best_dist)/sum(abs(best_dist))
@@ -133,6 +142,7 @@ im_brass <- function (CEB, CD, W,
       dplyr::mutate(age = la$age, .before = 1)
     return(mlt_interp)
   })
-  return(list(mi_brass = lx, mlts_interp = mlts_interp))
+  return(list(qx_estimate = lx_out, mlts_interp = mlts_interp))
 }
+
 

@@ -662,7 +662,7 @@ intercensal_surv_var_r <- function(c1,
   # if((date2-date1)>15) stop("more than 15 years in intercensal period")
 
   # apply method
-  lt_ManualX_variable_r(Age = age, Nx1 = c1, Nx2 = c2, ts = date2-date1,
+  lt_ManualX_variable_r(age = age, Nx1 = c1, Nx2 = c2, ts = date2-date1,
                         radix = 100000, full_lt = T)
 }
 

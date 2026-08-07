@@ -25,11 +25,15 @@ Imports:
     rms,
     MortCast,
     purrr,
+    MortalityEstimate,
+    expm,
     magrittr,
-    pkgload
+    pkgload,
+    pracma
 Remotes:
     timriffe/DemoTools,
     timriffe/DemoToolsData
 URL: https://ivanwilli.github.io/MortIndEst/
 Config/Needs/website: rmarkdown
 Config/roxygen2/version: 8.0.0
+RoxygenNote: 7.3.2

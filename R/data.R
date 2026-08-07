@@ -58,3 +58,32 @@
 #' @format A named list of length 2 with elements `female` and `male`.
 #' @source Spectrum mortality model files.
 "mods.r"
+
+#' Argentina census population
+#'
+#' Argentina census population counts by year and single year of age, with male
+#' and female population counts summed.
+#'
+#' @format A `data.frame` with 303 rows and 3 columns:
+#' \describe{
+#'   \item{year}{Integer census year.}
+#'   \item{age}{Integer age in completed years.}
+#'   \item{pop}{Numeric population count for both sexes combined.}
+#' }
+#' @source Instituto Nacional de Estadistica y Censos (INDEC), Argentina.
+"arg_pop"
+
+#' Argentina deaths
+#'
+#' Argentina death counts by year and single year of age, with male and female
+#' death counts summed.
+#'
+#' @format A `data.frame` with 2,553 rows and 3 columns:
+#' \describe{
+#'   \item{year}{Integer calendar year.}
+#'   \item{age}{Integer age in completed years.}
+#'   \item{deaths}{Numeric death count for both sexes combined.}
+#' }
+#' @source Direccion de Estadisticas e Informacion de la Salud (DEIS),
+#' Ministerio de Salud, Argentina.
+"arg_deaths"

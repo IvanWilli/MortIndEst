@@ -21,7 +21,11 @@ orphanhood_two(
   brass_logit_e0 = 60,
   HIV_prev = NULL,
   HIV_art = NULL,
+  HIV_pmtct = NULL,
   HIV_5q0 = NULL,
+  HIV_period_covariates = c("midpoint", "average"),
+  HIV_age_above30 = c("identity_if_low_exposure", "drop", "identity"),
+  HIV_birth_exposure_tol = 0.001,
   e0_accept = c(20, 100),
   verbose = TRUE
 )
@@ -31,69 +35,69 @@ orphanhood_two(
 
 \item{prop2_not_orphan}{numeric vector. Population proportion of respondents with mother/father alive, by age groups, from source 2.}
 
-\item{age1}{integer vector. Lower bound of age groups from first census. Last age is assumed as lower age open age group.}
+\item{age1}{integer vector. Lower bound of age groups from first census.}
 
 \item{age2}{Same than \code{age1} but for the second source.}
 
-\item{date1}{Either a \code{Date} class object or an unambiguous character string in the format \code{"YYYY-MM-DD"}. Reference date for the source 1 (typically census or survey).}
+\item{date1}{Either a \code{Date} class object or an unambiguous character string in the format \code{"YYYY-MM-DD"}. Reference date for source 1.}
 
 \item{date2}{Same than \code{date1} but for the second source.}
 
 \item{maternal}{logical. Either \code{TRUE} for maternal orphanhood (default) or \code{FALSE} for paternal orphanhood.}
 
-\item{method}{character. Choose between \code{timæus} (default) (Timæus, 1991) or \code{preston_chen} using r-variable method (Preston, 2001, p. 239).}
+\item{method}{character. One of timÃ¦us (default), preston_chen, or masquellier_timÃ¦us.}
 
 \item{mac1}{numeric. Mean age at childbearing for mothers/fathers from source 1.}
 
 \item{mac2}{Same than \code{mac1} but for the second source.}
 
-\item{mlt_data_input}{data.frame. If is \code{NULL} then model life tables is used, available from \code{Morcast} package. But specific pattern can be included (\code{l_x} must be included see examples).}
+\item{mlt_data_input}{data.frame. Optional model life table input; use with \code{brass_logit = TRUE}.}
 
-\item{mlt_family}{character. Options: "CD_East", "CD_North", "CD_South", "CD_West", "UN_Chilean", "UN_Far_Eastern", "UN_General", "UN_Latin_American", "UN_South_Asian". If \code{NULL} returns for all.}
+\item{mlt_family}{character. Model life table family. If \code{NULL}, returns all CD and UN families.}
 
 \item{brass_logit}{logical. Doing a level smoothing with 1-parameter logit Brass.}
 
 \item{brass_logit_e0}{numeric. Life expectancy at birth when \code{brass_logit} is \code{TRUE}.}
 
-\item{e0_accept}{integer vector. Range acceptable when calculating the median of implied level by age (avoid non-possible extrapolations). By deafult between 20 and 100.}
+\item{HIV_prev, HIV_art, HIV_5q0}{numeric or data.frame. HIV prevalence, ART coverage, and 5q0 inputs used by HIV variants.}
+
+\item{HIV_pmtct}{numeric or data.frame. PMTCT coverage for method = masquellier_timÃ¦us.}
+
+\item{HIV_period_covariates}{character. Use midpoint or average HIV/ART period covariates in the Masquelier-Timaeus equations.}
+
+\item{HIV_age_above30}{character. How to handle ages above Table 2 adjustment coefficients in the Masquelier-Timaeus method.}
+
+\item{HIV_birth_exposure_tol}{numeric. Tolerance used when deciding whether HIV birth exposure is negligible.}
+
+\item{e0_accept}{integer vector. Range acceptable when calculating the median of implied level by age.}
 }
 \description{
-Follows IUSSP(2012) template implementation of Timæus (1992) for estimate adult mortality using two observations.
-The other option is using r-variable method (Preston, 2001, p. 239).
+Estimates adult mortality from orphanhood in two observations using Timaeus,
+Preston-Chen, or the Masquelier-Timaeus HIV adaptation.
 }
 \examples{
 \dontrun{
-# Example from IUUSP Tools for Demographic Estimation
-# Orhpanhood 2 census
-# Paternal orphanhood - Salomons 1987 - 1999 ("AM_Orphanhood_TwoCensus - Solomons_2.xlsx")
+standard_iusssp <- data.frame(age = seq(15, 85, 5),
+  lx = c(0.8868,0.8763,0.8621,0.8467,0.8296,0.8094,0.7845,
+         0.7527,0.7096,0.6515,0.5724,0.4700,0.3443,0.2101,0.0962))
+
 salomons_1986_1999_paternal <- orphanhood_two(
-  prop1_not_orphan = c(0.9644 ,0.9340 ,0.8862 ,0.8088 ,0.7060 ,0.5812 ,0.4620 ,0.3317),
-  prop2_not_orphan = c(0.9710 ,0.9454 ,0.9071 ,0.8493 ,0.7717 ,0.6568 ,0.5375 ,0.3891),
+  prop1_not_orphan = c(0.9644,0.9340,0.8862,0.8088,0.7060,0.5812,0.4620,0.3317),
+  prop2_not_orphan = c(0.9710,0.9454,0.9071,0.8493,0.7717,0.6568,0.5375,0.3891),
   age1 = seq(5, 40, 5), age2 = seq(5, 40, 5),
   date1 = 1986.9, date2 = 1999.9,
-  maternal = FALSE,
-  mac1 = 34.08, mac2 = 34.08,
-  mlt_data_input = standard_iusssp,
-  brass_logit = TRUE)$adult_mort
-rr_45q15 <- c(0.175, 0.185,0.187,0.187)
-round((salomons_1986_1999_paternal$q15_45/rr_45q15)-1,2)
-# Preston_chen method
-# table 11.3 Preston (2001) r-var
+  maternal = FALSE, mac1 = 34.08, mac2 = 34.08,
+  mlt_data_input = standard_iusssp, brass_logit = TRUE)
+
 panama_1977_1980 <- orphanhood_two(
   prop1_not_orphan = c(.996,.9844,.9753,.9556,.9195,.8908,.8157,.7618,.6166),
   prop2_not_orphan = c(.9949,.9903,.9794,.9608,.9316,.8967,.8450,.7746,.6781),
-  age1 = seq(0, 40, 5),
-  age2 = seq(0, 40, 5),
-  date1 = "1977-07-01",
-  date2 = "1980-05-11",
-  maternal = TRUE,
-  mac1 = 27,
-  mac2 = 27,
-  method = "preston_chen",
-  mlt_data_input = NULL,
-  mlt_family = "CD_West",
-  brass_logit = FALSE,
-  brass_logit_e0 = 60)
-rr_levels <- c(22.4, 23, 22.7, 22.6, 22.9, 23, 23.5, 23.9)
+  age1 = seq(0, 40, 5), age2 = seq(0, 40, 5),
+  date1 = "1977-07-01", date2 = "1980-05-11",
+  maternal = TRUE, mac1 = 27, mac2 = 27,
+  method = "preston_chen", mlt_family = "CD_West")
+
+# For method = masquellier_timÃ¦us, pass HIV_prev, HIV_art, and HIV_pmtct
+# as proportions. data.frame(year, value) inputs are interpolated by year.
 }
 }

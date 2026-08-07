@@ -60,9 +60,9 @@ orphanhood_one(
 \item{HIV_prev_males}{numeric. Estimates of population-based estimate of HIV prevalence among men by age. If some value is assigned, then will be assumed AIDS variation of the method.}
 }
 \description{
-Follows IUSSP (2012) implementation for estimate adult mortality from orphanhood data, based in Timæus (1992).
+Follows IUSSP (2012) implementation for estimate adult mortality from orphanhood data, based in Timaeus (1992).
 The function also include the possibility to match the closest model life table (not using Brass logit given a pattern as default method), for some specific family (if no family is set, then return results for all CD and UN).
-Two options for considering HIV populations: one is following Timæus and Nunn (1997) (implemented in IUSSP (2012)), and other is using the Spectrum model (Stover and others, 2012). The last needs additional data on \code{HIV_prop_partner}, \code{HIV_art}.
+Two options for considering HIV populations: one is following Timaeus and Nunn (1997) (implemented in IUSSP (2012)), and other is using the Spectrum model (Stover and others, 2012). The last needs additional data on HIV_prop_partner, HIV_art.
 }
 \examples{
 \dontrun{

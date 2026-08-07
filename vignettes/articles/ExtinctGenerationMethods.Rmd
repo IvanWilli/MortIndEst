@@ -1,0 +1,194 @@
+---
+title: "Extinct generation methods: an application to Argentina"
+bibliography: references.bib
+---
+
+```{r, include = FALSE}
+pkgload::load_all()
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# Introduction
+
+Extinct generation methods estimate old-age population stocks from registered
+deaths by cohort. The basic extinct generation method (EGM) is most direct: once
+a cohort is extinct, the number of people alive at a given age is the sum of the
+deaths observed for that cohort from that age onward (specially in ages where the migration is negligible) [@Vincent_1951]. In a Lexis diagram, period
+deaths by calendar year and age are first assigned to birth cohorts, and cohort
+population is then reconstructed by reverse cumulative summation. The method depends strongly on the completeness and age accuracy of death registration. It also requires waiting until the cohort is extinct, or at least observed to a very high age. In practical applications is also useful to get a minimum, to be compared with another source, like a census.
+
+Nearly-extinct cohort (NEC) methods relax the requirement of complete extinction.
+They use deaths observed up to a cutoff year and estimate the survivors who
+remain alive after that cutoff. The package implements three variants discussed
+by Terblanche and Wilson [@TerblancheWilson2015]:
+
+- `SR`: survivor ratio method. Estimates the size of a nearly- extinct cohort for a recent date and age on the basis of the survivorship of older cohorts to
+the same age, averaging a cohort window for smoothing due to small exposure at advanced ages.
+- `DG`: Das Gupta method. estimates future cohort deaths, based on
+death ratios: the number of deaths at a particular age relative to deaths at
+the previous age, averaged over a number of older cohorts. 
+- `SA`: survivor ratio advanced method. The average improvement in survivor ratios measured at a specific age over ten (deafault) older cohorts is assumed to apply to the youngest cohort.
+
+In this article, the Argentina application uses complete deaths through 2023 to
+construct an EGM benchmark for the 2001 population aged 80 and over. We then
+pretend that deaths are only available up to an earlier cutoff year and compare
+the NEC estimates with the EGM benchmark.
+
+# Input data
+
+The package includes two data objects from Argentina:
+
+- `arg_pop`: census population in 2001 by single year of age, 60+.
+- `arg_deaths`: deaths 2001-2023 by year and single year of age, 60+.
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+head(arg_pop)
+head(arg_deaths)
+```
+
+
+# Application
+
+Our goal is to compare population stock in 80+ by single age in 2001, between these methods and the census. There is an increasing interest to contrast age-overstatement patterns in countries with "more than expected" population in oldest ages [@Battocchio_2024]. For the incomplete scenario (to test near extinct variants), we will truncate deaths until year 2010. Although we observe events for ages higher than 105, as a conservative measure we will assume $\omega=105$. Age/year parameters are:
+
+```{r}
+year_pop <- 2001
+year_cut <- 2010
+omega <- 105
+min_age <- 80
+```
+
+First, construct the EGM benchmark for the population aged 80 to `omega` in
+2001. The `egm()` function assigns deaths to birth cohorts and reconstructs the
+population by reverse cumulative cohort deaths.
+
+```{r}
+P_egm <- egm(
+  y = arg_deaths$year,
+  x = arg_deaths$age,
+  d = arg_deaths$deaths
+) |>
+  filter(y == year_pop, x >= min_age, x <= omega) |>
+  select(yb, x, EGM = pop)
+
+head(P_egm)
+```
+
+Next, retain only deaths available up to the cutoff year and apply the three NEC
+variants. The comparison is intentionally framed as a validation exercise: how
+close would each NEC method have been to the EGM estimate if only deaths through
+`r year_cut` had been available?
+
+```{r}
+arg_deaths_cut <- arg_deaths |>
+  filter(year <= year_cut)
+
+P_nec <- bind_rows(
+  SR = nec(
+    y = arg_deaths_cut$year,
+    x = arg_deaths_cut$age,
+    d = arg_deaths_cut$deaths,
+    method = "SR",
+    k = 5,
+    m = 5,
+    min_age = min_age,
+    omega = omega
+  ),
+  DG = nec(
+    y = arg_deaths_cut$year,
+    x = arg_deaths_cut$age,
+    d = arg_deaths_cut$deaths,
+    method = "DG",
+    m = 5,
+    min_age = min_age,
+    omega = omega
+  ),
+  SA = nec(
+    y = arg_deaths_cut$year,
+    x = arg_deaths_cut$age,
+    d = arg_deaths_cut$deaths,
+    method = "SA",
+    k = 5,
+    m = 5,
+    n = 10,
+    min_age = min_age,
+    omega = omega
+  ),
+  .id = "method"
+) |>
+  filter(y == year_pop, x >= min_age, x <= omega) |>
+  select(method, yb, x, NEC = pop) |>
+  pivot_wider(names_from = method, values_from = NEC)
+
+head(P_nec)
+```
+
+Parameters $k$ and $m$ are the number of years and previous cohorts where the ratios are modelled (used by SR and SA). [@TerblancheWilson2015] shows that $DG(m)$ gives the same results as $SR(k=1, m)$. Parameter $n$ is the number of older cohorts used to estimate survival improvement in SA method.  At the cutoff, cohorts that are already extinct under the `omega` assumption can be absent from the NEC output. For those cohorts, we use the truncated EGM value, which is equivalent to the EGM benchmark under the assumed extinction age.
+
+```{r}
+comparison <- P_egm |>
+  left_join(P_nec, by = c("yb", "x")) |>
+  mutate(
+    SR = coalesce(SR, EGM),
+    DG = coalesce(DG, EGM),
+    SA = coalesce(SA, EGM)
+  ) |>
+  arrange(x)
+
+comparison |>
+  mutate(across(where(is.numeric), trunc)) |>
+  knitr::kable(format.args = list(big.mark = ","))
+```
+
+# Results
+
+Population aged 80 for the census, EGM and NEC estimates can be compared. First result is that death data is higher than census, so an independent source confirm the general dimension of population stock. Second results is that even not observing last 12 years one can get good results extrapolating death ratios, at least in this case for SR and DG options.
+
+```{r}
+census_methods_comparison <- arg_pop |>
+  filter(year == year_pop, age >= min_age, age <= omega) |>
+  transmute(x = age, Census = pop) |>
+  left_join(comparison |> select(x, EGM, SR, DG, SA), by = "x")
+census_methods_comparison |>
+  summarise(
+    Census = sum(Census, na.rm = TRUE),
+    EGM = sum(EGM, na.rm = TRUE),
+    SR = sum(SR, na.rm = TRUE),
+    DG = sum(DG, na.rm = TRUE),
+    SA = sum(SA, na.rm = TRUE)
+  ) |>
+  mutate(across(where(is.numeric), trunc)) |>
+  knitr::kable(format.args = list(big.mark = ","))
+```
+
+The age pattern is useful because the total 80+ population can hide offsetting errors by age. This plot compares EGM and each NEC variant by single year of age in 2001.
+
+```{r}
+census_methods_comparison |>
+  pivot_longer(-x, names_to = "series", values_to = "pop") |> 
+  ggplot(aes(x, pop)) +
+  geom_line(data = . %>% filter(series != "Census"), aes(col = series), linewidth = 1.2) +
+  geom_point(data = . %>% filter(series == "Census"), size = 2, alpha = .6, col = 1) +
+  labs(
+    x = paste("Age in", year_pop),
+    y = "Population",
+    linetype = NULL,
+    title = "Argentina old-age population in 2001 from Census (points), EGM and NEC methods",
+    subtitle = paste0(
+      "NEC deaths observed through ", year_cut
+    )
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+For estimates about centenarians a more detiled study of highest ages needs to be done, re-defining $\omega$ based on VR evaluation.
+
+# References

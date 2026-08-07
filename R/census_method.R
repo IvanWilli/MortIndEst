@@ -1,4 +1,4 @@
-#' Intercensal survival estimates of 15q60 based on Li-Gerland (2012).
+#' Intercensal survival estimates of 15q60 based on Li & Gerland (2012).
 #' @description Adapted from matlab code provided from PG.
 #' @param c1 numeric vector. Population at observation 1.
 #' @param c2 numeric vector. Population at observation 2.

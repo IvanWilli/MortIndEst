@@ -18,9 +18,9 @@ split_q0_5 <- function(q0 = NULL, q1_4 = NULL, q0_5 = NULL){
 }
 
 # example: using two Interchangeably gives the same result
-q0 <- .05
-q1_4 <- .005
-q0_5 <- 1-(1-q0)*(1-q1_4)
-split_q0_5(q0 = q0, q1_4 = q1_4)
-split_q0_5(q0 = q0, q0_5 = q0_5)
-split_q0_5(q0 = q0, q1_4 = q1_4)
+# q0 <- .05
+# q1_4 <- .005
+# q0_5 <- 1-(1-q0)*(1-q1_4)
+# split_q0_5(q0 = q0, q1_4 = q1_4)
+# split_q0_5(q0 = q0, q0_5 = q0_5)
+# split_q0_5(q0 = q0, q1_4 = q1_4)

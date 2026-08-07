@@ -2,7 +2,7 @@
 % Please edit documentation in R/census_method.R
 \name{census_method}
 \alias{census_method}
-\title{Intercensal survival estimates of 15q60 based on Li-Gerland (2012).}
+\title{Intercensal survival estimates of 15q60 based on Li & Gerland (2012).}
 \usage{
 census_method(c1, c2, age, date1, date2, shortcut = F)
 }
