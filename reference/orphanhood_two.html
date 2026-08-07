@@ -336,6 +336,77 @@ orphanhood in two inquiries.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> CD_West    30 0.077<span style="text-decoration: underline;">2</span> 0.027<span style="text-decoration: underline;">6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> CD_West    35 0.053<span style="text-decoration: underline;">3</span> 0.018<span style="text-decoration: underline;">8</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> CD_West    40 0.048<span style="text-decoration: underline;">0</span> 0.016<span style="text-decoration: underline;">9</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Masquelier-Timaeus HIV/AIDS variant: South Africa spreadsheet replication.</span></span></span>
+<span class="r-in"><span><span class="va">sa_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">40</span>, <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sa_2007</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fl">0.977</span>, <span class="fl">0.939</span>, <span class="fl">0.904</span>,</span></span>
+<span class="r-in"><span>  <span class="fl">0.879</span>, <span class="fl">0.863</span>, <span class="fl">0.833</span>,</span></span>
+<span class="r-in"><span>  <span class="fl">0.782</span>, <span class="fl">0.694</span>, <span class="fl">0.592</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sa_2016</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fl">0.991</span>, <span class="fl">0.961</span>, <span class="fl">0.916</span>,</span></span>
+<span class="r-in"><span>  <span class="fl">0.866</span>, <span class="fl">0.828</span>, <span class="fl">0.803</span>,</span></span>
+<span class="r-in"><span>  <span class="fl">0.779</span>, <span class="fl">0.744</span>, <span class="fl">0.667</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sa_mac</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="cn">NA</span>, <span class="fl">27.094</span>, <span class="fl">27.327</span>, <span class="fl">27.332</span>,</span></span>
+<span class="r-in"><span>  <span class="fl">27.420</span>, <span class="fl">27.458</span>, <span class="fl">27.471</span>,</span></span>
+<span class="r-in"><span>  <span class="fl">27.702</span>, <span class="fl">27.838</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sa_hiv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fl">1964.621</span>, <span class="fl">1969.621</span>, <span class="fl">1973.773</span>, <span class="fl">1974.621</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">1978.773</span>, <span class="fl">1979.621</span>, <span class="fl">1983.773</span>, <span class="fl">1984.621</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">1988.773</span>, <span class="fl">1989.621</span>, <span class="fl">1993.773</span>, <span class="fl">1994.621</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">1998.773</span>, <span class="fl">1999.621</span>, <span class="fl">2003.773</span>, <span class="fl">2004.621</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">2007.121</span>, <span class="fl">2008.773</span>, <span class="fl">2011.697</span>, <span class="fl">2013.773</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">2016.273</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.000</span>, <span class="fl">0.000</span>, <span class="fl">0.000</span>, <span class="fl">0.001</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0.001</span>, <span class="fl">0.001</span>, <span class="fl">0.003</span>, <span class="fl">0.004</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0.033</span>, <span class="fl">0.045</span>, <span class="fl">0.111</span>, <span class="fl">0.123</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0.167</span>, <span class="fl">0.173</span>, <span class="fl">0.188</span>, <span class="fl">0.199</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0.216</span>, <span class="fl">0.225</span>, <span class="fl">0.231</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sa_pmtct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fl">1964.621</span>, <span class="fl">1969.621</span>, <span class="fl">1973.773</span>, <span class="fl">1974.621</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">1978.773</span>, <span class="fl">1979.621</span>, <span class="fl">1983.773</span>, <span class="fl">1984.621</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">1988.773</span>, <span class="fl">1989.621</span>, <span class="fl">1993.773</span>, <span class="fl">1994.621</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">1998.773</span>, <span class="fl">1999.621</span>, <span class="fl">2003.773</span>, <span class="fl">2004.621</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">2008.773</span>, <span class="fl">2013.773</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0.000</span>, <span class="fl">0.102</span>, <span class="fl">0.165</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0.630</span>, <span class="fl">0.996</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sa_art</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2007.121</span>, <span class="fl">2011.697</span>, <span class="fl">2016.273</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.140</span>, <span class="fl">0.450</span>, <span class="fl">0.577</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sa_masq</span> <span class="op">&lt;-</span> <span class="fu">orphanhood_two</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  prop1_not_orphan <span class="op">=</span> <span class="va">sa_2007</span>,</span></span>
+<span class="r-in"><span>  prop2_not_orphan <span class="op">=</span> <span class="va">sa_2016</span>,</span></span>
+<span class="r-in"><span>  age1 <span class="op">=</span> <span class="va">sa_age</span>,</span></span>
+<span class="r-in"><span>  age2 <span class="op">=</span> <span class="va">sa_age</span>,</span></span>
+<span class="r-in"><span>  date1 <span class="op">=</span> <span class="fl">2007.120548</span>,</span></span>
+<span class="r-in"><span>  date2 <span class="op">=</span> <span class="fl">2016.273224</span>,</span></span>
+<span class="r-in"><span>  maternal <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  mac1 <span class="op">=</span> <span class="va">sa_mac</span>,</span></span>
+<span class="r-in"><span>  mac2 <span class="op">=</span> <span class="va">sa_mac</span>,</span></span>
+<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"masquellier_timaeus"</span>,</span></span>
+<span class="r-in"><span>  HIV_prev <span class="op">=</span> <span class="va">sa_hiv</span>,</span></span>
+<span class="r-in"><span>  HIV_art <span class="op">=</span> <span class="va">sa_art</span>,</span></span>
+<span class="r-in"><span>  HIV_pmtct <span class="op">=</span> <span class="va">sa_pmtct</span>,</span></span>
+<span class="r-in"><span>  mlt_family <span class="op">=</span> <span class="st">"CD_West"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">sa_masq</span><span class="op">$</span><span class="va">p25_estimates</span><span class="op">$</span><span class="va">p25_n</span>, <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.927 0.884 0.844 0.815 0.774 0.736 0.711 0.687</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
