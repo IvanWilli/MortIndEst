@@ -29,11 +29,11 @@
 #' @return
 #' A list with two data frames:
 #' \describe{
-#'   \item{mi_brass}{Brass estimates by women's age group, including the input
+#'   \item{qx_estimate}{Estimates by women's age group, including the input
 #'   age, estimated survivorship \code{lx}, childhood mortality age \code{x},
 #'   time lag \code{t}, and reference date \code{date_t}.}
 #'   \item{mlts_interp}{Interpolated model life table rows matched to each
-#'   Brass estimate, including \code{mx_mlt}, \code{qx_mlt}, \code{lx_mlt}, and
+#'   estimate, including \code{mx_mlt}, \code{qx_mlt}, \code{lx_mlt}, and
 #'   \code{ex_mlt}.}
 #' }
 #'

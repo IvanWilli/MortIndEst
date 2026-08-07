@@ -3,7 +3,7 @@
 #'
 #' Compute cohort population counts by accumulating deaths along cohort lines
 #' in a Lexis diagram. Population stocks are located at the beginning of each
-#' calendar year.
+#' calendar year. See vignette for an example.
 #'
 #' @param y Numeric vector. Calendar year.
 #' @param x Numeric vector. Age in the Lexis square.
@@ -13,7 +13,7 @@
 #' @param alpha Numeric between 0 and 1. Upper-triangle share. Default 0.5.
 #'
 #' @return A data frame with \code{yb}, \code{x}, \code{y},
-#'   \code{AgeDeath105}, and reconstructed population \code{pop}.
+#'   and reconstructed population \code{pop}.
 #'
 #' @export
 egm <- function(y, x, d, yb = NULL, alpha = NULL){
@@ -32,14 +32,14 @@ egm <- function(y, x, d, yb = NULL, alpha = NULL){
   pop_lexis %>%
     dplyr::filter(triangle == "u") %>%
     dplyr::left_join(max_age, by = "yb") %>%
-    dplyr::mutate(AgeDeath105 = max_x >= 105) %>%
+    # dplyr::mutate(AgeDeath105 = max_x >= 105) %>%
     dplyr::select(yb, x, y, AgeDeath105, pop)
 }
 
 #' Nearly-Extinct Cohort Methods from Lexis-square deaths
 #'
 #' Estimate population stocks of nearly-extinct cohorts using the Survivor
-#' Ratio (SR), Das Gupta (DG), or Survivor Ratio Advanced (SA) method.
+#' Ratio (SR), Das Gupta (DG), or Survivor Ratio Advanced (SA) method. See vignette for an example.
 #'
 #' Deaths are first assigned to cohorts from Lexis triangles. The method
 #' estimates the population remaining at the end of the observed death series;
@@ -63,8 +63,8 @@ egm <- function(y, x, d, yb = NULL, alpha = NULL){
 #' @param omega Extinction age. Cohorts aged \code{omega} or older at the
 #'   calculation date are assumed extinct. Default is max observed age + 1.
 #'
-#' @return A data frame with \code{yb}, \code{x}, \code{y},
-#'   \code{AgeDeath105}, and estimated population \code{pop}.
+#' @return A data frame with \code{yb}, \code{x}, \code{y}
+#'   and estimated population \code{pop}.
 #'
 #' @references
 #' Terblanche, W. and Wilson, T. (2015). An Evaluation of Nearly-Extinct
@@ -170,7 +170,7 @@ nec <- function(y, x, d, yb = NULL, alpha = NULL,
   # return
   out %>%
     dplyr::left_join(max_age, by = "yb") %>%
-    dplyr::mutate(AgeDeath105 = max_x >= 105) %>%
+    # dplyr::mutate(AgeDeath105 = max_x >= 105) %>%
     dplyr::select(yb, x, y, AgeDeath105, pop)
 }
 
@@ -197,99 +197,3 @@ nec <- function(y, x, d, yb = NULL, alpha = NULL,
     dplyr::select(yb, x, y, triangle, d) %>%
     dplyr::arrange(yb, y, dplyr::desc(triangle))
 }
-
-# library(tidyverse)
-# load("data/arg.rda")
-# arg_deaths <- arg_deaths |> 
-#   filter(age >= 60) |> 
-#   mutate(deaths = trunc(deaths))
-# arg_pop <- arg_pop |> 
-#   filter(age >= 60, year == 2001)
-# save(arg_deaths, arg_pop, file = "data/arg.rda")
-
-
-# year_pop <- 2001
-# year_cut <- 2010
-# omega    <- 105
-
-# P_true <- egm(
-#   y = arg_deaths$year,
-#   x = arg_deaths$age,
-#   d = arg_deaths$deaths
-# ) |> 
-#   filter(y == year_pop, x >= 80, x <= omega) %>%
-#   select(yb, x, EGM = pop)
-
-# arg_deaths_2001.2015 <- arg_deaths |> 
-#   filter(year <= 2015)
-# P_nec <- bind_rows(
-#   SR = nec(arg_deaths_2001.2015$y, arg_deaths_2001.2015$age, arg_deaths_2001.2015$deaths,
-#            method = "SR", k = 5, m = 5,
-#            min_age = 80, omega = omega),
-
-#   DG = nec(arg_deaths_2001.2015$y, arg_deaths_2001.2015$age, arg_deaths_2001.2015$deaths,
-#            method = "DG", m = 5,
-#            min_age = 80, omega = omega),
-
-#   SA = nec(arg_deaths_2001.2015$y, arg_deaths_2001.2015$age, arg_deaths_2001.2015$deaths,
-#            method = "SA", k = 5, m = 5, n = 10,
-#            min_age = 80, omega = omega),
-
-#   .id = "method"
-# ) %>%
-#   filter(y == year_pop, x >= 80, x <= omega) %>%
-#   select(method, yb, x, NEC = pop) %>%
-#   pivot_wider(names_from = method, values_from = NEC)
-
-# comparison <- P_true %>%
-#   left_join(P_nec, by = c("yb", "x")) %>%
-#   mutate(
-#     # At the 2010 cutoff, cohorts absent from NEC are already
-#     # extinct under the omega assumption: use truncated EGM.
-#     SR = coalesce(SR, EGM),
-#     DG = coalesce(DG, EGM),
-#     SA = coalesce(SA, EGM),
-
-#     error_SR = 100 * (SR - EGM) / EGM,
-#     error_DG = 100 * (DG - EGM) / EGM,
-#     error_SA = 100 * (SA - EGM) / EGM
-#   ) %>%
-#   arrange(x)
-
-# comparison
-
-
-# # 5. Compare total population 80+ and WMAPE
-# comparison_summary <- comparison %>%
-#   summarise(
-#     EGM = sum(EGM, na.rm = TRUE),
-#     SR  = sum(SR,  na.rm = TRUE),
-#     DG  = sum(DG,  na.rm = TRUE),
-#     SA  = sum(SA,  na.rm = TRUE),
-
-#     WMAPE_SR = 100 * sum(abs(SR - EGM), na.rm = TRUE) /
-#                      sum(EGM, na.rm = TRUE),
-
-#     WMAPE_DG = 100 * sum(abs(DG - EGM), na.rm = TRUE) /
-#                      sum(EGM, na.rm = TRUE),
-
-#     WMAPE_SA = 100 * sum(abs(SA - EGM), na.rm = TRUE) /
-#                      sum(EGM, na.rm = TRUE)
-#   )
-
-# comparison_summary
-
-
-# # 6. Age-specific comparison
-# comparison %>%
-#   select(x, EGM, SR, DG, SA) %>%
-#   pivot_longer(-x, names_to = "method", values_to = "pop") %>%
-#   ggplot(aes(x, pop, linetype = method)) +
-#   geom_line(linewidth = .8) +
-#   geom_point() +
-#   labs(
-#     x = "Age in 1990",
-#     y = "Population",
-#     linetype = NULL
-#   ) +
-#   theme_minimal()

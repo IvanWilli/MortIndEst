@@ -342,60 +342,170 @@ orphanhood_one <- function(prop_not_orphan,
 
 # orphanhood two census/surveys -------------------------------------------
 
-#' Estimate adult mortality with two survey/census observations from orphanhood data.
-#' @description Estimates adult mortality from orphanhood in two observations using Timaeus,
-#' Preston-Chen, or the Masquelier-Timaeus HIV adaptation.
-#' @param prop1_not_orphan numeric vector. Population proportion of respondents with mother/father alive, by age groups, from source 1.
-#' @param prop2_not_orphan numeric vector. Population proportion of respondents with mother/father alive, by age groups, from source 2.
-#' @param date1 Either a \code{Date} class object or an unambiguous character string in the format \code{"YYYY-MM-DD"}. Reference date for source 1.
-#' @param date2 Same than `date1` but for the second source.
-#' @param age1 integer vector. Lower bound of age groups from first census.
-#' @param age2 Same than `age1` but for the second source.
-#' @param maternal logical. Either `TRUE` for maternal orphanhood (default) or `FALSE` for paternal orphanhood.
-#' @param mac1 numeric. Mean age at childbearing for mothers/fathers from source 1.
-#' @param mac2 Same than `mac1` but for the second source.
-#' @param method character. One of timÃ¦us (default), preston_chen, or masquellier_timÃ¦us.
-#' @param mlt_data_input data.frame. Optional model life table input; use with `brass_logit = TRUE`.
-#' @param mlt_family character. Model life table family. If `NULL`, returns all CD and UN families.
-#' @param brass_logit logical. Doing a level smoothing with 1-parameter logit Brass.
-#' @param brass_logit_e0 numeric. Life expectancy at birth when `brass_logit` is `TRUE`.
-#' @param HIV_prev,HIV_art,HIV_5q0 numeric or data.frame. HIV prevalence, ART coverage, and 5q0 inputs used by HIV variants.
-#' @param HIV_pmtct numeric or data.frame. PMTCT coverage for method = masquellier_timÃ¦us.
-#' @param HIV_period_covariates character. Use midpoint or average HIV/ART period covariates in the Masquelier-Timaeus equations.
-#' @param HIV_age_above30 character. How to handle ages above Table 2 adjustment coefficients in the Masquelier-Timaeus method.
-#' @param HIV_birth_exposure_tol numeric. Tolerance used when deciding whether HIV birth exposure is negligible.
-#' @param e0_accept integer vector. Range acceptable when calculating the median of implied level by age.
+#' Estimate adult mortality from orphanhood observed in two censuses or surveys
+#'
+#' Estimate adult mortality from changes in the proportion of respondents with a
+#' surviving mother or father between two observations.
+#'
+#' @details
+#' Three two-observation variants are implemented:
+#' \describe{
+#'   \item{\code{"timaeus"}}{The Timaeus two-census orphanhood method. It
+#'   converts cohort changes in the proportion not orphaned into conditional
+#'   parental survival probabilities using Timaeus coefficients. This is the
+#'   default variant.}
+#'   \item{\code{"preston_chen"}}{The Preston-Chen two-census method, using
+#'   variable-\eqn{r} adjustments to combine two observations of parental
+#'   survival by respondent age.}
+#'   \item{\code{"masquellier_timaeus"}}{The Masquelier-Timaeus HIV/AIDS
+#'   adaptation for maternal orphanhood. It adjusts maternal survival
+#'   proportions for HIV exposure, PMTCT, and ART before converting synthetic
+#'   orphanhood proportions into adult survivorship.}
+#' }
+#'
+#' For all variants, survivorship estimates are matched to model life tables or
+#' to a user-supplied life table. When \code{mlt_family = NULL}, all available
+#' Coale-Demeny and United Nations model life table families are returned.
+#'
+#' @param prop1_not_orphan Numeric vector. Proportion of respondents with the
+#'   mother or father alive in the first observation, by respondent age group.
+#' @param prop2_not_orphan Numeric vector. Proportion of respondents with the
+#'   mother or father alive in the second observation, by respondent age group.
+#' @param age1 Integer vector. Lower bounds of respondent age groups in the first
+#'   observation.
+#' @param age2 Integer vector. Lower bounds of respondent age groups in the
+#'   second observation.
+#' @param date1 Numeric decimal year, \code{Date}, or unambiguous
+#'   \code{"YYYY-MM-DD"} string for the first observation.
+#' @param date2 Numeric decimal year, \code{Date}, or unambiguous
+#'   \code{"YYYY-MM-DD"} string for the second observation. Must be later than
+#'   \code{date1}.
+#' @param maternal Logical. \code{TRUE} for maternal orphanhood, \code{FALSE} for
+#'   paternal orphanhood.
+#' @param method Character. One of \code{"timaeus"}, \code{"preston_chen"}, or
+#'   \code{"masquellier_timaeus"}. Unicode aliases are also accepted by the
+#'   function.
+#' @param mac1,mac2 Numeric scalar, vector, or \code{data.frame(year, value)}.
+#'   Mean age at childbearing for mothers or fathers in the first and second
+#'   observations. Data frames are interpolated to the relevant years.
+#' @param mlt_data_input Optional data frame containing a user-supplied model
+#'   life table. It must include the same basic columns used by
+#'   \code{MortCast::MLTlookup}, especially \code{age} and \code{lx}; use with
+#'   \code{brass_logit = TRUE}.
+#' @param mlt_family Character vector of model life table families. Options are
+#'   \code{"CD_East"}, \code{"CD_North"}, \code{"CD_South"}, \code{"CD_West"},
+#'   \code{"UN_Chilean"}, \code{"UN_Far_Eastern"}, \code{"UN_General"},
+#'   \code{"UN_Latin_American"}, and \code{"UN_South_Asian"}. If \code{NULL},
+#'   all families are used.
+#' @param brass_logit Logical. If \code{TRUE}, smooth using a one-parameter Brass
+#'   logit transform against the selected or supplied model life table.
+#' @param brass_logit_e0 Numeric. Life expectancy at birth used when
+#'   \code{brass_logit = TRUE}.
+#' @param HIV_prev,HIV_art,HIV_pmtct,HIV_5q0 Numeric scalar, vector, named
+#'   vector, or \code{data.frame(year, value)} inputs for HIV prevalence, ART
+#'   coverage, PMTCT coverage, and child mortality. HIV prevalence, ART, and
+#'   PMTCT must be proportions, not percentages.
+#' @param HIV_period_covariates Character. Whether to evaluate period HIV and
+#'   ART covariates at the \code{"midpoint"} or as an \code{"average"} of the two
+#'   observation dates in the Masquelier-Timaeus equations.
+#' @param HIV_age_above30 Character. Rule for respondent ages above the Table 2
+#'   HIV adjustment coefficients in the Masquelier-Timaeus method:
+#'   \code{"identity_if_low_exposure"}, \code{"drop"}, or \code{"identity"}.
+#' @param HIV_birth_exposure_tol Numeric. Tolerance below which birth HIV
+#'   exposure is treated as negligible when \code{HIV_age_above30 =
+#'   "identity_if_low_exposure"}.
+#' @param e0_accept Numeric vector of length 2. Acceptable range of implied
+#'   \eqn{e_0} levels when converting estimates through model life tables.
+#' @param verbose Logical. If \code{TRUE}, print diagnostic messages.
+#'
+#' @return A named list with at least:
+#' \describe{
+#'   \item{\code{adult_mort_index}}{A data frame with adult mortality indicators
+#'   by respondent age and model life table family, including \code{q15_45} and
+#'   \code{q15_35}.}
+#'   \item{\code{lx_estimates}}{The interpolated life-table survivorship
+#'   estimates used to derive the adult mortality indicators.}
+#' }
+#' Some variants return additional diagnostic components, such as
+#' \code{p25_estimates}, \code{synthetic_maternal_survival}, or
+#' \code{hiv_adjusted_proportions}.
+#'
+#' @references
+#' Timaeus, I. M. (1991). Estimation of Mortality from Orphanhood in Adulthood.
+#' \emph{Demography}, 28(2), 213-227.
+#'
+#' Preston, S. H. and Chen, N. (1984). Two Census Orphanhood Methods for
+#' Estimating Adult Mortality, with Applications to Latin America. United
+#' Nations.
+#'
+#' Masquelier, B. and Timaeus, I. M. HIV/AIDS correction method for maternal
+#' orphanhood in two inquiries.
+#'
 #' @export
 #' @examples
-#' \dontrun{
-#' standard_iusssp <- data.frame(age = seq(15, 85, 5),
-#'   lx = c(0.8868,0.8763,0.8621,0.8467,0.8296,0.8094,0.7845,
-#'          0.7527,0.7096,0.6515,0.5724,0.4700,0.3443,0.2101,0.0962))
+#' \donttest{
+#' library(dplyr)
+#' library(purrr)
 #'
+#' standard_iusssp <- data.frame(
+#'   age = seq(15, 85, 5),
+#'   lx = c(
+#'     0.8868, 0.8763, 0.8621, 0.8467, 0.8296,
+#'     0.8094, 0.7845, 0.7527, 0.7096, 0.6515,
+#'     0.5724, 0.4700, 0.3443, 0.2101, 0.0962
+#'   )
+#' )
+#'
+#' # Timaeus variant: Salomons 1986-1999 paternal orphanhood example.
 #' salomons_1986_1999_paternal <- orphanhood_two(
-#'   prop1_not_orphan = c(0.9644,0.9340,0.8862,0.8088,0.7060,0.5812,0.4620,0.3317),
-#'   prop2_not_orphan = c(0.9710,0.9454,0.9071,0.8493,0.7717,0.6568,0.5375,0.3891),
-#'   age1 = seq(5, 40, 5), age2 = seq(5, 40, 5),
-#'   date1 = 1986.9, date2 = 1999.9,
-#'   maternal = FALSE, mac1 = 34.08, mac2 = 34.08,
-#'   mlt_data_input = standard_iusssp, brass_logit = TRUE)
+#'   prop1_not_orphan = c(
+#'     0.9644, 0.9340, 0.8862, 0.8088,
+#'     0.7060, 0.5812, 0.4620, 0.3317
+#'   ),
+#'   prop2_not_orphan = c(
+#'     0.9710, 0.9454, 0.9071, 0.8493,
+#'     0.7717, 0.6568, 0.5375, 0.3891
+#'   ),
+#'   age1 = seq(5, 40, 5),
+#'   age2 = seq(5, 40, 5),
+#'   date1 = 1986.9,
+#'   date2 = 1999.9,
+#'   maternal = FALSE,
+#'   mac1 = 34.08,
+#'   mac2 = 34.08,
+#'   method = "timaeus",
+#'   mlt_data_input = standard_iusssp,
+#'   brass_logit = TRUE
+#' )
+#' salomons_1986_1999_paternal$adult_mort_index
 #'
+#' # Preston-Chen variant: Panama 1977-1980 maternal orphanhood example.
 #' panama_1977_1980 <- orphanhood_two(
-#'   prop1_not_orphan = c(.996,.9844,.9753,.9556,.9195,.8908,.8157,.7618,.6166),
-#'   prop2_not_orphan = c(.9949,.9903,.9794,.9608,.9316,.8967,.8450,.7746,.6781),
-#'   age1 = seq(0, 40, 5), age2 = seq(0, 40, 5),
-#'   date1 = "1977-07-01", date2 = "1980-05-11",
-#'   maternal = TRUE, mac1 = 27, mac2 = 27,
-#'   method = "preston_chen", mlt_family = "CD_West")
-#'
-#' # For method = masquellier_timÃ¦us, pass HIV_prev, HIV_art, and HIV_pmtct
-#' # as proportions. data.frame(year, value) inputs are interpolated by year.
+#'   prop1_not_orphan = c(
+#'     .9960, .9844, .9753, .9556, .9195,
+#'     .8908, .8157, .7618, .6166
+#'   ),
+#'   prop2_not_orphan = c(
+#'     .9949, .9903, .9794, .9608, .9316,
+#'     .8967, .8450, .7746, .6781
+#'   ),
+#'   age1 = seq(0, 40, 5),
+#'   age2 = seq(0, 40, 5),
+#'   date1 = "1977-07-01",
+#'   date2 = "1980-05-11",
+#'   maternal = TRUE,
+#'   mac1 = 27,
+#'   mac2 = 27,
+#'   method = "preston_chen",
+#'   mlt_family = "CD_West"
+#' )
+#' panama_1977_1980$adult_mort_index
 #' }
 orphanhood_two <- function(prop1_not_orphan, prop2_not_orphan,
                            age1, age2,
                            date1, date2,
                            maternal = TRUE,
-                           method = "tim\u00e6us",
+                           method = "timaeus",
                            mac1 = NULL, mac2 = NULL,
                            mlt_data_input = NULL,
                            mlt_family = NULL,
@@ -572,6 +682,94 @@ orphanhood_two <- function(prop1_not_orphan, prop2_not_orphan,
            partial_estimate[setdiff(names(partial_estimate), "lx_estimates")]))
 }
 
+#' Two-observation orphanhood estimates using the Timaeus coefficients
+#'
+#' Internal worker for the Timaeus two-census orphanhood variant used by
+#' [orphanhood_two()]. It converts changes in the proportion not orphaned into
+#' conditional parental survival and then into interpolated life-table
+#' survivorship.
+#'
+#' @param prop1_not_orphan,prop2_not_orphan Numeric vectors with proportions of
+#'   respondents with a surviving parent in the first and second observations.
+#' @param age Integer vector with lower bounds of respondent age groups common
+#'   to both observations.
+#' @param date1,date2 Numeric decimal years for the first and second
+#'   observations.
+#' @param maternal Logical. `TRUE` for maternal orphanhood, `FALSE` for paternal
+#'   orphanhood.
+#' @param mac1,mac2 Numeric mean ages at childbearing in the first and second
+#'   observations.
+#' @param mlt_data_input Optional user-supplied model life table. Use with
+#'   `brass_logit = TRUE`.
+#' @param mlt_family Character vector of model life table families.
+#' @param brass_logit Logical. If `TRUE`, apply one-parameter Brass logit
+#'   smoothing against the selected or supplied standard.
+#' @param brass_logit_e0 Numeric life expectancy at birth used when
+#'   `brass_logit = TRUE`.
+#' @param HIV_prev,HIV_art,HIV_5q0 Optional HIV prevalence, ART coverage, and
+#'   child mortality inputs for the HIV variant.
+#' @param sex Character. `"f"` for female mortality or `"m"` for male mortality.
+#' @param y,z Numeric parental exact-age anchors used in the Timaeus conversion.
+#' @param timaes_coeff Data frame of Timaeus coefficients for the selected
+#'   maternal or paternal variant.
+#' @param e0_accept Numeric vector of length 2 with acceptable implied `e0`
+#'   range.
+#' @param verbose Logical. If `TRUE`, print diagnostic messages.
+#'
+#' @return A list with `lx_estimates`.
+#' @keywords internal
+#' @examples
+#' \donttest{
+#' library(dplyr)
+#' library(purrr)
+#'
+#' standard_iusssp <- data.frame(
+#'   age = seq(15, 85, 5),
+#'   lx = c(
+#'     0.8868, 0.8763, 0.8621, 0.8467, 0.8296,
+#'     0.8094, 0.7845, 0.7527, 0.7096, 0.6515,
+#'     0.5724, 0.4700, 0.3443, 0.2101, 0.0962
+#'   )
+#' )
+#' paternal_coeff <- data.frame(
+#'   age = c(25, 30, 35, 40),
+#'   a = c(-0.0554, -0.7539, -1.0809, -1.1726),
+#'   b = c(0.00757, 0.01558, 0.02273, 0.02647),
+#'   c = c(0.0239, 0.6452, 0.9289, 0.9381),
+#'   d = c(0.8080, 0.6498, 0.4807, 0.4372)
+#' )
+#'
+#' salomons_1986_1999_paternal <- MortIndEst:::orphanhood_two_timaeus(
+#'   prop1_not_orphan = c(
+#'     0.9644, 0.9340, 0.8862, 0.8088,
+#'     0.7060, 0.5812, 0.4620, 0.3317
+#'   ),
+#'   prop2_not_orphan = c(
+#'     0.9710, 0.9454, 0.9071, 0.8493,
+#'     0.7717, 0.6568, 0.5375, 0.3891
+#'   ),
+#'   age = seq(5, 40, 5),
+#'   date1 = 1986.9,
+#'   date2 = 1999.9,
+#'   maternal = FALSE,
+#'   mac1 = 34.08,
+#'   mac2 = 34.08,
+#'   mlt_data_input = standard_iusssp,
+#'   mlt_family = "CD_West",
+#'   brass_logit = TRUE,
+#'   brass_logit_e0 = 60,
+#'   HIV_prev = NULL,
+#'   HIV_art = NULL,
+#'   HIV_5q0 = NULL,
+#'   sex = "m",
+#'   y = 35,
+#'   z = 55,
+#'   timaes_coeff = paternal_coeff,
+#'   e0_accept = c(20, 100),
+#'   verbose = FALSE
+#' )
+#' head(salomons_1986_1999_paternal$lx_estimates)
+#' }
 orphanhood_two_timaeus <- function(prop1_not_orphan, prop2_not_orphan,
                                   age,
                                   date1, date2,
@@ -704,6 +902,73 @@ orphanhood_two_timaeus <- function(prop1_not_orphan, prop2_not_orphan,
   return(list(lx_estimates = lx_out))
 }
 
+#' Two-observation orphanhood estimates using the Preston-Chen method
+#'
+#' Internal worker for the Preston-Chen two-census orphanhood variant used by
+#' [orphanhood_two()]. It applies variable-r adjustments to the geometric mean
+#' of the two orphanhood observations, then delegates the adjusted proportions
+#' to the one-observation orphanhood conversion.
+#'
+#' @param prop1_not_orphan,prop2_not_orphan Numeric vectors with proportions of
+#'   respondents with a surviving parent in the first and second observations.
+#' @param age Integer vector with lower bounds of respondent age groups common
+#'   to both observations.
+#' @param ages Integer. Number of common respondent age groups.
+#' @param date1,date2 Numeric decimal years for the first and second
+#'   observations.
+#' @param maternal Logical. `TRUE` for maternal orphanhood, `FALSE` for paternal
+#'   orphanhood.
+#' @param mac1,mac2 Numeric mean ages at childbearing in the first and second
+#'   observations.
+#' @param M Numeric mean age at childbearing averaged across the two
+#'   observations.
+#' @param mlt_data_input Optional user-supplied model life table. Use with
+#'   `brass_logit = TRUE`.
+#' @param mlt_family_input Character vector of model life table families.
+#' @param brass_logit Logical. If `TRUE`, apply one-parameter Brass logit
+#'   smoothing against the selected or supplied standard.
+#' @param brass_logit_e0 Numeric life expectancy at birth used when
+#'   `brass_logit = TRUE`.
+#' @param HIV_prev,HIV_art,HIV_5q0 Optional HIV prevalence, ART coverage, and
+#'   child mortality inputs for the HIV variant.
+#' @param is.HIV Logical. Whether to use the HIV-adjusted one-observation
+#'   conversion.
+#'
+#' @return A list with `lx_estimates`.
+#' @keywords internal
+#' @examples
+#' \donttest{
+#' library(dplyr)
+#' library(purrr)
+#'
+#' panama_1977_1980 <- MortIndEst:::orphanhood_two_preston_chen(
+#'   prop1_not_orphan = c(
+#'     .9960, .9844, .9753, .9556, .9195,
+#'     .8908, .8157, .7618, .6166
+#'   ),
+#'   prop2_not_orphan = c(
+#'     .9949, .9903, .9794, .9608, .9316,
+#'     .8967, .8450, .7746, .6781
+#'   ),
+#'   age = seq(0, 40, 5),
+#'   ages = length(seq(0, 40, 5)),
+#'   date1 = 1977.50,
+#'   date2 = 1980.36,
+#'   maternal = TRUE,
+#'   mac1 = 27,
+#'   mac2 = 27,
+#'   M = 27,
+#'   mlt_data_input = NULL,
+#'   mlt_family_input = "CD_West",
+#'   brass_logit = FALSE,
+#'   brass_logit_e0 = 60,
+#'   HIV_prev = NULL,
+#'   HIV_art = NULL,
+#'   HIV_5q0 = NULL,
+#'   is.HIV = FALSE
+#' )
+#' head(panama_1977_1980$lx_estimates)
+#' }
 orphanhood_two_preston_chen <- function(prop1_not_orphan, prop2_not_orphan,
                                         age, ages,
                                         date1, date2,
@@ -759,6 +1024,134 @@ orphanhood_two_preston_chen <- function(prop1_not_orphan, prop2_not_orphan,
   return(list(lx_estimates = lx_out))
 }
 
+#' Two-observation maternal orphanhood with Masquelier-Timaeus HIV adjustment
+#'
+#' Internal worker for the Masquelier-Timaeus HIV/AIDS variant used by
+#' [orphanhood_two()]. It adjusts maternal orphanhood proportions for HIV
+#' exposure at birth, PMTCT, and ART, then converts synthetic cohort survival
+#' proportions into adult mortality through model life tables.
+#'
+#' @param prop1_not_orphan,prop2_not_orphan Numeric vectors with proportions of
+#'   respondents with a surviving mother in the first and second observations.
+#' @param age1,age2 Integer vectors with lower bounds of respondent age groups
+#'   in the first and second observations.
+#' @param date1,date2 Numeric decimal years, `Date` objects, or unambiguous
+#'   date strings for the two observations.
+#' @param maternal Logical. Must be `TRUE`; this adaptation is for maternal
+#'   orphanhood.
+#' @param mac1,mac2 Numeric scalar, vector, or `data.frame(year, value)` with
+#'   mean age at childbearing.
+#' @param mlt_data_input Optional user-supplied model life table. Use with
+#'   `brass_logit = TRUE`.
+#' @param mlt_family Character vector of model life table families.
+#' @param brass_logit Logical. If `TRUE`, apply one-parameter Brass logit
+#'   smoothing against the selected or supplied standard.
+#' @param brass_logit_e0 Numeric life expectancy at birth used when
+#'   `brass_logit = TRUE`.
+#' @param HIV_prev,HIV_art,HIV_pmtct Numeric scalar, vector, named vector, or
+#'   `data.frame(year, value)` inputs for HIV prevalence, ART coverage, and
+#'   PMTCT coverage. Values must be proportions, not percentages.
+#' @param HIV_5q0 Optional child mortality input for Spectrum HIV life-table
+#'   construction.
+#' @param HIV_period_covariates Character. Use `"midpoint"` or `"average"` for
+#'   period HIV and ART covariates.
+#' @param HIV_age_above30 Character. Rule for ages above the Table 2 adjustment
+#'   coefficients: `"identity_if_low_exposure"`, `"drop"`, or `"identity"`.
+#' @param HIV_birth_exposure_tol Numeric tolerance for negligible birth HIV
+#'   exposure under `"identity_if_low_exposure"`.
+#' @param e0_accept Numeric vector of length 2 with acceptable implied `e0`
+#'   range.
+#' @param verbose Logical. If `TRUE`, print diagnostic messages.
+#'
+#' @return A list with `lx_estimates`, `p25_estimates`,
+#'   `synthetic_maternal_survival`, and `hiv_adjusted_proportions`.
+#' @keywords internal
+#' @examples
+#' \donttest{
+#' library(dplyr)
+#' library(purrr)
+#'
+#' sa_age <- seq(0, 40, 5)
+#' sa_2007 <- c(
+#'   0.977, 0.939, 0.904,
+#'   0.879, 0.863, 0.833,
+#'   0.782, 0.694, 0.592
+#' )
+#' sa_2016 <- c(
+#'   0.991, 0.961, 0.916,
+#'   0.866, 0.828, 0.803,
+#'   0.779, 0.744, 0.667
+#' )
+#' sa_mac <- c(
+#'   NA, 27.094, 27.327, 27.332,
+#'   27.420, 27.458, 27.471,
+#'   27.702, 27.838
+#' )
+#' sa_hiv <- data.frame(
+#'   year = c(
+#'     1964.621, 1969.621, 1973.773, 1974.621,
+#'     1978.773, 1979.621, 1983.773, 1984.621,
+#'     1988.773, 1989.621, 1993.773, 1994.621,
+#'     1998.773, 1999.621, 2003.773, 2004.621,
+#'     2007.121, 2008.773, 2011.697, 2013.773,
+#'     2016.273
+#'   ),
+#'   value = c(
+#'     0, 0, 0.000, 0.000, 0.000, 0.001,
+#'     0.001, 0.001, 0.003, 0.004,
+#'     0.033, 0.045, 0.111, 0.123,
+#'     0.167, 0.173, 0.188, 0.199,
+#'     0.216, 0.225, 0.231
+#'   )
+#' )
+#' sa_pmtct <- data.frame(
+#'   year = c(
+#'     1964.621, 1969.621, 1973.773, 1974.621,
+#'     1978.773, 1979.621, 1983.773, 1984.621,
+#'     1988.773, 1989.621, 1993.773, 1994.621,
+#'     1998.773, 1999.621, 2003.773, 2004.621,
+#'     2008.773, 2013.773
+#'   ),
+#'   value = c(
+#'     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+#'     0.000, 0.102, 0.165,
+#'     0.630, 0.996
+#'   )
+#' )
+#' sa_art <- data.frame(
+#'   year = c(2007.121, 2011.697, 2016.273),
+#'   value = c(0.140, 0.450, 0.577)
+#' )
+#'
+#' sa_masq <- MortIndEst:::orphanhood_two_masquellier_timaeus(
+#'   prop1_not_orphan = sa_2007,
+#'   prop2_not_orphan = sa_2016,
+#'   age1 = sa_age,
+#'   age2 = sa_age,
+#'   date1 = 2007.120548,
+#'   date2 = 2016.273224,
+#'   maternal = TRUE,
+#'   mac1 = sa_mac,
+#'   mac2 = sa_mac,
+#'   mlt_data_input = NULL,
+#'   mlt_family = "CD_West",
+#'   brass_logit = FALSE,
+#'   brass_logit_e0 = 60,
+#'   HIV_prev = sa_hiv,
+#'   HIV_art = sa_art,
+#'   HIV_pmtct = sa_pmtct,
+#'   HIV_5q0 = NULL,
+#'   HIV_period_covariates = "midpoint",
+#'   HIV_age_above30 = "identity_if_low_exposure",
+#'   HIV_birth_exposure_tol = 1e-3,
+#'   e0_accept = c(20, 100),
+#'   verbose = FALSE
+#' )
+#' round(sa_masq$p25_estimates$p25_n, 3)
+#' # Expected from the workbook example form the paper, approximately:
+#  # 0.927425 0.884010 0.843594 0.814588
+#  # 0.773862 0.735641 0.711444 0.687329
+#' }
 orphanhood_two_masquellier_timaeus <- function(prop1_not_orphan, prop2_not_orphan,
                                              age1, age2,
                                              date1, date2,

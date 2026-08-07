@@ -2,7 +2,7 @@
 % Please edit documentation in R/orphanhood.R
 \name{orphanhood_two}
 \alias{orphanhood_two}
-\title{Estimate adult mortality with two survey/census observations from orphanhood data.}
+\title{Estimate adult mortality from orphanhood observed in two censuses or surveys}
 \usage{
 orphanhood_two(
   prop1_not_orphan,
@@ -12,7 +12,7 @@ orphanhood_two(
   date1,
   date2,
   maternal = TRUE,
-  method = "timæus",
+  method = "timaeus",
   mac1 = NULL,
   mac2 = NULL,
   mlt_data_input = NULL,
@@ -31,73 +31,180 @@ orphanhood_two(
 )
 }
 \arguments{
-\item{prop1_not_orphan}{numeric vector. Population proportion of respondents with mother/father alive, by age groups, from source 1.}
+\item{prop1_not_orphan}{Numeric vector. Proportion of respondents with the
+mother or father alive in the first observation, by respondent age group.}
 
-\item{prop2_not_orphan}{numeric vector. Population proportion of respondents with mother/father alive, by age groups, from source 2.}
+\item{prop2_not_orphan}{Numeric vector. Proportion of respondents with the
+mother or father alive in the second observation, by respondent age group.}
 
-\item{age1}{integer vector. Lower bound of age groups from first census.}
+\item{age1}{Integer vector. Lower bounds of respondent age groups in the first
+observation.}
 
-\item{age2}{Same than \code{age1} but for the second source.}
+\item{age2}{Integer vector. Lower bounds of respondent age groups in the
+second observation.}
 
-\item{date1}{Either a \code{Date} class object or an unambiguous character string in the format \code{"YYYY-MM-DD"}. Reference date for source 1.}
+\item{date1}{Numeric decimal year, \code{Date}, or unambiguous
+\code{"YYYY-MM-DD"} string for the first observation.}
 
-\item{date2}{Same than \code{date1} but for the second source.}
+\item{date2}{Numeric decimal year, \code{Date}, or unambiguous
+\code{"YYYY-MM-DD"} string for the second observation. Must be later than
+\code{date1}.}
 
-\item{maternal}{logical. Either \code{TRUE} for maternal orphanhood (default) or \code{FALSE} for paternal orphanhood.}
+\item{maternal}{Logical. \code{TRUE} for maternal orphanhood, \code{FALSE} for
+paternal orphanhood.}
 
-\item{method}{character. One of timÃ¦us (default), preston_chen, or masquellier_timÃ¦us.}
+\item{method}{Character. One of \code{"timaeus"}, \code{"preston_chen"}, or
+\code{"masquellier_timaeus"}. Unicode aliases are also accepted by the
+function.}
 
-\item{mac1}{numeric. Mean age at childbearing for mothers/fathers from source 1.}
+\item{mac1, mac2}{Numeric scalar, vector, or \code{data.frame(year, value)}.
+Mean age at childbearing for mothers or fathers in the first and second
+observations. Data frames are interpolated to the relevant years.}
 
-\item{mac2}{Same than \code{mac1} but for the second source.}
+\item{mlt_data_input}{Optional data frame containing a user-supplied model
+life table. It must include the same basic columns used by
+\code{MortCast::MLTlookup}, especially \code{age} and \code{lx}; use with
+\code{brass_logit = TRUE}.}
 
-\item{mlt_data_input}{data.frame. Optional model life table input; use with \code{brass_logit = TRUE}.}
+\item{mlt_family}{Character vector of model life table families. Options are
+\code{"CD_East"}, \code{"CD_North"}, \code{"CD_South"}, \code{"CD_West"},
+\code{"UN_Chilean"}, \code{"UN_Far_Eastern"}, \code{"UN_General"},
+\code{"UN_Latin_American"}, and \code{"UN_South_Asian"}. If \code{NULL},
+all families are used.}
 
-\item{mlt_family}{character. Model life table family. If \code{NULL}, returns all CD and UN families.}
+\item{brass_logit}{Logical. If \code{TRUE}, smooth using a one-parameter Brass
+logit transform against the selected or supplied model life table.}
 
-\item{brass_logit}{logical. Doing a level smoothing with 1-parameter logit Brass.}
+\item{brass_logit_e0}{Numeric. Life expectancy at birth used when
+\code{brass_logit = TRUE}.}
 
-\item{brass_logit_e0}{numeric. Life expectancy at birth when \code{brass_logit} is \code{TRUE}.}
+\item{HIV_prev, HIV_art, HIV_pmtct, HIV_5q0}{Numeric scalar, vector, named
+vector, or \code{data.frame(year, value)} inputs for HIV prevalence, ART
+coverage, PMTCT coverage, and child mortality. HIV prevalence, ART, and
+PMTCT must be proportions, not percentages.}
 
-\item{HIV_prev, HIV_art, HIV_5q0}{numeric or data.frame. HIV prevalence, ART coverage, and 5q0 inputs used by HIV variants.}
+\item{HIV_period_covariates}{Character. Whether to evaluate period HIV and
+ART covariates at the \code{"midpoint"} or as an \code{"average"} of the two
+observation dates in the Masquelier-Timaeus equations.}
 
-\item{HIV_pmtct}{numeric or data.frame. PMTCT coverage for method = masquellier_timÃ¦us.}
+\item{HIV_age_above30}{Character. Rule for respondent ages above the Table 2
+HIV adjustment coefficients in the Masquelier-Timaeus method:
+\code{"identity_if_low_exposure"}, \code{"drop"}, or \code{"identity"}.}
 
-\item{HIV_period_covariates}{character. Use midpoint or average HIV/ART period covariates in the Masquelier-Timaeus equations.}
+\item{HIV_birth_exposure_tol}{Numeric. Tolerance below which birth HIV
+exposure is treated as negligible when \code{HIV_age_above30 =
+"identity_if_low_exposure"}.}
 
-\item{HIV_age_above30}{character. How to handle ages above Table 2 adjustment coefficients in the Masquelier-Timaeus method.}
+\item{e0_accept}{Numeric vector of length 2. Acceptable range of implied
+\eqn{e_0} levels when converting estimates through model life tables.}
 
-\item{HIV_birth_exposure_tol}{numeric. Tolerance used when deciding whether HIV birth exposure is negligible.}
-
-\item{e0_accept}{integer vector. Range acceptable when calculating the median of implied level by age.}
+\item{verbose}{Logical. If \code{TRUE}, print diagnostic messages.}
+}
+\value{
+A named list with at least:
+\describe{
+\item{\code{adult_mort_index}}{A data frame with adult mortality indicators
+by respondent age and model life table family, including \code{q15_45} and
+\code{q15_35}.}
+\item{\code{lx_estimates}}{The interpolated life-table survivorship
+estimates used to derive the adult mortality indicators.}
+}
+Some variants return additional diagnostic components, such as
+\code{p25_estimates}, \code{synthetic_maternal_survival}, or
+\code{hiv_adjusted_proportions}.
 }
 \description{
-Estimates adult mortality from orphanhood in two observations using Timaeus,
-Preston-Chen, or the Masquelier-Timaeus HIV adaptation.
+Estimate adult mortality from changes in the proportion of respondents with a
+surviving mother or father between two observations.
+}
+\details{
+Three two-observation variants are implemented:
+\describe{
+\item{\code{"timaeus"}}{The Timaeus two-census orphanhood method. It
+converts cohort changes in the proportion not orphaned into conditional
+parental survival probabilities using Timaeus coefficients. This is the
+default variant.}
+\item{\code{"preston_chen"}}{The Preston-Chen two-census method, using
+variable-\eqn{r} adjustments to combine two observations of parental
+survival by respondent age.}
+\item{\code{"masquellier_timaeus"}}{The Masquelier-Timaeus HIV/AIDS
+adaptation for maternal orphanhood. It adjusts maternal survival
+proportions for HIV exposure, PMTCT, and ART before converting synthetic
+orphanhood proportions into adult survivorship.}
+}
+
+For all variants, survivorship estimates are matched to model life tables or
+to a user-supplied life table. When \code{mlt_family = NULL}, all available
+Coale-Demeny and United Nations model life table families are returned.
 }
 \examples{
-\dontrun{
-standard_iusssp <- data.frame(age = seq(15, 85, 5),
-  lx = c(0.8868,0.8763,0.8621,0.8467,0.8296,0.8094,0.7845,
-         0.7527,0.7096,0.6515,0.5724,0.4700,0.3443,0.2101,0.0962))
+\donttest{
+library(dplyr)
+library(purrr)
 
+standard_iusssp <- data.frame(
+  age = seq(15, 85, 5),
+  lx = c(
+    0.8868, 0.8763, 0.8621, 0.8467, 0.8296,
+    0.8094, 0.7845, 0.7527, 0.7096, 0.6515,
+    0.5724, 0.4700, 0.3443, 0.2101, 0.0962
+  )
+)
+
+# Timaeus variant: Salomons 1986-1999 paternal orphanhood example.
 salomons_1986_1999_paternal <- orphanhood_two(
-  prop1_not_orphan = c(0.9644,0.9340,0.8862,0.8088,0.7060,0.5812,0.4620,0.3317),
-  prop2_not_orphan = c(0.9710,0.9454,0.9071,0.8493,0.7717,0.6568,0.5375,0.3891),
-  age1 = seq(5, 40, 5), age2 = seq(5, 40, 5),
-  date1 = 1986.9, date2 = 1999.9,
-  maternal = FALSE, mac1 = 34.08, mac2 = 34.08,
-  mlt_data_input = standard_iusssp, brass_logit = TRUE)
+  prop1_not_orphan = c(
+    0.9644, 0.9340, 0.8862, 0.8088,
+    0.7060, 0.5812, 0.4620, 0.3317
+  ),
+  prop2_not_orphan = c(
+    0.9710, 0.9454, 0.9071, 0.8493,
+    0.7717, 0.6568, 0.5375, 0.3891
+  ),
+  age1 = seq(5, 40, 5),
+  age2 = seq(5, 40, 5),
+  date1 = 1986.9,
+  date2 = 1999.9,
+  maternal = FALSE,
+  mac1 = 34.08,
+  mac2 = 34.08,
+  method = "timaeus",
+  mlt_data_input = standard_iusssp,
+  brass_logit = TRUE
+)
+salomons_1986_1999_paternal$adult_mort_index
 
+# Preston-Chen variant: Panama 1977-1980 maternal orphanhood example.
 panama_1977_1980 <- orphanhood_two(
-  prop1_not_orphan = c(.996,.9844,.9753,.9556,.9195,.8908,.8157,.7618,.6166),
-  prop2_not_orphan = c(.9949,.9903,.9794,.9608,.9316,.8967,.8450,.7746,.6781),
-  age1 = seq(0, 40, 5), age2 = seq(0, 40, 5),
-  date1 = "1977-07-01", date2 = "1980-05-11",
-  maternal = TRUE, mac1 = 27, mac2 = 27,
-  method = "preston_chen", mlt_family = "CD_West")
-
-# For method = masquellier_timÃ¦us, pass HIV_prev, HIV_art, and HIV_pmtct
-# as proportions. data.frame(year, value) inputs are interpolated by year.
+  prop1_not_orphan = c(
+    .9960, .9844, .9753, .9556, .9195,
+    .8908, .8157, .7618, .6166
+  ),
+  prop2_not_orphan = c(
+    .9949, .9903, .9794, .9608, .9316,
+    .8967, .8450, .7746, .6781
+  ),
+  age1 = seq(0, 40, 5),
+  age2 = seq(0, 40, 5),
+  date1 = "1977-07-01",
+  date2 = "1980-05-11",
+  maternal = TRUE,
+  mac1 = 27,
+  mac2 = 27,
+  method = "preston_chen",
+  mlt_family = "CD_West"
+)
+panama_1977_1980$adult_mort_index
 }
+}
+\references{
+Timaeus, I. M. (1991). Estimation of Mortality from Orphanhood in Adulthood.
+\emph{Demography}, 28(2), 213-227.
+
+Preston, S. H. and Chen, N. (1984). Two Census Orphanhood Methods for
+Estimating Adult Mortality, with Applications to Latin America. United
+Nations.
+
+Masquelier, B. and Timaeus, I. M. HIV/AIDS correction method for maternal
+orphanhood in two inquiries.
 }

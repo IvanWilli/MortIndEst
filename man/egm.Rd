@@ -26,13 +26,12 @@ A data frame with one row per cohort–age–year of population stock at the beg
 \item{yb}{Year of birth (cohort).}
 \item{x}{Age (exact age on vertical segment).}
 \item{y}{Calendar year corresponding to age \eqn{x}.}
-\item{AgeDeath105}{Inform if max age with data is 105 or more. A flag for extinct interpretation.}
 \item{pop}{Cohort population at exact age \eqn{x}, reconstructed by reverse
 cumulative deaths.}
 }
 
 A data frame with \code{yb}, \code{x}, \code{y},
-\code{AgeDeath105}, and reconstructed population \code{pop}.
+and reconstructed population \code{pop}.
 }
 \description{
 Compute cohort population counts (the extinct generation method) by
@@ -45,7 +44,7 @@ triangles using \code{alpha}.
 
 Compute cohort population counts by accumulating deaths along cohort lines
 in a Lexis diagram. Population stocks are located at the beginning of each
-calendar year.
+calendar year. See vignette for an example.
 }
 \details{
 The extinct generation method reconstructs cohort population size at age
@@ -53,12 +52,3 @@ The extinct generation method reconstructs cohort population size at age
 onward.  Implementation note: this uses \code{dplyr::mutate(..., .by = yb)}, which
 requires \strong{dplyr >= 1.1.0}.
 }
-\section{Assumptions}{
-
-\itemize{
-\item Death registration is complete for extinct (or nearly extinct) cohorts.
-\item When \code{yb} is not provided, the within-square timing of deaths is
-approximated by a constant split \code{alpha} between triangles.
-}
-}
-

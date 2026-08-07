@@ -47,12 +47,12 @@ in SA. Default 10.}
 calculation date are assumed extinct. Default is max observed age + 1.}
 }
 \value{
-A data frame with \code{yb}, \code{x}, \code{y},
-\code{AgeDeath105}, and estimated population \code{pop}.
+A data frame with \code{yb}, \code{x}, \code{y}
+and estimated population \code{pop}.
 }
 \description{
 Estimate population stocks of nearly-extinct cohorts using the Survivor
-Ratio (SR), Das Gupta (DG), or Survivor Ratio Advanced (SA) method.
+Ratio (SR), Das Gupta (DG), or Survivor Ratio Advanced (SA) method. See vignette for an example.
 }
 \details{
 Deaths are first assigned to cohorts from Lexis triangles. The method

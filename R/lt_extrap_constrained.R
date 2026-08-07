@@ -1,11 +1,13 @@
-#' Extrapolate mortality by age, constrained to a life expectancy value.
+#' Extrapolate mortality by age, constrained to a life expectancy value at some age.
 #' @description Instead of fitting parameters from some mortality law in previous ages to an observed OAG, find the parameters for the mortality function that replicates e(OAG) (Ediev, 2016).
+#' @details Compute rates extension that matches some e(OAG). By default takes the last age as the OAG. 
+#' Important: see if it converged (first element in output). See examples. 
 #' @param nMx numeric. Vector of mortality rates in abridged or single age classes.
 #' @param Age integer. Vector with lower bound for each age class (could be integer or abridged). Last age is assumed as lower age from open age group.
 #' @param Sex character. Either male \code{"m"}, or female \code{"f"}.
-#' @param method character. This indicates how to calculate `e_{OAG}` with methods: `classical` (default), `H-C` or `Mitra` (Ediev, 2014).
+#' @param method character. This indicates how to calculate `e_{OAG}` with methods: `classical` (default, 1/M(OAG)), `H-C` or `Mitra` (Ediev, 2014).
 #' @param extrapLaw character. Available options: `Gompertz` or `Kannisto`.
-#' @param eOAG numeric. An estimate of life expectancy in the input OAG age. If this has a value, then replace `method`.
+#' @param eOAG numeric. An estimate of life expectancy in the input OAG age. If this has a value, then `method` is ignored.
 #' @param OAnew integer. After extrapolating, pick a new OAG.
 #' @param alpha numeric. Parameter for `H-C` method. Default values are automatically selected for input OAG.
 #' @param beta numeric. Parameter for `H-C` method. Default values are automatically selected for input OAG.
@@ -15,17 +17,18 @@
 #' @examples
 #' \dontrun{
 #' # Pakistan - 1968-1971 - males - OAG=65 - HLD (2020)
+#' # Replicate 1/M(65+)
 #' nMx <- c(0.13328, 0.01539, 0.0031, 0.00155, 0.00169, 0.00185, 0.00201,
 #'          0.0024, 0.00289, 0.00367, 0.00498, 0.00736, 0.01214, 0.02301, 0.0879)
 #' Age <- c(0L, 1L, 5L, 10L, 15L, 20L, 25L, 30L, 35L, 40L, 45L, 50L, 55L, 60L, 65L)
 #' fit_extrap_constr <- lt_extrap_constrained(nMx, Age, OAnew = 100, extrapLaw = "Gompertz")
-#' fit_extrap_constr$ex[fit_extrap_constr$Age == 65] - (1/nMx[Age == 65])
+#' fit_extrap_constr$lt$ex[fit_extrap_constr$lt$Age == 65] - (1/nMx[Age == 65])
 #' # if some other value is required on e(65), like 10. The function forces extrapolation to fit that value.
 #' nMx <- c(0.13328, 0.01539, 0.0031, 0.00155, 0.00169, 0.00185, 0.00201,
 #'          0.0024, 0.00289, 0.00367, 0.00498, 0.00736, 0.01214, 0.02301, 0.0879)
 #' Age <- c(0L, 1L, 5L, 10L, 15L, 20L, 25L, 30L, 35L, 40L, 45L, 50L, 55L, 60L, 65L)
 #' fit_extrap_constr <- lt_extrap_constrained(nMx, Age, OAnew = 100, extrapLaw = "Gompertz", eOAG = 10)$lt
-#' fit_extrap_constr$ex[fit_extrap_constr$Age == 65] - 10
+#' fit_extrap_constr$lt$ex[fit_extrap_constr$Age == 65] - 10
 #' }
 
 lt_extrap_constrained <- function(nMx, Age,
