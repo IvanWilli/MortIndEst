@@ -2,7 +2,7 @@
 % Please edit documentation in R/lt_extrap_constrained.R
 \name{lt_extrap_constrained}
 \alias{lt_extrap_constrained}
-\title{Extrapolate mortality by age, constrained to a life expectancy value.}
+\title{Extrapolate mortality by age, constrained to a life expectancy value at some age.}
 \usage{
 lt_extrap_constrained(
   nMx,
@@ -25,11 +25,11 @@ lt_extrap_constrained(
 
 \item{Sex}{character. Either male \code{"m"}, or female \code{"f"}.}
 
-\item{method}{character. This indicates how to calculate \verb{e_\{OAG\}} with methods: \code{classical} (default), \code{H-C} or \code{Mitra} (Ediev, 2014).}
+\item{method}{character. This indicates how to calculate \verb{e_\{OAG\}} with methods: \code{classical} (default, 1/M(OAG)), \code{H-C} or \code{Mitra} (Ediev, 2014).}
 
 \item{extrapLaw}{character. Available options: \code{Gompertz} or \code{Kannisto}.}
 
-\item{eOAG}{numeric. An estimate of life expectancy in the input OAG age. If this has a value, then replace \code{method}.}
+\item{eOAG}{numeric. An estimate of life expectancy in the input OAG age. If this has a value, then \code{method} is ignored.}
 
 \item{OAnew}{integer. After extrapolating, pick a new OAG.}
 
@@ -44,19 +44,24 @@ lt_extrap_constrained(
 \description{
 Instead of fitting parameters from some mortality law in previous ages to an observed OAG, find the parameters for the mortality function that replicates e(OAG) (Ediev, 2016).
 }
+\details{
+Compute rates extension that matches some e(OAG). By default takes the last age as the OAG.
+Important: see if it converged (first element in output). See examples.
+}
 \examples{
 \dontrun{
 # Pakistan - 1968-1971 - males - OAG=65 - HLD (2020)
+# Replicate 1/M(65+)
 nMx <- c(0.13328, 0.01539, 0.0031, 0.00155, 0.00169, 0.00185, 0.00201,
          0.0024, 0.00289, 0.00367, 0.00498, 0.00736, 0.01214, 0.02301, 0.0879)
 Age <- c(0L, 1L, 5L, 10L, 15L, 20L, 25L, 30L, 35L, 40L, 45L, 50L, 55L, 60L, 65L)
 fit_extrap_constr <- lt_extrap_constrained(nMx, Age, OAnew = 100, extrapLaw = "Gompertz")
-fit_extrap_constr$ex[fit_extrap_constr$Age == 65] - (1/nMx[Age == 65])
+fit_extrap_constr$lt$ex[fit_extrap_constr$lt$Age == 65] - (1/nMx[Age == 65])
 # if some other value is required on e(65), like 10. The function forces extrapolation to fit that value.
 nMx <- c(0.13328, 0.01539, 0.0031, 0.00155, 0.00169, 0.00185, 0.00201,
          0.0024, 0.00289, 0.00367, 0.00498, 0.00736, 0.01214, 0.02301, 0.0879)
 Age <- c(0L, 1L, 5L, 10L, 15L, 20L, 25L, 30L, 35L, 40L, 45L, 50L, 55L, 60L, 65L)
 fit_extrap_constr <- lt_extrap_constrained(nMx, Age, OAnew = 100, extrapLaw = "Gompertz", eOAG = 10)$lt
-fit_extrap_constr$ex[fit_extrap_constr$Age == 65] - 10
+fit_extrap_constr$lt$ex[fit_extrap_constr$Age == 65] - 10
 }
 }

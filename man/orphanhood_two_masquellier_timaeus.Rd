@@ -169,6 +169,7 @@ sa_masq <- MortIndEst:::orphanhood_two_masquellier_timaeus(
   verbose = FALSE
 )
 round(sa_masq$p25_estimates$p25_n, 3)
+# Expected from the workbook example form the paper, approximately:
 }
 }
 \keyword{internal}

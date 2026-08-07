@@ -33,7 +33,7 @@ egm <- function(y, x, d, yb = NULL, alpha = NULL){
     dplyr::filter(triangle == "u") %>%
     dplyr::left_join(max_age, by = "yb") %>%
     # dplyr::mutate(AgeDeath105 = max_x >= 105) %>%
-    dplyr::select(yb, x, y, AgeDeath105, pop)
+    dplyr::select(yb, x, y, pop)
 }
 
 #' Nearly-Extinct Cohort Methods from Lexis-square deaths
@@ -171,7 +171,7 @@ nec <- function(y, x, d, yb = NULL, alpha = NULL,
   out %>%
     dplyr::left_join(max_age, by = "yb") %>%
     # dplyr::mutate(AgeDeath105 = max_x >= 105) %>%
-    dplyr::select(yb, x, y, AgeDeath105, pop)
+    dplyr::select(yb, x, y, pop)
 }
 
 # Internal: convert Lexis-square deaths to cohort-triangle deaths
