@@ -263,6 +263,7 @@ ggplot(
     shape = "Data source",
     title = "Brazil parental orphanhood estimates"
   ) +
+  scale_shape_manual(values = 1:12) +
   theme_minimal(base_size = 13)
 ```
 
