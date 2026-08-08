@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orphanhood method for adult mortality: an application to Brazil • MortIndEst</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/lumen/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/sandstone/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -104,26 +104,24 @@ information on
 In reality, fertility is distributed across ages, so the age pattern of
 childbearing must be taken into account. Timæus <span class="citation">(1992)</span> therefore modeled adult survival using
 the proportion of respondents with a surviving mother or father,
-({}<em>5S</em>{n-5}), together with the mean age of childbearing.</p>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>5</mn></msub><msub><mi>S</mi><mrow><mi>n</mi><mo>−</mo><mn>5</mn></mrow></msub></mrow><annotation encoding="application/x-tex">{}_5S_{n-5}</annotation></semantics></math>),
+together with the mean age of childbearing.</p>
 <p>For women, the method estimates survival for (n) years from age 25
-using</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mi>n</mi></msub><msub><mi>p</mi><mn>25</mn></msub><mi>a</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>b</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mtext mathvariant="normal">MAC</mtext><mo>+</mo><mi>c</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><msub><mrow></mrow><mn>5</mn></msub><msub><mi>S</mi><mrow><mi>n</mi><mo>−</mo><mn>5</mn></mrow></msub><mo>,</mo></mrow><annotation encoding="application/x-tex">
-{}_np_{25}
-a(n)+b(n),\text{MAC}+c(n),{}_5S_{n-5},
+using this relationship:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mi>n</mi></msub><msub><mi>p</mi><mn>25</mn></msub><mo>=</mo><mi>a</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>b</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mtext mathvariant="normal">MAC</mtext><mo>+</mo><mi>c</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><msub><mrow></mrow><mn>5</mn></msub><msub><mi>S</mi><mrow><mi>n</mi><mo>−</mo><mn>5</mn></mrow></msub><mo>,</mo></mrow><annotation encoding="application/x-tex">
+{}_np_{25} = a(n)+b(n),\text{MAC}+c(n),{}_5S_{n-5},
 </annotation></semantics></math></p>
-<p>where the coefficients vary by five-year respondent age group. For
+<p>Where the coefficients vary by five-year respondent age group. For
 fathers, the corresponding equation begins at age 35 and uses a
 different set of coefficients. The coefficients were derived from
 simulated combinations of Brass relational mortality models and Booth’s
 relational Gompertz fertility model <span class="citation">(Booth
 1984)</span>. Thus, the method can be applied under a range of mortality
-and fertility regimes rather than under a single fixed demographic
-pattern.</p>
-<p>For example, if 80% of women aged 20–24 report that their mother is
-still alive and the mean age of childbearing is 27, the coefficients for
-ages 25–29 can be used to obtain</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>25</mn></msub><msub><mi>p</mi><mn>25</mn></msub><mo>−</mo><mn>0.1808</mn><mo>+</mo><mn>0.00586</mn><mo>×</mo><mn>27</mn><mo>+</mo><mn>1.0267</mn><mo>×</mo><mn>0.8</mn><mn>0.79878</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">
-{}_{25}p_{25}
+and fertility regimes. For example, if 80% of women aged 20–24 report
+that their mother is still alive and the mean age of childbearing is 27,
+the coefficients for ages 25–29 can be used to obtain</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>25</mn></msub><msub><mi>p</mi><mn>25</mn></msub><mo>=</mo><mi>−</mi><mn>0.1808</mn><mo>+</mo><mn>0.00586</mn><mo>×</mo><mn>27</mn><mo>+</mo><mn>1.0267</mn><mo>×</mo><mn>0.8</mn><mn>0.79878</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">
+{}_{25}p_{25} = 
 -0.1808+0.00586\times27+1.0267\times0.8
 0.79878.
 </annotation></semantics></math></p>
@@ -140,33 +138,30 @@ interval. The resulting time lag depends on respondent age, the
 fertility pattern, and the age schedule of mortality. Older respondents
 provide information on older parents who have been exposed to mortality
 risks for longer periods. Since each respondent age group yields a
-separate estimate of ({}<em>np</em>{25}), inconsistencies may arise
-across ages. Each estimate should therefore be mapped onto a standard
-mortality pattern, evaluated, and retained only when it provides
-demographically plausible information <span class="citation">(United
-Nations Population Division 1983)</span>.</p>
+separate estimate of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mi>n</mi></msub><msub><mi>p</mi><mn>25</mn></msub></mrow><annotation encoding="application/x-tex">{}_np_{25}</annotation></semantics></math>,
+inconsistencies may arise across ages. Each estimate should therefore be
+mapped onto a standard mortality pattern, evaluated, and retained only
+when it provides demographically plausible information <span class="citation">(United Nations Population Division 1983)</span>.</p>
 <p>The main limitations include the adoption effect <span class="citation">(Timæus 1991)</span>, age misreporting, uncertainty
 about parental identity or survival status, and the greater weight
 assigned to high-fertility adults because they have more children
 available to respond. HIV/AIDS can also cause underestimation because
 infected women tend to have lower fertility and infected children may
 die before the survey; Timæus and Nunn <span class="citation">(1997)</span> proposed a correction based on HIV
-prevalence, reduced fertility, and vertical transmission. When two
-observations are available, cohort changes in orphanhood can be used to
-estimate parental survival more directly. For example,</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>10</mn></msub><msub><mi>p</mi><mn>49.5</mn></msub><mfrac><mrow><msub><mrow></mrow><mn>32.5</mn></msub><msub><mi>p</mi><mn>27</mn></msub></mrow><mrow><msub><mrow></mrow><mn>22.5</mn></msub><msub><mi>p</mi><mn>27</mn></msub></mrow></mfrac><mfrac><mn>0.6</mn><mn>0.8</mn></mfrac><mn>0.75</mn><mi>.</mi></mrow><annotation encoding="application/x-tex">
-{}_{10}p_{49.5}
-\frac{{}_{32.5}p_{27}}{{}_{22.5}p_{27}}
-\frac{0.6}{0.8}
-0.75.
-</annotation></semantics></math></p>
-<p>These two-survey approaches use variable-(r) adjustments, usually
-refer estimates to the midpoint between observations, and retain
+prevalence, reduced fertility, and vertical transmission.</p>
+<p>When two observations are available, cohort changes in orphanhood can
+be used to estimate parental survival more directly. These two-survey
+(or two-census) approaches use variable-r adjustments, usually refer
+estimates to the midpoint between observations, and retain
 cohort-specific estimates separately in order to assess statistical
 uncertainty <span class="citation">(Timæus 1991; Preston et al. 2001;
-Moultrie et al. 2013; Preston and Chen 1984)</span>. Although we do not
-apply it here, you can find an adaptation of the Macura (1984) method in
-the <code>orphanhood_macura</code> function.</p>
+Moultrie et al. 2013; Preston and Chen 1984)</span>. A new proposal from
+<span class="citation">(Masquelier and Timæus 2024)</span> is
+implemented also in <code>orphanhood_two</code> function (see funciton
+details). Finally, although we do not apply it here, you can find an
+adaptation of the Macura (1984) method in the
+<code>orphanhood_macura</code> function.</p>
 </div>
 <div class="section level2">
 <h2 id="input-data">Input data<a class="anchor" aria-label="anchor" href="#input-data"></a>
@@ -174,11 +169,11 @@ the <code>orphanhood_macura</code> function.</p>
 <p>Data that we need (both loaded with the package) are</p>
 <ul>
 <li>
-<code>Orphanhood_DB_full</code>: census and survey information about
+<code>Orphanhood_DB</code>: census and survey information about
 survival parents by age and sex of respondants.</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Orphanhood_DB</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Orphanhood_DB</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"IndicatorName"</span>, <span class="st">"LocName"</span>, <span class="st">"DataSourceName"</span>, <span class="st">"TimeLabel"</span>, <span class="st">"AgeLabel"</span>, <span class="st">"DataValue"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;                                                               IndicatorName</span></span>
 <span><span class="co">#&gt;                                                                      &lt;char&gt;</span></span>
 <span><span class="co">#&gt; 1: Proportion of the population with mother alive by age and sex - abridged</span></span>
@@ -187,181 +182,21 @@ survival parents by age and sex of respondants.</li>
 <span><span class="co">#&gt; 4: Proportion of the population with mother alive by age and sex - abridged</span></span>
 <span><span class="co">#&gt; 5: Proportion of the population with mother alive by age and sex - abridged</span></span>
 <span><span class="co">#&gt; 6: Proportion of the population with mother alive by age and sex - abridged</span></span>
-<span><span class="co">#&gt;    IndicatorID     LocName LocID StructuredDataID LocTypeName LocTypeID RegName</span></span>
-<span><span class="co">#&gt;          &lt;num&gt;      &lt;char&gt; &lt;num&gt;            &lt;num&gt;      &lt;char&gt;     &lt;num&gt;   &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:         101 Afghanistan     4        382635629     Country         5      NA</span></span>
-<span><span class="co">#&gt; 2:         101 Afghanistan     4        382635630     Country         5      NA</span></span>
-<span><span class="co">#&gt; 3:         101 Afghanistan     4        382635631     Country         5      NA</span></span>
-<span><span class="co">#&gt; 4:         101 Afghanistan     4        382635632     Country         5      NA</span></span>
-<span><span class="co">#&gt; 5:         101 Afghanistan     4        382635633     Country         5      NA</span></span>
-<span><span class="co">#&gt; 6:         101 Afghanistan     4        382635634     Country         5      NA</span></span>
-<span><span class="co">#&gt;    RegID AreaName AreaID LocAreaTypeName LocAreaTypeID</span></span>
-<span><span class="co">#&gt;    &lt;num&gt;    &lt;num&gt;  &lt;num&gt;          &lt;char&gt;         &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:     0       NA      0      Whole area             2</span></span>
-<span><span class="co">#&gt; 2:     0       NA      0      Whole area             2</span></span>
-<span><span class="co">#&gt; 3:     0       NA      0      Whole area             2</span></span>
-<span><span class="co">#&gt; 4:     0       NA      0      Whole area             2</span></span>
-<span><span class="co">#&gt; 5:     0       NA      0      Whole area             2</span></span>
-<span><span class="co">#&gt; 6:     0       NA      0      Whole area             2</span></span>
-<span><span class="co">#&gt;                    SubGroupTypeName SubGroupTypeID SubGroupID1</span></span>
-<span><span class="co">#&gt;                              &lt;char&gt;          &lt;num&gt;       &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: Total / All groups / Whole group              2           2</span></span>
-<span><span class="co">#&gt; 2: Total / All groups / Whole group              2           2</span></span>
-<span><span class="co">#&gt; 3: Total / All groups / Whole group              2           2</span></span>
-<span><span class="co">#&gt; 4: Total / All groups / Whole group              2           2</span></span>
-<span><span class="co">#&gt; 5: Total / All groups / Whole group              2           2</span></span>
-<span><span class="co">#&gt; 6: Total / All groups / Whole group              2           2</span></span>
-<span><span class="co">#&gt;           SubGroupName SubGroupCombinationID SubGroupTypeSortOrder</span></span>
-<span><span class="co">#&gt;                 &lt;char&gt;                 &lt;num&gt;                 &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: Total or All groups                     0                     3</span></span>
-<span><span class="co">#&gt; 2: Total or All groups                     0                     3</span></span>
-<span><span class="co">#&gt; 3: Total or All groups                     0                     3</span></span>
-<span><span class="co">#&gt; 4: Total or All groups                     0                     3</span></span>
-<span><span class="co">#&gt; 5: Total or All groups                     0                     3</span></span>
-<span><span class="co">#&gt; 6: Total or All groups                     0                     3</span></span>
-<span><span class="co">#&gt;    IndicatorShortName DataCatalogID DataProcessTypeID DataProcessType</span></span>
-<span><span class="co">#&gt;                &lt;char&gt;         &lt;num&gt;            &lt;char&gt;          &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:       pMotherAlive          5045            Survey          Survey</span></span>
-<span><span class="co">#&gt; 2:       pMotherAlive          5045            Survey          Survey</span></span>
-<span><span class="co">#&gt; 3:       pMotherAlive          5045            Survey          Survey</span></span>
-<span><span class="co">#&gt; 4:       pMotherAlive          5045            Survey          Survey</span></span>
-<span><span class="co">#&gt; 5:       pMotherAlive          5045            Survey          Survey</span></span>
-<span><span class="co">#&gt; 6:       pMotherAlive          5045            Survey          Survey</span></span>
-<span><span class="co">#&gt;    DataProcessTypeSort DataProcess DataProcessID DataProcessSort</span></span>
-<span><span class="co">#&gt;                  &lt;num&gt;      &lt;char&gt;         &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:                   3      DHS-NS            48              16</span></span>
-<span><span class="co">#&gt; 2:                   3      DHS-NS            48              16</span></span>
-<span><span class="co">#&gt; 3:                   3      DHS-NS            48              16</span></span>
-<span><span class="co">#&gt; 4:                   3      DHS-NS            48              16</span></span>
-<span><span class="co">#&gt; 5:                   3      DHS-NS            48              16</span></span>
-<span><span class="co">#&gt; 6:                   3      DHS-NS            48              16</span></span>
-<span><span class="co">#&gt;                      DataCatalogName DataCatalogShortName ReferencePeriod</span></span>
-<span><span class="co">#&gt;                               &lt;char&gt;               &lt;char&gt;          &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1: Afghanistan 2010 Mortality Survey     2010 DHS Special            2010</span></span>
-<span><span class="co">#&gt; 2: Afghanistan 2010 Mortality Survey     2010 DHS Special            2010</span></span>
-<span><span class="co">#&gt; 3: Afghanistan 2010 Mortality Survey     2010 DHS Special            2010</span></span>
-<span><span class="co">#&gt; 4: Afghanistan 2010 Mortality Survey     2010 DHS Special            2010</span></span>
-<span><span class="co">#&gt; 5: Afghanistan 2010 Mortality Survey     2010 DHS Special            2010</span></span>
-<span><span class="co">#&gt; 6: Afghanistan 2010 Mortality Survey     2010 DHS Special            2010</span></span>
-<span><span class="co">#&gt;    ReferenceYearStart ReferenceYearEnd ReferenceYearMid       FieldWorkStart</span></span>
-<span><span class="co">#&gt;                 &lt;num&gt;            &lt;num&gt;            &lt;num&gt;               &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:               2010             2010           2010.5 4/1/2010 12:00:00 AM</span></span>
-<span><span class="co">#&gt; 2:               2010             2010           2010.5 4/1/2010 12:00:00 AM</span></span>
-<span><span class="co">#&gt; 3:               2010             2010           2010.5 4/1/2010 12:00:00 AM</span></span>
-<span><span class="co">#&gt; 4:               2010             2010           2010.5 4/1/2010 12:00:00 AM</span></span>
-<span><span class="co">#&gt; 5:               2010             2010           2010.5 4/1/2010 12:00:00 AM</span></span>
-<span><span class="co">#&gt; 6:               2010             2010           2010.5 4/1/2010 12:00:00 AM</span></span>
-<span><span class="co">#&gt;              FieldWorkEnd FieldWorkMiddle DataCatalogNote DataSourceID</span></span>
-<span><span class="co">#&gt;                    &lt;char&gt;           &lt;num&gt;          &lt;char&gt;        &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 12/31/2010 12:00:00 AM         2010.62                        44606</span></span>
-<span><span class="co">#&gt; 2: 12/31/2010 12:00:00 AM         2010.62                        44606</span></span>
-<span><span class="co">#&gt; 3: 12/31/2010 12:00:00 AM         2010.62                        44606</span></span>
-<span><span class="co">#&gt; 4: 12/31/2010 12:00:00 AM         2010.62                        44606</span></span>
-<span><span class="co">#&gt; 5: 12/31/2010 12:00:00 AM         2010.62                        44606</span></span>
-<span><span class="co">#&gt; 6: 12/31/2010 12:00:00 AM         2010.62                        44606</span></span>
-<span><span class="co">#&gt;                                                                                                                                                 DataSourceAuthor</span></span>
-<span><span class="co">#&gt;                                                                                                                                                           &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1: Afghan Public Health Institute, Central Statistics Organization , ICF Macro , Indian Institute of Health Management Research , World Health Organization/EMRO</span></span>
-<span><span class="co">#&gt; 2: Afghan Public Health Institute, Central Statistics Organization , ICF Macro , Indian Institute of Health Management Research , World Health Organization/EMRO</span></span>
-<span><span class="co">#&gt; 3: Afghan Public Health Institute, Central Statistics Organization , ICF Macro , Indian Institute of Health Management Research , World Health Organization/EMRO</span></span>
-<span><span class="co">#&gt; 4: Afghan Public Health Institute, Central Statistics Organization , ICF Macro , Indian Institute of Health Management Research , World Health Organization/EMRO</span></span>
-<span><span class="co">#&gt; 5: Afghan Public Health Institute, Central Statistics Organization , ICF Macro , Indian Institute of Health Management Research , World Health Organization/EMRO</span></span>
-<span><span class="co">#&gt; 6: Afghan Public Health Institute, Central Statistics Organization , ICF Macro , Indian Institute of Health Management Research , World Health Organization/EMRO</span></span>
-<span><span class="co">#&gt;    DataSourceYear                    DataSourceName</span></span>
-<span><span class="co">#&gt;             &lt;num&gt;                            &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:           2010 Afghanistan Mortality Survey 2010</span></span>
-<span><span class="co">#&gt; 2:           2010 Afghanistan Mortality Survey 2010</span></span>
-<span><span class="co">#&gt; 3:           2010 Afghanistan Mortality Survey 2010</span></span>
-<span><span class="co">#&gt; 4:           2010 Afghanistan Mortality Survey 2010</span></span>
-<span><span class="co">#&gt; 5:           2010 Afghanistan Mortality Survey 2010</span></span>
-<span><span class="co">#&gt; 6:           2010 Afghanistan Mortality Survey 2010</span></span>
-<span><span class="co">#&gt;                  DataSourceShortName DataSourceSort DataStatusName DataStatusID</span></span>
-<span><span class="co">#&gt;                               &lt;char&gt;          &lt;num&gt;         &lt;char&gt;        &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: Afghanistan Mortality Survey 2010              0          Final            1</span></span>
-<span><span class="co">#&gt; 2: Afghanistan Mortality Survey 2010              0          Final            1</span></span>
-<span><span class="co">#&gt; 3: Afghanistan Mortality Survey 2010              0          Final            1</span></span>
-<span><span class="co">#&gt; 4: Afghanistan Mortality Survey 2010              0          Final            1</span></span>
-<span><span class="co">#&gt; 5: Afghanistan Mortality Survey 2010              0          Final            1</span></span>
-<span><span class="co">#&gt; 6: Afghanistan Mortality Survey 2010              0          Final            1</span></span>
-<span><span class="co">#&gt;    DataStatusSort StatisticalConceptName StatisticalConceptID</span></span>
-<span><span class="co">#&gt;             &lt;num&gt;                 &lt;char&gt;                &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:              2               De-facto                    2</span></span>
-<span><span class="co">#&gt; 2:              2               De-facto                    2</span></span>
-<span><span class="co">#&gt; 3:              2               De-facto                    2</span></span>
-<span><span class="co">#&gt; 4:              2               De-facto                    2</span></span>
-<span><span class="co">#&gt; 5:              2               De-facto                    2</span></span>
-<span><span class="co">#&gt; 6:              2               De-facto                    2</span></span>
-<span><span class="co">#&gt;    StatisticalConceptSort    SexName SexID SexSort AgeID AgeUnit AgeStart</span></span>
-<span><span class="co">#&gt;                     &lt;num&gt;     &lt;char&gt; &lt;num&gt;   &lt;num&gt; &lt;num&gt;  &lt;char&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:                      1 Both sexes     3       3   702    Year        5</span></span>
-<span><span class="co">#&gt; 2:                      1 Both sexes     3       3   703    Year       10</span></span>
-<span><span class="co">#&gt; 3:                      1 Both sexes     3       3   704    Year       15</span></span>
-<span><span class="co">#&gt; 4:                      1 Both sexes     3       3   705    Year       20</span></span>
-<span><span class="co">#&gt; 5:                      1 Both sexes     3       3   706    Year       25</span></span>
-<span><span class="co">#&gt; 6:                      1 Both sexes     3       3   707    Year       30</span></span>
-<span><span class="co">#&gt;    AgeEnd AgeSpan AgeMid AgeLabel AgeSort agesort DataTypeGroupName</span></span>
-<span><span class="co">#&gt;     &lt;num&gt;   &lt;num&gt;  &lt;num&gt;   &lt;char&gt;   &lt;num&gt;   &lt;num&gt;            &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:     10       5    7.5      5-9      69       0            Direct</span></span>
-<span><span class="co">#&gt; 2:     15       5   12.5    10-14     133       0            Direct</span></span>
-<span><span class="co">#&gt; 3:     20       5   17.5    15-19     190       0            Direct</span></span>
-<span><span class="co">#&gt; 4:     25       5   22.5    20-24     263       0            Direct</span></span>
-<span><span class="co">#&gt; 5:     30       5   27.5    25-29     306       0            Direct</span></span>
-<span><span class="co">#&gt; 6:     35       5   32.5    30-34     330       0            Direct</span></span>
-<span><span class="co">#&gt;    DataTypeGroupID DataTypeName DataTypeID DataTypeSort      ModelType</span></span>
-<span><span class="co">#&gt;              &lt;num&gt;       &lt;char&gt;      &lt;num&gt;        &lt;num&gt;         &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:               3       Direct         16           11 Not applicable</span></span>
-<span><span class="co">#&gt; 2:               3       Direct         16           11 Not applicable</span></span>
-<span><span class="co">#&gt; 3:               3       Direct         16           11 Not applicable</span></span>
-<span><span class="co">#&gt; 4:               3       Direct         16           11 Not applicable</span></span>
-<span><span class="co">#&gt; 5:               3       Direct         16           11 Not applicable</span></span>
-<span><span class="co">#&gt; 6:               3       Direct         16           11 Not applicable</span></span>
-<span><span class="co">#&gt;    ModelPatternFamilyName ModelPatternFamilyID        ModelPatternName</span></span>
-<span><span class="co">#&gt;                    &lt;char&gt;                &lt;num&gt;                  &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:         Not applicable                   15 Not applicable (Direct)</span></span>
-<span><span class="co">#&gt; 2:         Not applicable                   15 Not applicable (Direct)</span></span>
-<span><span class="co">#&gt; 3:         Not applicable                   15 Not applicable (Direct)</span></span>
-<span><span class="co">#&gt; 4:         Not applicable                   15 Not applicable (Direct)</span></span>
-<span><span class="co">#&gt; 5:         Not applicable                   15 Not applicable (Direct)</span></span>
-<span><span class="co">#&gt; 6:         Not applicable                   15 Not applicable (Direct)</span></span>
-<span><span class="co">#&gt;    ModelPatternID DataReliabilityName DataReliabilityID DataReliabilitySort</span></span>
-<span><span class="co">#&gt;             &lt;num&gt;              &lt;char&gt;             &lt;num&gt;               &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:             40                Fair                 5                   2</span></span>
-<span><span class="co">#&gt; 2:             40                Fair                 5                   2</span></span>
-<span><span class="co">#&gt; 3:             40                Fair                 5                   2</span></span>
-<span><span class="co">#&gt; 4:             40                Fair                 5                   2</span></span>
-<span><span class="co">#&gt; 5:             40                Fair                 5                   2</span></span>
-<span><span class="co">#&gt; 6:             40                Fair                 5                   2</span></span>
-<span><span class="co">#&gt;    PeriodTypeName PeriodTypeID PeriodGroupName PeriodGroupID PeriodStart</span></span>
-<span><span class="co">#&gt;            &lt;char&gt;        &lt;num&gt;          &lt;char&gt;         &lt;num&gt;       &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:             RP            6               0           433           0</span></span>
-<span><span class="co">#&gt; 2:             RP            6               0           433           0</span></span>
-<span><span class="co">#&gt; 3:             RP            6               0           433           0</span></span>
-<span><span class="co">#&gt; 4:             RP            6               0           433           0</span></span>
-<span><span class="co">#&gt; 5:             RP            6               0           433           0</span></span>
-<span><span class="co">#&gt; 6:             RP            6               0           433           0</span></span>
-<span><span class="co">#&gt;    PeriodEnd PeriodSpan PeriodMiddle Weight TimeUnit  TimeStart    TimeEnd</span></span>
-<span><span class="co">#&gt;        &lt;num&gt;      &lt;num&gt;        &lt;num&gt;  &lt;num&gt;   &lt;char&gt;     &lt;char&gt;     &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:         0          0            0     NA     year 15/08/2010 15/08/2010</span></span>
-<span><span class="co">#&gt; 2:         0          0            0     NA     year 15/08/2010 15/08/2010</span></span>
-<span><span class="co">#&gt; 3:         0          0            0     NA     year 15/08/2010 15/08/2010</span></span>
-<span><span class="co">#&gt; 4:         0          0            0     NA     year 15/08/2010 15/08/2010</span></span>
-<span><span class="co">#&gt; 5:         0          0            0     NA     year 15/08/2010 15/08/2010</span></span>
-<span><span class="co">#&gt; 6:         0          0            0     NA     year 15/08/2010 15/08/2010</span></span>
-<span><span class="co">#&gt;    TimeDuration  TimeMid TimeLabel FootNoteID    id         SeriesID DataValue</span></span>
-<span><span class="co">#&gt;           &lt;num&gt;    &lt;num&gt;    &lt;char&gt;      &lt;num&gt; &lt;num&gt;           &lt;char&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:            0 2010.619      2010          0     1 1041324512495107 0.9867798</span></span>
-<span><span class="co">#&gt; 2:            0 2010.619      2010          0     1 1041324512495107 0.9712740</span></span>
-<span><span class="co">#&gt; 3:            0 2010.619      2010          0     1 1041324512495107 0.9490994</span></span>
-<span><span class="co">#&gt; 4:            0 2010.619      2010          0     1 1041324512495107 0.9216962</span></span>
-<span><span class="co">#&gt; 5:            0 2010.619      2010          0     1 1041324512495107 0.8639209</span></span>
-<span><span class="co">#&gt; 6:            0 2010.619      2010          0     1 1041324512495107 0.7899554</span></span></code></pre></div>
+<span><span class="co">#&gt;        LocName                    DataSourceName TimeLabel AgeLabel DataValue</span></span>
+<span><span class="co">#&gt;         &lt;char&gt;                            &lt;char&gt;    &lt;char&gt;   &lt;char&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: Afghanistan Afghanistan Mortality Survey 2010      2010      5-9 0.9867798</span></span>
+<span><span class="co">#&gt; 2: Afghanistan Afghanistan Mortality Survey 2010      2010    10-14 0.9712740</span></span>
+<span><span class="co">#&gt; 3: Afghanistan Afghanistan Mortality Survey 2010      2010    15-19 0.9490994</span></span>
+<span><span class="co">#&gt; 4: Afghanistan Afghanistan Mortality Survey 2010      2010    20-24 0.9216962</span></span>
+<span><span class="co">#&gt; 5: Afghanistan Afghanistan Mortality Survey 2010      2010    25-29 0.8639209</span></span>
+<span><span class="co">#&gt; 6: Afghanistan Afghanistan Mortality Survey 2010      2010    30-34 0.7899554</span></span></code></pre></div>
 <ul>
 <li>
 <code>mac_wpp22</code>: mean age of childbearing from an external
-source, in this case from WPP 2022 revision. Consider here that onet
-hing is the mean age at risk of childearing (calculated from asfr) and
-other thing is the population weighted, taht only considers observed
-mothers and fathers. In general those looks similar in value.</li>
+source, in this case from WPP 2022 revision. Consider here that one
+thing is the mean age at risk of childearing (calculated from asfr) and
+other thing is the population weighted one, that only considers observed
+mothers and fathers. In general, values are similar.</li>
 </ul>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mac_wpp22</span><span class="op">)</span></span>
@@ -374,22 +209,14 @@ mothers and fathers. In general those looks similar in value.</li>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     4  <span style="text-decoration: underline;">1</span>951 father  36.6</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     4  <span style="text-decoration: underline;">1</span>952 mother  29.6</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>     4  <span style="text-decoration: underline;">1</span>952 father  36.6</span></span></code></pre></div>
-<p>We join both data sources in one just for convenience, and select
-only relevant variables, avoiding duplicate survey rows. Our main type
-of indicator is “Proportion of the population with <em>mother</em>
-alive” and “Proportion of the population with <em>father</em> alive”
-(are filtered by ID in <code>DemoData</code> format), mening proportion
+<p>We join both data sources in only one, just for convenience, and
+select only relevant variables, avoiding duplicate survey rows. Our main
+indicator is “Proportion of the population with <em>mother</em> alive”
+and “Proportion of the population with <em>father</em> alive” (are
+filtered by ID in <code>DemoData</code> format), meaning the proportion
 not orphaned.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter, lag</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -416,10 +243,10 @@ not orphaned.</p>
 <div class="section level2">
 <h2 id="application">Application<a class="anchor" aria-label="anchor" href="#application"></a>
 </h2>
-<p>First we need to organize the one and pair-census comparison. FOr the
-cas of two observations, there is a version of coefficients, one from
-Ttimaeus and other from Perton &amp; Chen. As in
-<code>intercensal_survvial</code>, when <code>mlt_family = NULL</code>
+<p>First we need to organize the one and pair-census comparison. Here we
+consider only the methods based on Timaeus <span class="citation">(2013)</span> and Preston &amp; Chen <span class="citation">(1984)</span> (if Brasil would be an HIV country, the
+method from Masquellier &amp; Timaeus <span class="citation">(2024)</span> is a better option). As in
+<code>intercensal_survival</code>, when <code>mlt_family = NULL</code>,
 all the eleven model life table families are considered as pattern (see
 <code><a href="https://rdrr.io/pkg/DemoToolsData/man/modelLTx1.html" class="external-link">DemoToolsData::modelLTx1</a></code>).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -434,10 +261,11 @@ all the eleven model life table families are considered as pattern (see
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">date2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">trunc</a></span><span class="op">(</span><span class="va">date1</span><span class="op">)</span> <span class="op">!=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">trunc</a></span><span class="op">(</span><span class="va">date2</span><span class="op">)</span>, <span class="va">date2</span> <span class="op">-</span> <span class="va">date1</span> <span class="op">&lt;</span> <span class="fl">30</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand.html" class="external-link">crossing</a></span><span class="op">(</span>variant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"two_timaeus"</span>, <span class="st">"two_preston_chen"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>We loop over the combinations of
-sex/one-two/interval/coefficients/mlt with <code>pmap</code> from the
-<code>map</code> family functions. If you want to see in detail the
-application to some census pair (not looping in an industrial scale as
-here) see the <code>orphanhood</code> documentation.</p>
+<strong>sex/one-two/interval/coefficients/mlt</strong> with
+<code>pmap</code> from the <code>map</code> family functions. If you
+want to see in detail the application to some census pair (not looping
+in an industrial scale as here) see the <code>orphanhood_one</code> and
+<code>orphanhood_two</code> documentation.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span>
 <span><span class="co"># one observation method</span></span>
@@ -511,10 +339,6 @@ here) see the <code>orphanhood</code> documentation.</p>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">}</span>, error <span class="op">=</span> \<span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>result <span class="op">=</span> <span class="cn">NULL</span>, error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Joining with `by = join_by(age_yplus_n)`</span></span>
-<span><span class="co">#&gt; Joining with `by = join_by(age_yplus_n)`</span></span>
-<span><span class="co">#&gt; Joining with `by = join_by(age_yplus_n)`</span></span>
-<span><span class="co">#&gt; Joining with `by = join_by(age_yplus_n)`</span></span>
 <span><span class="co"># bind results from the two methods</span></span>
 <span><span class="va">results_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map2_dfr</a></span><span class="op">(</span><span class="va">one_runs</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">one_grid</span><span class="op">)</span><span class="op">)</span>, \<span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
@@ -531,10 +355,10 @@ here) see the <code>orphanhood</code> documentation.</p>
 <h2 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
 </h2>
 <p>First we can take a look to combinations that did not work, and if we
-see something we need to loof for the reason (can exists quality
-problems in census data, or some issue arrangin the data, etc.). In this
-case we see an error realted to the age requirements of the Timaeus
-coefficients in the two observation method.</p>
+see something we need to look and inspect (quality issues in census
+data, or some issue arranging the data, etc.). In this case we see an
+error related to the age requirements of the Timaeus coefficients in the
+two observation method, which is expected.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">issues_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span></span>
 <span>  <span class="va">one_grid</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>error <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_chr</a></span><span class="op">(</span><span class="va">one_runs</span>, <span class="st">"error"</span><span class="op">)</span>, variant <span class="op">=</span> <span class="st">"one_census"</span><span class="op">)</span>,</span>
@@ -583,23 +407,23 @@ method and census-pair.</p>
 <span>    q15_45_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">q15_45</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>    .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">parent</span>, <span class="va">sex_resp</span>, <span class="va">source</span>, <span class="va">variant</span>, <span class="va">name</span>, <span class="va">time_point</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p>We plot the results agaist WPP24 results (which in some way already
-is considering the estimates).</p>
-<p>The various data sources available for Brazil make it possible to
-apply the different methods discussed above, distinguishing both the sex
-of the parent and the sex of the respondent. As expected, fewer
-observations are available for fathers, a common limitation noted
-previously. Estimates based on the 1950 Census appear to underestimate
-the mortality level by around 50% and yield values similar to those
-observed several decades later; these estimates should therefore
-probably be discarded. Estimates based on a single observation show, for
-women, a declining trend and a slightly lower mortality level than WPP
-2024 <span class="citation">(United Nations, Department of Economic and
-Social Affairs, Population Division 2024)</span>, with a larger bias
-when the respondents are men. Estimates based on two observations do not
-appear to improve performance for women. For men, however, they seem to
-provide one potentially useful estimate based on the 1991–1996
-surveys.</p>
+<p>We plot the results agaist WPP24 estimates <span class="citation">(United Nations, Department of Economic and Social
+Affairs, Population Division 2024)</span> (which in some way already is
+considering orphanhood estimates).</p>
+<p>The various data sources available for Brazil makes possible to apply
+the different methods discussed above, distinguishing both the sex of
+the parent and the sex of the respondent. As expected, fewer
+observations are available for fathers. Estimates based on the 1950
+Census appear to underestimate the mortality level by around 50% and
+yield values similar to those observed several decades later; these
+estimates should therefore probably be discarded. Estimates based on a
+single observation show, for women, a declining trend and a slightly
+lower mortality level than WPP2024 <span class="citation">(United
+Nations, Department of Economic and Social Affairs, Population Division
+2024)</span>, with a larger bias when the respondents are men. Estimates
+based on two observations do not appear to improve performance for
+women. For men, however, they seem to provide one potentially useful
+estimate based on the 1991–1996 surveys.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wpp_q15_45_df</span> <span class="op">&lt;-</span> <span class="va">lt5_wpp24_brazil</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Sex</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Female"</span>, <span class="st">"Male"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -648,6 +472,11 @@ IPUMS. 2026. <em><span>IPUMS International</span>: Harmonized
 International Census Data</em>. Institute for Social Research; Data
 Innovation, University of Minnesota; Online database and documentation.
 <a href="https://international.ipums.org/international/" class="external-link">https://international.ipums.org/international/</a>.
+</div>
+<div id="ref-Masquelier_Timæus_2024" class="csl-entry">
+Masquelier, Bruno, and Ian M. Timæus. 2024. <span>“Estimating Adult
+Mortality Based on Maternal Orphanhood in Populations with
+HIV/AIDS.”</span> <em>Population Studies</em> 79 (2): 337–57. <a href="https://doi.org/10.1080/00324728.2024.2416185" class="external-link">https://doi.org/10.1080/00324728.2024.2416185</a>.
 </div>
 <div id="ref-IUSSP2013" class="csl-entry">
 Moultrie, Tom A., Rob E. Dorrington, Allan G. Hill, Kenneth Hill, Ian M.

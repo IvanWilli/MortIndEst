@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Intercensal survival method for adult mortality: an application to Brazil • MortIndEst</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/lumen/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/sandstone/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -118,9 +118,9 @@ method is based on selecting a model life table family and identifying
 the level that provides the best fit for each
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>5</mn></msub><msub><mi>S</mi><mi>x</mi></msub></mrow><annotation encoding="application/x-tex">{}_5S_x</annotation></semantics></math>)
 corresponding to each age group. The indicators of interest are then
-obtained from the resulting life table—in our case,
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>45</mn></msub><msub><mi>q</mi><mn>15</mn></msub></mrow><annotation encoding="application/x-tex">{}_{45}q_{15}</annotation></semantics></math>)—and
-a summary measure is calculated across all cohorts.</p>
+obtained from the resulting life table (in our case
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow></mrow><mn>45</mn></msub><msub><mi>q</mi><mn>15</mn></msub></mrow><annotation encoding="application/x-tex">{}_{45}q_{15}</annotation></semantics></math>)
+and a summary measure is calculated across all cohorts.</p>
 <p>This is considered the most rudimentary method and was originally
 recommended in <em>Manual X</em> <span class="citation">(United Nations
 Population Division 1983)</span>. A later refinement presented by
@@ -128,8 +128,8 @@ Preston <span class="citation">(1983b)</span> applies the Brass logit
 transformation, using the selected model family as the standard and the
 resulting level obtained from the fitting method as the reference <span class="citation">(Preston et al. 2001)</span>.</p>
 </li>
-<li><p><strong>Forward and backward projection (<em>fproj and
-bproj</em>):</strong> these methods start from the first—or the
+<li><p><strong>Forward and backward projection (<em>fproj</em> &amp;
+<em>bproj</em>):</strong> these methods start from the first—or the
 last—census and use a model family to project the population forward—or
 backward—in order to determine the mortality level required to reproduce
 the age structure of the second—or first—census. The literature
@@ -143,7 +143,7 @@ applied in both directions and that a way of combining the results be
 sought, taking into account the particular characteristics of the
 population under study <span class="citation">(United Nations Population
 Division 1983)</span>.</p></li>
-<li><p><strong>Variable-(r) (<em>var-r</em>):</strong> the population by
+<li><p><strong>Variable-r (<em>var-r</em>):</strong> the population by
 age and sex can be expressed as a function of survival ratios and cohort
 growth rates, a relationship derived by relaxing the stable-population
 assumption of a single growth rate originating from births <span class="citation">(Bennett and Horiuchi 1981)</span>. Given the size of
@@ -176,8 +176,7 @@ greater than one <span class="citation">(Hill 2001; Preston et al.
 2001)</span>.</p>
 <p>For step-by-step descriptions of the procedures, see Chapter XIV of
 <em>Manual X</em> <span class="citation">(United Nations Population
-Division 1983)</span> or Chapter 9 of Preston, Heuveline, and Guillot
-<span class="citation">(2001)</span>.</p>
+Division 1983)</span> or Chapter 9 of Preston <span class="citation">(2001)</span>.</p>
 </div>
 <div class="section level2">
 <h2 id="input-data">Input data<a class="anchor" aria-label="anchor" href="#input-data"></a>
@@ -336,15 +335,15 @@ method and census-pair.</p>
 <span>    .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">sex_name</span>, <span class="va">method</span>, <span class="va">t_middle</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p>We plot the results agaist WPP24 results (which in some way already
-is considering the estimates). The <code>match</code> method yields
-higher adult mortality in all periods and for both sexes, while
-<code>fproj</code> looks always too lower, and the estimates produced by
-the other four methods are fairly similar. If the estimates from WPP
-2024 are incorporated into the analysis, the mortality level estimated
-for 2000–2010 appears to be too low. Besides that, looks intercensal
-estimates can inform about general tendency between 1950-2010.
-Comparison with other estimates, regions, or countries is therefore
-particularly useful for calibrating the final adjustment.</p>
+considering the estimates). The <code>match</code> method yields higher
+adult mortality in all periods and for both sexes, while
+<code>fproj</code> looks always lower, and the estimates produced by the
+other four methods are fairly similar. If the estimates from WPP 2024
+are incorporated into the analysis, the mortality level estimated for
+2000–2010 appears to be too low. Besides that, intercensal estimates can
+inform about generally ok the tendency between 1950-2010. Comparison
+with other estimates, regions, or countries is therefore particularly
+useful for calibrating the final adjustment.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">wpp_q15_45_df</span> <span class="op">&lt;-</span> <span class="va">lt5_wpp24_brazil</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>q15_45_wpp <span class="op">=</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">lx</span><span class="op">[</span><span class="va">AgeGrpStart</span> <span class="op">==</span> <span class="fl">60</span><span class="op">]</span> <span class="op">/</span> <span class="va">lx</span><span class="op">[</span><span class="va">AgeGrpStart</span> <span class="op">==</span> <span class="fl">15</span><span class="op">]</span>,</span>

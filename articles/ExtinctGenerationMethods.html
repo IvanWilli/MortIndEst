@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Extinct generation methods: an application to Argentina • MortIndEst</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/lumen/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/sandstone/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -96,9 +96,12 @@ deaths by calendar year and age are first assigned to birth cohorts, and
 cohort population is then reconstructed by reverse cumulative summation.
 The method depends strongly on the completeness and age accuracy of
 death registration. It also requires waiting until the cohort is
-extinct, or at least observed to a very high age. In practical
-applications is also useful to get a minimum, to be compared with
-another source, like a census.</p>
+extinct, or at least observed to a very high age. Even if death data
+don’t reach
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ω</mi><annotation encoding="application/x-tex">\omega</annotation></semantics></math>
+(age where every cohort extincts), in practical applications this method
+is useful to get a minimum of population, to be compared with another
+source like a census.</p>
 <p>Nearly-extinct cohort (NEC) methods relax the requirement of complete
 extinction. They use deaths observed up to a cutoff year and estimate
 the survivors who remain alive after that cutoff. The package implements
@@ -120,11 +123,11 @@ improvement in survivor ratios measured at a specific age over ten
 (deafault) older cohorts is assumed to apply to the youngest
 cohort.</li>
 </ul>
-<p>In this article, the Argentina application uses complete deaths
-through 2023 to construct an EGM benchmark for the 2001 population aged
-80 and over. We then pretend that deaths are only available up to an
-earlier cutoff year and compare the NEC estimates with the EGM
-benchmark.</p>
+<p>In this article, the Argentina application uses complete deaths from
+2001 through 2023 to construct an EGM benchmark for the 2001 population
+aged 80 and over. We then pretend that deaths are only available up to
+an earlier cutoff year and compare the NEC estimates with the EGM
+benchmark and the 2001 census.</p>
 </div>
 <div class="section level2">
 <h2 id="input-data">Input data<a class="anchor" aria-label="anchor" href="#input-data"></a>
@@ -163,31 +166,32 @@ age, 60+.</li>
 <h2 id="application">Application<a class="anchor" aria-label="anchor" href="#application"></a>
 </h2>
 <p>Our goal is to compare population stock in 80+ by single age in 2001,
-between these methods and the census. There is an increasing interest to
-contrast age-overstatement patterns in countries with “more than
-expected” population in oldest ages <span class="citation">(Battocchio
-2024)</span>. For the incomplete scenario (to test near extinct
-variants), we will truncate deaths until year 2010. Although we observe
-events for ages higher than 105, as a conservative measure we will
-assume
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ω</mi><mo>=</mo><mn>105</mn></mrow><annotation encoding="application/x-tex">\omega=105</annotation></semantics></math>.
+between methods EGM, NEC and the census. There is an increasing interest
+in the academic field to contrast age-overstatement patterns in
+countries with “more than expected” population in oldest ages <span class="citation">(Battocchio 2024; Nepomuceno and Turra 2020)</span>.
+For the incomplete scenario (to test near extinct variants), we will
+truncate deaths until year 2010 (we will miss 13 years of observations).
 Age/year parameters are:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">year_pop</span> <span class="op">&lt;-</span> <span class="fl">2001</span></span>
 <span><span class="va">year_cut</span> <span class="op">&lt;-</span> <span class="fl">2010</span></span>
-<span><span class="va">omega</span> <span class="op">&lt;-</span> <span class="fl">105</span></span>
+<span><span class="va">max_age</span> <span class="op">&lt;-</span> <span class="fl">105</span></span>
 <span><span class="va">min_age</span> <span class="op">&lt;-</span> <span class="fl">80</span></span></code></pre></div>
-<p>First, construct the EGM benchmark for the population aged 80 to
-<code>omega</code> in 2001. The <code><a href="../reference/egm.html">egm()</a></code> function assigns
-deaths to birth cohorts and reconstructs the population by reverse
-cumulative cohort deaths.</p>
+<p>First, construct the EGM benchmark for the population aged 80+ in
+2001. The <code><a href="../reference/egm.html">egm()</a></code> function assigns deaths to birth cohorts
+and reconstructs the population by reverse cumulative cohort deaths.
+This function will assign by cohort with the 50% rule in case if
+arguments <code>yb == NULL</code> and <code>alpha == NULL</code>. This
+is a strong assumption, especially in last ages where the force of
+mortality makes deaths do not concentrates uniformily over the year
+<span class="citation">(Preston et al. 2001)</span>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">P_egm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/egm.html">egm</a></span><span class="op">(</span></span>
 <span>  y <span class="op">=</span> <span class="va">arg_deaths</span><span class="op">$</span><span class="va">year</span>,</span>
 <span>  x <span class="op">=</span> <span class="va">arg_deaths</span><span class="op">$</span><span class="va">age</span>,</span>
 <span>  d <span class="op">=</span> <span class="va">arg_deaths</span><span class="op">$</span><span class="va">deaths</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">y</span> <span class="op">==</span> <span class="va">year_pop</span>, <span class="va">x</span> <span class="op">&gt;=</span> <span class="va">min_age</span>, <span class="va">x</span> <span class="op">&lt;=</span> <span class="va">omega</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">y</span> <span class="op">==</span> <span class="va">year_pop</span>, <span class="va">x</span> <span class="op">&gt;=</span> <span class="va">min_age</span>, <span class="va">x</span> <span class="op">&lt;=</span> <span class="va">max_age</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">yb</span>, <span class="va">x</span>, EGM <span class="op">=</span> <span class="va">pop</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">P_egm</span><span class="op">)</span></span>
@@ -215,7 +219,7 @@ EGM estimate if only deaths through 2010 had been available?</p>
 <span>    k <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>    m <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>    min_age <span class="op">=</span> <span class="va">min_age</span>,</span>
-<span>    omega <span class="op">=</span> <span class="va">omega</span></span>
+<span>    omega <span class="op">=</span> <span class="va">max_age</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  DG <span class="op">=</span> <span class="fu"><a href="../reference/nec.html">nec</a></span><span class="op">(</span></span>
 <span>    y <span class="op">=</span> <span class="va">arg_deaths_cut</span><span class="op">$</span><span class="va">year</span>,</span>
@@ -224,7 +228,7 @@ EGM estimate if only deaths through 2010 had been available?</p>
 <span>    method <span class="op">=</span> <span class="st">"DG"</span>,</span>
 <span>    m <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>    min_age <span class="op">=</span> <span class="va">min_age</span>,</span>
-<span>    omega <span class="op">=</span> <span class="va">omega</span></span>
+<span>    omega <span class="op">=</span> <span class="va">max_age</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  SA <span class="op">=</span> <span class="fu"><a href="../reference/nec.html">nec</a></span><span class="op">(</span></span>
 <span>    y <span class="op">=</span> <span class="va">arg_deaths_cut</span><span class="op">$</span><span class="va">year</span>,</span>
@@ -235,11 +239,11 @@ EGM estimate if only deaths through 2010 had been available?</p>
 <span>    m <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>    n <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>    min_age <span class="op">=</span> <span class="va">min_age</span>,</span>
-<span>    omega <span class="op">=</span> <span class="va">omega</span></span>
+<span>    omega <span class="op">=</span> <span class="va">max_age</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  .id <span class="op">=</span> <span class="st">"method"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">y</span> <span class="op">==</span> <span class="va">year_pop</span>, <span class="va">x</span> <span class="op">&gt;=</span> <span class="va">min_age</span>, <span class="va">x</span> <span class="op">&lt;=</span> <span class="va">omega</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">y</span> <span class="op">==</span> <span class="va">year_pop</span>, <span class="va">x</span> <span class="op">&gt;=</span> <span class="va">min_age</span>, <span class="va">x</span> <span class="op">&lt;=</span> <span class="va">max_age</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">method</span>, <span class="va">yb</span>, <span class="va">x</span>, NEC <span class="op">=</span> <span class="va">pop</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">method</span>, values_from <span class="op">=</span> <span class="va">NEC</span><span class="op">)</span></span>
 <span></span>
@@ -508,14 +512,16 @@ the EGM benchmark under the assumed extinction age.</p>
 <h2 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
 </h2>
 <p>Population aged 80 for the census, EGM and NEC estimates can be
-compared. First result is that death data is higher than census, so an
-independent source confirm the general dimension of population stock.
-Second results is that even not observing last 12 years one can get good
-results extrapolating death ratios, at least in this case for SR and DG
-options.</p>
+compared. First result is that death data implies a population in 2001
+that is higher than census, so an independent source confirm the general
+dimension of population stock, resting evidence that age-overstatement
+is inflating old-age population in this case. Second important result is
+that even not observing last 12 years one can get good results
+extrapolating death ratios, at least for SR and DG options in this
+case.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">census_methods_comparison</span> <span class="op">&lt;-</span> <span class="va">arg_pop</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="va">year_pop</span>, <span class="va">age</span> <span class="op">&gt;=</span> <span class="va">min_age</span>, <span class="va">age</span> <span class="op">&lt;=</span> <span class="va">omega</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="va">year_pop</span>, <span class="va">age</span> <span class="op">&gt;=</span> <span class="va">min_age</span>, <span class="va">age</span> <span class="op">&lt;=</span> <span class="va">max_age</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">age</span>, Census <span class="op">=</span> <span class="va">pop</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">comparison</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">EGM</span>, <span class="va">SR</span>, <span class="va">DG</span>, <span class="va">SA</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span>
 <span><span class="va">census_methods_comparison</span> <span class="op">|&gt;</span></span>
@@ -577,6 +583,17 @@ based on VR evaluation.</p>
 Battocchio, Matias. 2024. <span>“La Población Centenaria En Argentina En
 2001 y 2010.”</span> <em>Saberes.unr.edu.ar</em>, ahead of print,
 December. <a href="https://doi.org/10.35305/s.v16i2.286" class="external-link">https://doi.org/10.35305/s.v16i2.286</a>.
+</div>
+<div id="ref-Nepomuceno_2020" class="csl-entry">
+Nepomuceno, Marília R., and Cássio M. Turra. 2020. <span>“The Population
+of Centenarians in Brazil: Historical Estimates from 1900 to
+2000.”</span> <em>Population and Development Review</em> 46 (4): 813–33.
+<a href="https://doi.org/10.1111/padr.12355" class="external-link">https://doi.org/10.1111/padr.12355</a>.
+</div>
+<div id="ref-preston2001" class="csl-entry">
+Preston, Samuel H., Patrick Heuveline, and Michel Guillot. 2001.
+<em>Demography: Measuring and Modeling Population Processes</em>.
+Blackwell Publishers.
 </div>
 <div id="ref-TerblancheWilson2015" class="csl-entry">
 Terblanche, Wilma, and Tom Wilson. 2015. <span>“An Evaluation of
