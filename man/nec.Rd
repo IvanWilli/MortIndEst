@@ -2,7 +2,7 @@
 % Please edit documentation in R/egm_nec.R
 \name{nec}
 \alias{nec}
-\title{Nearly-Extinct Cohort Methods from Lexis-square deaths}
+\title{Nearly-Extinct Cohort Methods}
 \usage{
 nec(
   y,

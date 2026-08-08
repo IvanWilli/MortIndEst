@@ -1,26 +1,23 @@
 
 # MortIndEst
 
-This package includes several functions for indirect estimates,
-specially about adult mortality. Main development was done during World
-Population Prospects revision 2024, with the goal to include as inputs
-in the B3 model (United Nations: Department of Economic and Social
-Affairs 2024).
+This package includes several functions for indirect estimates of
+mortality, specially about adult mortality. Main development was done
+during World Population Prospects 2024 revision (United Nations:
+Department of Economic and Social Affairs 2024).
 
 Functions included are related to intercensal survival estimates,
-orphanhood, siblings survival, widowhood survival, census method for
-${}_{15}q_{60}$ and old ages extension of mortality rates. Some of the
-contents consists in R implementations of materials from Moultrie et al.
-(2012) and United Nations (1983).
+orphanhood, siblings survival, widowhood survival, child mortality,
+extinct generation methods and old ages extension of mortality rates.
+Some of the contents consists in R implementations of materials from
+Moultrie et al. (2012) and United Nations (1983).
 
-See the \[web\]\[<https://ivanwilli.github.io/MortIndEst/index.html>\]
-for an application to Brazil, or see the examples in the function´s
-documentation.
+See the [web](https://ivanwilli.github.io/MortIndEst/index.html) for
+applications, or see the examples in the function´s documentation.
 
 ## Installation
 
-You can install the development version of MortIndEst from
-[GitHub](https://github.com/) with:
+You can install the development version of MortIndEst with:
 
 ``` r
 # install.packages("remotes")

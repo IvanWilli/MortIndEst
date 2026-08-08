@@ -20,7 +20,6 @@ Ministerio de Salud, Argentina.
 arg_deaths
 }
 \description{
-Argentina death counts by year and single year of age, with male and female
-death counts summed.
+Argentina priod death counts by year and single year of age, years 2001-2023.
 }
 \keyword{datasets}

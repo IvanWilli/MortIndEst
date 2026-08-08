@@ -2,7 +2,7 @@
 
 # función egm -------------------------------------------------------------
 
-#' Extinct Generation Method (EGM) from Lexis-square deaths
+#' Extinct Generation Method (EGM)
 #'
 #' Compute cohort population counts (the extinct generation method) by
 #' accumulating deaths along cohort lines in a Lexis diagram, locating estimates at

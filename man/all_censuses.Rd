@@ -5,7 +5,7 @@
 \alias{all_censuses}
 \title{Census population database}
 \format{
-A \code{data.table} and \code{data.frame} with 59,524 rows and 93 columns.
+A \code{data.frame} with 59,524 rows and 93 columns.
 Important fields include \code{LocName}, \code{LocID}, \code{DataCatalogName},
 \code{ReferenceYearStart}, \code{ReferenceYearEnd}, \code{SexName}, \code{AgeStart}, \code{AgeEnd},
 \code{PeriodStart}, \code{PeriodEnd}, and \code{DataValue}.

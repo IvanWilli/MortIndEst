@@ -7,7 +7,8 @@ bibliography: references.bib
 pkgload::load_all()
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  warning = FALSE, message = FALSE
 )
 ```
 
@@ -15,58 +16,47 @@ knitr::opts_chunk$set(
 
 Orphanhood information is commonly collected in censuses and surveys through questions such as whether a person’s biological mother or father is still alive. Questions about mothers are more frequent than questions about fathers. In censuses, they are usually asked across all age groups, whereas surveys such as the DHS often restrict them to the youngest age groups. These data have been widely used in countries with incomplete vital statistics. IPUMS standardized orphanhood variables and made harmonized modules and questionnaire images available [@IPUMS2026], while the DHS program provides access to survey data and documentation.
 
-The underlying demographic logic is that the parental survival status reported by children contains information on adult mortality. If all mothers gave birth at age 25, a respondent aged (n) would provide direct information on (${}_nq_{25}$). In reality, fertility is distributed across ages, so the age pattern of childbearing must be taken into account. Timæus [-@Timaeus1992] therefore modeled adult survival using the proportion of respondents with a surviving mother or father, ({}*5S*{n-5}), together with the mean age of childbearing.
+The underlying demographic logic is that the parental survival status reported by children contains information on adult mortality. If all mothers gave birth at age 25, a respondent aged (n) would provide direct information on (${}_nq_{25}$). In reality, fertility is distributed across ages, so the age pattern of childbearing must be taken into account. Timæus [-@Timaeus1992] therefore modeled adult survival using the proportion of respondents with a surviving mother or father, (${}_5S_{n-5}$), together with the mean age of childbearing.
 
-For women, the method estimates survival for (n) years from age 25 using
-
-
-$$
-{}_np_{25}
-a(n)+b(n),\text{MAC}+c(n),{}_5S_{n-5},
-$$
-
-where the coefficients vary by five-year respondent age group. For fathers, the corresponding equation begins at age 35 and uses a different set of coefficients. The coefficients were derived from simulated combinations of Brass relational mortality models and Booth’s relational Gompertz fertility model [@Booth1984]. Thus, the method can be applied under a range of mortality and fertility regimes rather than under a single fixed demographic pattern.
-
-For example, if 80% of women aged 20–24 report that their mother is still alive and the mean age of childbearing is 27, the coefficients for ages 25–29 can be used to obtain
+For women, the method estimates survival for (n) years from age 25 using this relationship:
 
 $$
-{}_{25}p_{25}
+{}_np_{25} = a(n)+b(n),\text{MAC}+c(n),{}_5S_{n-5},
+$$
+
+Where the coefficients vary by five-year respondent age group. For fathers, the corresponding equation begins at age 35 and uses a different set of coefficients. The coefficients were derived from simulated combinations of Brass relational mortality models and Booth’s relational Gompertz fertility model [@Booth1984]. Thus, the method can be applied under a range of mortality and fertility regimes. For example, if 80% of women aged 20–24 report that their mother is still alive and the mean age of childbearing is 27, the coefficients for ages 25–29 can be used to obtain
+
+$$
+{}_{25}p_{25} = 
 -0.1808+0.00586\times27+1.0267\times0.8
 0.79878.
 $$
 
 This implies a probability of dying over the previous 25 years of approximately 20%, under the assumption that fertility and mortality remained constant over that period. The coefficient attached to mean age of childbearing is positive because, for a given proportion with a surviving parent, later childbearing implies that parents are younger and therefore more likely to be alive [@Preston2001].
 
-The method also locates each estimate at a specific reference date rather than automatically assigning it to the midpoint of the exposure interval. The resulting time lag depends on respondent age, the fertility pattern, and the age schedule of mortality. Older respondents provide information on older parents who have been exposed to mortality risks for longer periods. Since each respondent age group yields a separate estimate of ({}*np*{25}), inconsistencies may arise across ages. Each estimate should therefore be mapped onto a standard mortality pattern, evaluated, and retained only when it provides demographically plausible information [@UnitedNations1983].
+The method also locates each estimate at a specific reference date rather than automatically assigning it to the midpoint of the exposure interval. The resulting time lag depends on respondent age, the fertility pattern, and the age schedule of mortality. Older respondents provide information on older parents who have been exposed to mortality risks for longer periods. Since each respondent age group yields a separate estimate of ${}_np_{25}$, inconsistencies may arise across ages. Each estimate should therefore be mapped onto a standard mortality pattern, evaluated, and retained only when it provides demographically plausible information [@UnitedNations1983].
 
-The main limitations include the adoption effect [@Timaeus1991], age misreporting, uncertainty about parental identity or survival status, and the greater weight assigned to high-fertility adults because they have more children available to respond. HIV/AIDS can also cause underestimation because infected women tend to have lower fertility and infected children may die before the survey; Timæus and Nunn [-@TimaeusNunn1997] proposed a correction based on HIV prevalence, reduced fertility, and vertical transmission. When two observations are available, cohort changes in orphanhood can be used to estimate parental survival more directly. For example,
+The main limitations include the adoption effect [@Timaeus1991], age misreporting, uncertainty about parental identity or survival status, and the greater weight assigned to high-fertility adults because they have more children available to respond. HIV/AIDS can also cause underestimation because infected women tend to have lower fertility and infected children may die before the survey; Timæus and Nunn [-@TimaeusNunn1997] proposed a correction based on HIV prevalence, reduced fertility, and vertical transmission. 
 
-$$
-{}_{10}p_{49.5}
-\frac{{}_{32.5}p_{27}}{{}_{22.5}p_{27}}
-\frac{0.6}{0.8}
-0.75.
-$$
-
-These two-survey approaches use variable-(r) adjustments, usually refer estimates to the midpoint between observations, and retain cohort-specific estimates separately in order to assess statistical uncertainty [@Timaeus1991; @Preston2001; @IUSSP2013; @PrestonChen1998]. Although we do not apply it here, you can find an adaptation of the Macura (1984) method in the `orphanhood_macura` function.
+When two observations are available, cohort changes in orphanhood can be used to estimate parental survival more directly. These two-survey (or two-census) approaches use variable-r adjustments, usually refer estimates to the midpoint between observations, and retain cohort-specific estimates separately in order to assess statistical uncertainty [@Timaeus1991; @Preston2001; @IUSSP2013; @PrestonChen1998]. A new proposal from [@Masquelier_Timæus_2024] is implemented also in `orphanhood_two` function (see funciton details). Finally, although we do not apply it here, you can find an adaptation of the Macura (1984) method in the `orphanhood_macura` function.
 
 # Input data
 
 Data that we need (both loaded with the package) are 
 
-- `Orphanhood_DB_full`: census and survey information about survival parents by age and sex of respondants.
+- `Orphanhood_DB`: census and survey information about survival parents by age and sex of respondants.
 
 ```{r}
-head(Orphanhood_DB)
+head(Orphanhood_DB)[, c("IndicatorName", "LocName", "DataSourceName", "TimeLabel", "AgeLabel", "DataValue")]
 ```
 
-- `mac_wpp22`: mean age of childbearing from an external source, in this case from WPP 2022 revision. Consider here that onet hing is the mean age at risk of childearing (calculated from asfr) and other thing is the population weighted, taht only considers observed mothers and fathers. In general those looks similar in value.
+- `mac_wpp22`: mean age of childbearing from an external source, in this case from WPP 2022 revision. Consider here that one thing is the mean age at risk of childearing (calculated from asfr) and other thing is the population weighted one, that only considers observed mothers and fathers. In general, values are similar.
 
 ```{r}
 head(mac_wpp22)
 ```
 
-We join both data sources in one just for convenience, and select only relevant variables, avoiding duplicate survey rows. Our main type of indicator is "Proportion of the population with *mother* alive" and "Proportion of the population with *father* alive" (are filtered by ID in `DemoData` format), mening proportion not orphaned.
+We join both data sources in only one, just for convenience, and select only relevant variables, avoiding duplicate survey rows. Our main indicator is "Proportion of the population with *mother* alive" and "Proportion of the population with *father* alive" (are filtered by ID in `DemoData` format), meaning the proportion not orphaned.
 
 ```{r}
 library(dplyr)
@@ -96,7 +86,7 @@ orp_data <- Orphanhood_DB |>
 
 # Application
 
-First we need to organize the one and pair-census comparison. FOr the cas of two observations, there is a version of coefficients, one from Ttimaeus and other from Perton & Chen. As in `intercensal_survvial`, when `mlt_family = NULL` all the eleven model life table families are considered as pattern (see `DemoToolsData::modelLTx1`).
+First we need to organize the one and pair-census comparison. Here we consider only the methods based on Timaeus [-@IUSSP2013] and Preston & Chen [-@PrestonChen1998] (if Brasil would be an HIV country, the method from Masquellier & Timaeus [-@Masquelier_Timæus_2024] is a better option). As in `intercensal_survival`, when `mlt_family = NULL`, all the eleven model life table families are considered as pattern (see `DemoToolsData::modelLTx1`).
 
 ```{r}
 one_grid <- orp_data |>
@@ -111,7 +101,7 @@ two_grid <- one_grid |>
   crossing(variant = c("two_timaeus", "two_preston_chen"))
 ```
 
-We loop over the combinations of sex/one-two/interval/coefficients/mlt with `pmap` from the `map` family functions. If you want to see in detail the application to some census pair (not looping in an industrial scale as here) see the `orphanhood` documentation.
+We loop over the combinations of **sex/one-two/interval/coefficients/mlt** with `pmap` from the `map` family functions. If you want to see in detail the application to some census pair (not looping in an industrial scale as here) see the `orphanhood_one` and `orphanhood_two` documentation.
 
 ```{r}
 library(purrr)
@@ -201,7 +191,7 @@ results_df <- bind_rows(
 
 # Results
 
-First we can take a look to combinations that did not work, and if we see something we need to loof for the reason (can exists quality problems in census data, or some issue arrangin the data, etc.). In this case we see an error realted to the age requirements of the Timaeus coefficients in the two observation method.
+First we can take a look to combinations that did not work, and if we see something we need to look and inspect (quality issues in census data, or some issue arranging the data, etc.). In this case we see an error related to the age requirements of the Timaeus coefficients in the two observation method, which is expected.
 
 ```{r}
 issues_df <- bind_rows(
@@ -230,9 +220,9 @@ dispersion_df <- results_df %>%
   )
 ```
 
-We plot the results agaist WPP24 results (which in some way already is considering the estimates). 
+We plot the results agaist WPP24 estimates [@UnitedNations2024] (which in some way already is considering orphanhood estimates). 
 
-The various data sources available for Brazil make it possible to apply the different methods discussed above, distinguishing both the sex of the parent and the sex of the respondent. As expected, fewer observations are available for fathers, a common limitation noted previously. Estimates based on the 1950 Census appear to underestimate the mortality level by around 50% and yield values similar to those observed several decades later; these estimates should therefore probably be discarded. Estimates based on a single observation show, for women, a declining trend and a slightly lower mortality level than WPP 2024 [@UnitedNations2024], with a larger bias when the respondents are men. Estimates based on two observations do not appear to improve performance for women. For men, however, they seem to provide one potentially useful estimate based on the 1991–1996 surveys.
+The various data sources available for Brazil makes possible to apply the different methods discussed above, distinguishing both the sex of the parent and the sex of the respondent. As expected, fewer observations are available for fathers. Estimates based on the 1950 Census appear to underestimate the mortality level by around 50% and yield values similar to those observed several decades later; these estimates should therefore probably be discarded. Estimates based on a single observation show, for women, a declining trend and a slightly lower mortality level than WPP2024 [@UnitedNations2024], with a larger bias when the respondents are men. Estimates based on two observations do not appear to improve performance for women. For men, however, they seem to provide one potentially useful estimate based on the 1991–1996 surveys.
 
 ```{r}
 wpp_q15_45_df <- lt5_wpp24_brazil |>

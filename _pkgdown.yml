@@ -2,5 +2,10 @@ url: https://ivanwilli.github.io/MortIndEst/
 template:
   params:
     bootstrap: 5
-    bootswatch: lumen
+    bootswatch: sandstone
+    theme: github-light
 
+    bslib:
+      primary: "#0066cc"
+      link-decoration: underline
+      link-hover-color: "#004c99"

@@ -3,7 +3,7 @@
 \docType{data}
 \name{arg_pop}
 \alias{arg_pop}
-\title{Argentina census population}
+\title{Argentina 2001 census population}
 \format{
 A \code{data.frame} with 303 rows and 3 columns:
 \describe{
@@ -19,7 +19,6 @@ Instituto Nacional de Estadistica y Censos (INDEC), Argentina.
 arg_pop
 }
 \description{
-Argentina census population counts by year and single year of age, with male
-and female population counts summed.
+Argentina 2001 census population counts by year and single year of age.
 }
 \keyword{datasets}

@@ -1,5 +1,5 @@
 
-#' Extinct Generation Method (EGM) from Lexis-square deaths
+#' Extinct Generation Method (EGM)
 #'
 #' Compute cohort population counts by accumulating deaths along cohort lines
 #' in a Lexis diagram. Population stocks are located at the beginning of each
@@ -36,7 +36,7 @@ egm <- function(y, x, d, yb = NULL, alpha = NULL){
     dplyr::select(yb, x, y, pop)
 }
 
-#' Nearly-Extinct Cohort Methods from Lexis-square deaths
+#' Nearly-Extinct Cohort Methods
 #'
 #' Estimate population stocks of nearly-extinct cohorts using the Survivor
 #' Ratio (SR), Das Gupta (DG), or Survivor Ratio Advanced (SA) method. See vignette for an example.

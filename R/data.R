@@ -15,7 +15,7 @@
 #' Census population records by location, sex, age, source, period, and related
 #' metadata.
 #'
-#' @format A `data.table` and `data.frame` with 59,524 rows and 93 columns.
+#' @format A `data.frame` with 59,524 rows and 93 columns.
 #' Important fields include `LocName`, `LocID`, `DataCatalogName`,
 #' `ReferenceYearStart`, `ReferenceYearEnd`, `SexName`, `AgeStart`, `AgeEnd`,
 #' `PeriodStart`, `PeriodEnd`, and `DataValue`.
@@ -59,10 +59,9 @@
 #' @source Spectrum mortality model files.
 "mods.r"
 
-#' Argentina census population
+#' Argentina 2001 census population
 #'
-#' Argentina census population counts by year and single year of age, with male
-#' and female population counts summed.
+#' Argentina 2001 census population counts by year and single year of age.
 #'
 #' @format A `data.frame` with 303 rows and 3 columns:
 #' \describe{
@@ -75,8 +74,7 @@
 
 #' Argentina deaths
 #'
-#' Argentina death counts by year and single year of age, with male and female
-#' death counts summed.
+#' Argentina priod death counts by year and single year of age, years 2001-2023.
 #'
 #' @format A `data.frame` with 2,553 rows and 3 columns:
 #' \describe{
