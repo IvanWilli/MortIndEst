@@ -656,6 +656,7 @@ intercensal_surv_var_r <- function(c1,
 
 # from Manual X, r-var method
 # from Michael Lachanski (mikelach@sas.upenn.edu)
+.datatable.aware <- TRUE
 lt_ManualX_variable_r <- function(age, Nx1, Nx2, ts, radix = 1000, full_lt = T){
   DT <- data.table::data.table(age, Nx1, Nx2, ts, radix, key = "age")
 
