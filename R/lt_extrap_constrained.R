@@ -41,6 +41,7 @@ lt_extrap_constrained <- function(nMx, Age,
                                   beta = NULL, # H-C recommended for OAG 65
                                   r = NULL, # for non classical e(OAG) computation
                                   x_hat = NULL # for non classical e(OAG) computation
+                                  
 ){
 
   # initial settings
@@ -147,7 +148,8 @@ fo_extrap <- function(b, Age, Sex = Sex, extrapFrom, ex_obj, nMx, extrapLaw){
   nMx_prev <- nMx[Age<extrapFrom]
   nMx_hat <- c(nMx_prev, nMx_extrap)
   if(is_abridged(Age)) complete = FALSE else complete = TRUE
-  ex_hat <- lt_ambiguous(nMx_or_nqx_or_lx = nMx_hat, type = "m", Age = Age, Sex = Sex, OAnew=extrapFrom, OAG = FALSE, Single = complete) %>%
+  ex_hat <- lt_ambiguous(nMx_or_nqx_or_lx = nMx_hat, type = "m", Age = Age, 
+  Sex = Sex, OAnew=extrapFrom, OAG = FALSE, Single = complete) %>%
     filter(Age==extrapFrom) %>%
     pull(ex)
   # quadratic relative diff
