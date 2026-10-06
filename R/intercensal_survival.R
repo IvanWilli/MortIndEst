@@ -208,9 +208,10 @@ intercensal_survival <- function(c1,
 
   # give a message on how many survival ratios greater than 1 you have, no matter ages_fit
   ages_nSx_greater1 <- surv_data$age[surv_data$nSx>1 & !is.na(surv_data$nSx)]
-  if(length(ages_nSx_greater1)>0 & verbose) message(
-    paste0("survival ratios greater than 1 for group ages starting on ", paste(ages_nSx_greater1,collapse=", "))
-    )
+  if(length(ages_nSx_greater1)>0 & verbose) 
+    message(paste0("survival ratios greater than 1 for group ages starting on ", paste(ages_nSx_greater1,collapse=", ")))
+  if(all(ages_fit %in% ages_nSx_greater1)) 
+    stop("All survival ratios greater than 1 in fitting ages")
 
   # pre-smooth on nSx
   if(!is.null(span_pre_smooth)){
@@ -249,7 +250,7 @@ intercensal_survival <- function(c1,
         select(type, e0, sex, age = Age, mx = nMx, lx, Lx = nLx)
       mlt_family <- "HIVSpectrum"
       if(method %in% c("feeney", "logit")){
-        actual_levels <- unique(mlt_data$e0)
+        actual_levels <- unique(mlt_this_family_all_ages$e0)
         closer_level <- which(abs(actual_levels-mlt_e0_logit_feeney)==min(abs(actual_levels-mlt_e0_logit_feeney)))
         mlt_e0_logit_feeney <- actual_levels[closer_level]
       }
@@ -337,7 +338,7 @@ intercensal_survival <- function(c1,
     # get e(OAG-5). If multiple mlt are selected, take the mean
     if(!is.null(mlt_e0_logit_feeney)){
       TOAGless5_l2.5 <-  mlt_this_family_all_ages %>%
-        dplyr::filter(e0 == trunc(mlt_e0_logit_feeney/2.5)*2.5) %>%
+        dplyr::filter(round(e0,1) == round(mlt_e0_logit_feeney,1)) %>%
         dplyr::group_by(type) %>%
         dplyr::mutate(Tx = purrr::accumulate(Lx, `+`, .dir = "backward")) %>%
         dplyr::summarise(TOAGless5_l2.5 = sum(Tx[age==OAG-5])/sum(lx[age==1]*2.5/4+lx[age==5]*1.5/4)) %>%
@@ -383,6 +384,12 @@ intercensal_survival <- function(c1,
                      coef_var = sd(e0_interp, na.rm = T)/mean_e0,
                      p25 = quantile(e0_interp, probs = .25, na.rm = T),
                      p75 = quantile(e0_interp, probs = .75, na.rm = T))
+
+  # e0 in accepted borders or within family range
+  if(all(mlt_level$median_e0 <= e0_accept[1]) | all(mlt_level$median_e0 >= e0_accept[2])) 
+    stop("Resulting e(0) is out of range of e0_accept range.")
+  if(all(!between(mlt_level$median_e0, min(mlt_this_family_all_ages$e0), max(mlt_this_family_all_ages$e0)))) 
+    stop(paste0("Resulting e(0) is out of range for family ", mlt_family, ". Consider another family or method."))
 
   # get mlt best fit interpolating lx
   lx_mlt_level <- interp_level_mlt(
@@ -454,6 +461,9 @@ intercensal_survival <- function(c1,
     dplyr::filter(age<=100) %>%
     split(list(.$type)) %>%
     purrr::map_df(function(X){
+      # crazy cases: non monotonic lx
+      ages_zero <- X$age[X$lx_interp==0]
+      if(length(ages_zero)>0) X <- X[X$age<min(ages_zero),] 
       X <- X[X$lx_interp>0,]
       DemoTools::lt_abridged(lx = X$lx_interp, Age = X$age, Sex = sex, extrapLaw = extrapLaw) %>%
         dplyr::mutate(type = unique(X$type), .before = 1)

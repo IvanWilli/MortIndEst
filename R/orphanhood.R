@@ -85,7 +85,7 @@ orphanhood_one <- function(prop_not_orphan,
   if(maternal){
     sex <- "f"
     y <- 25
-    timaes_coeff <- matrix(c(
+    timaeus_coeff <- matrix(c(
       10,	-0.2894, 	0.00125, 	1.2559,
       15,	-0.1718,	0.00222, 	1.1123,
       20,	-0.1513,	0.00372,	1.0525,
@@ -101,7 +101,7 @@ orphanhood_one <- function(prop_not_orphan,
 
     # HIV settings
     is.HIV <- FALSE
-    timaes_coeff_aids <- matrix(c(
+    timaeus_coeff_aids <- matrix(c(
       10, -0.3611, 	0.00125, 	1.2974,
       15, -0.4030, 	0.00222, 	1.3732,
       20, -0.2120, 	0.00372, 	1.1342,
@@ -117,7 +117,7 @@ orphanhood_one <- function(prop_not_orphan,
     # use pre natal clinic prev
     if(!is.null(HIV_prev_antenatal)){
       if(length(HIV_prev_antenatal) != length(prop_not_orphan)) stop("diff length between proportion alive and prevalence data")
-      timaes_coeff[HIV_prev_antenatal>.05,] <- timaes_coeff_aids[HIV_prev_antenatal>.05,]
+      timaeus_coeff[HIV_prev_antenatal>.05,] <- timaeus_coeff_aids[HIV_prev_antenatal>.05,]
       HIV_factor_adj <- (1-HIV_vert_transm*HIV_prev_antenatal)/(1+(1-HIV_fert_ratio)/HIV_fert_ratio*HIV_prev_antenatal)
       HIV_factor_adj <- 1-(1-HIV_factor_adj) * HIV_parents_surv
       prop_not_orphan <- HIV_factor_adj * prop_not_orphan
@@ -132,7 +132,7 @@ orphanhood_one <- function(prop_not_orphan,
   }else{
     sex <- "m"
     y <- 35
-    timaes_coeff <- matrix(c(
+    timaeus_coeff <- matrix(c(
       10,	-0.5578, 	0.00040, 	1.4708, 	0.0698,
       15,	-0.4013, 	0.00576, 	1.5602, 	-0.3522,
       20,	-0.3329, 	0.01031, 	0.6656, 	0.3419,
@@ -221,7 +221,7 @@ orphanhood_one <- function(prop_not_orphan,
 
   # estimate conditional probabilities of survival using timaes coefficients
   orp_data <- data.frame(age = age, prop_not_orphan = prop_not_orphan, mac =  mac, n = age + 5) %>%
-    left_join(timaes_coeff, by = c("n" = "age" )) %>%
+    left_join(timaeus_coeff, by = c("n" = "age" )) %>%
     mutate(age_n = age + n,
            age_mean = age + age_int/2,
            maternal = maternal,
@@ -241,7 +241,7 @@ orphanhood_one <- function(prop_not_orphan,
            time_location = date - time)
 
   # Check probability btwn 0 and 1
-  if(nrow(orp_data)==0) stop("py_n out of [0,1] range")
+  if(nrow(orp_data)==0) stop("Probability estimates (from regression formula) out of [0,1] range")
 
   # find adult mortality depending if brass smoothing
   if(brass_logit){
@@ -617,7 +617,7 @@ orphanhood_two <- function(prop1_not_orphan, prop2_not_orphan,
     sex <- "f"
     y <- 25
     z <- 45
-    timaes_coeff <- matrix(c(
+    timaeus_coeff <- matrix(c(
       25,	-0.8623, 	0.00292, 	1.7861,
       30,	-0.3822, 	0.00679, 	1.2062,
       35,	-0.4355, 	0.01197, 	1.1310,
@@ -631,7 +631,7 @@ orphanhood_two <- function(prop1_not_orphan, prop2_not_orphan,
     sex <- "m"
     y <- 35
     z <- 55
-    timaes_coeff <- matrix(c(
+    timaeus_coeff <- matrix(c(
       25, 	-0.0554, 	0.00757, 	0.0239, 	0.8080,
       30, 	-0.7539, 	0.01558, 	0.6452, 	0.6498,
       35, 	-1.0809, 	0.02273, 	0.9289, 	0.4807,
@@ -660,6 +660,7 @@ orphanhood_two <- function(prop1_not_orphan, prop2_not_orphan,
   age_int <- 5
   first_age <- max(min(age1), min(age2))
   last_age <- min(max(age1), max(age2))
+  if(first_age >= last_age) stop("Review age groups: no cohort matching")
   age <- seq(first_age, last_age, age_int)
   prop1_not_orphan <- prop1_not_orphan[age1 %in% age]
   prop2_not_orphan <- prop2_not_orphan[age2 %in% age]
@@ -691,7 +692,7 @@ orphanhood_two <- function(prop1_not_orphan, prop2_not_orphan,
                                sex = sex,
                                y = y,
                                z = z,
-                               timaes_coeff = timaes_coeff,
+                               timaeus_coeff = timaeus_coeff,
                                e0_accept = e0_accept,
                                verbose = verbose),
                              "preston_chen" = orphanhood_two_preston_chen(
@@ -780,7 +781,7 @@ orphanhood_two <- function(prop1_not_orphan, prop2_not_orphan,
 #'   child mortality inputs for the HIV variant.
 #' @param sex Character. `"f"` for female mortality or `"m"` for male mortality.
 #' @param y,z Numeric parental exact-age anchors used in the Timaeus conversion.
-#' @param timaes_coeff Data frame of Timaeus coefficients for the selected
+#' @param timaeus_coeff Data frame of Timaeus coefficients for the selected
 #'   maternal or paternal variant.
 #' @param e0_accept Numeric vector of length 2 with acceptable implied `e0`
 #'   range.
@@ -834,7 +835,7 @@ orphanhood_two <- function(prop1_not_orphan, prop2_not_orphan,
 #'   sex = "m",
 #'   y = 35,
 #'   z = 55,
-#'   timaes_coeff = paternal_coeff,
+#'   timaeus_coeff = paternal_coeff,
 #'   e0_accept = c(20, 100),
 #'   verbose = FALSE
 #' )
@@ -853,7 +854,7 @@ orphanhood_two_timaeus <- function(prop1_not_orphan, prop2_not_orphan,
                                   HIV_art,
                                   HIV_5q0,
                                   sex, y, z,
-                                  timaes_coeff,
+                                  timaeus_coeff,
                                   e0_accept,
                                   verbose){
   # mlt data to use. If no input data, then use mortcast for maternal/paternal
@@ -905,14 +906,14 @@ orphanhood_two_timaeus <- function(prop1_not_orphan, prop2_not_orphan,
     ungroup() %>% arrange(type, e0, age)
 
     # need ages
-    if(!any((age+5) %in% timaes_coeff$age)) stop("For applying this method you need adult ages for respondants (IUSSP, 2012)")
+    if(!any((age+5) %in% timaeus_coeff$age)) stop("Timaeus method needs adult ages of respondants (IUSSP, 2012)")
 
     # org data
     orp_data <- data.frame(age = age,
                            prop1_not_orphan = prop1_not_orphan,
                            prop2_not_orphan = prop2_not_orphan,
                            mac1 =  mac1, mac2 =  mac2, n = age + 5) %>%
-      left_join(timaes_coeff, by = c("n" = "age" )) %>%
+      left_join(timaeus_coeff, by = c("n" = "age" )) %>%
       mutate(maternal = maternal,
              age_n = age + n,
              age_yplus_n = y + n,
@@ -959,7 +960,7 @@ orphanhood_two_timaeus <- function(prop1_not_orphan, prop2_not_orphan,
       lx_out <- orp_data %>%
         inner_join(mlt_closest %>%
                      filter(!age %in% ages_filter_out) %>%
-                     select(type, age_yplus_n = age, e0_interp))%>%
+                     select(type, age_yplus_n = age, e0_interp), by = c("age_yplus_n")) %>%
         split(list(.$type, .$age_n)) %>%
         map_df(function(X){
           obs_data <- data.frame(age = c(0,1,seq(5,100,5)), e0 = X$e0_interp)
