@@ -23,7 +23,7 @@ orphanhood_two_timaeus(
   sex,
   y,
   z,
-  timaes_coeff,
+  timaeus_coeff,
   e0_accept,
   verbose
 )
@@ -62,7 +62,7 @@ child mortality inputs for the HIV variant.}
 
 \item{y, z}{Numeric parental exact-age anchors used in the Timaeus conversion.}
 
-\item{timaes_coeff}{Data frame of Timaeus coefficients for the selected
+\item{timaeus_coeff}{Data frame of Timaeus coefficients for the selected
 maternal or paternal variant.}
 
 \item{e0_accept}{Numeric vector of length 2 with acceptable implied \code{e0}
@@ -125,7 +125,7 @@ salomons_1986_1999_paternal <- MortIndEst:::orphanhood_two_timaeus(
   sex = "m",
   y = 35,
   z = 55,
-  timaes_coeff = paternal_coeff,
+  timaeus_coeff = paternal_coeff,
   e0_accept = c(20, 100),
   verbose = FALSE
 )

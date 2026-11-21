@@ -6,55 +6,64 @@
 \usage{
 childmort_brass(
   CEB,
-  CD,
-  W,
-  age = seq(15, 45, 5),
-  variant = "trussell",
+  CS = NULL,
+  CD = NULL,
+  W = 1,
+  variant = NULL,
   mlt_model = NULL,
   Sex = NULL,
   date_obs = 0,
+  age = seq(15, 45, 5),
   mam = NULL
 )
 }
 \arguments{
-\item{CEB}{Numeric vector. Children ever born by women's age group.}
+\item{CEB}{Numeric vector. Children ever born by women's age group. Can be a mean.}
 
-\item{CD}{Numeric vector. Children dead by women's age group.}
+\item{CS}{Numeric vector. Children alive by women's age group. Can be a mean.}
 
-\item{W}{Numeric vector. Women by age group.}
+\item{CD}{Numeric vector. Children dead by women's age group. Can be a mean.}
 
-\item{age}{Numeric vector. Lower bounds of women's five-year age groups.
-Default is \code{seq(15, 45, 5)}.}
+\item{W}{Numeric vector. Women by age group. By Dfault is one, allowing mean numbers in \code{CEB}, \code{CD} or \code{CS}.}
 
 \item{variant}{Character. Multiplier variant to use. Options are
-\code{"trussell"} and \code{"palloni_helligman"}.}
+\code{"trussell"} and \code{"palloni_helligman"}. If \code{NULL} return both.}
 
-\item{mlt_model}{Character. Model life table family. For \code{"trussell"},
+\item{mlt_model}{Character. Model life table family. If \code{NULL} return all. For \code{"trussell"},
 use one of \code{"North"}, \code{"South"}, \code{"East"}, or
 \code{"West"}. For \code{"palloni_helligman"}, use one of
 \code{"Latin"}, \code{"Chilean"}, \code{"South_Asian"},
 \code{"Far_East_Asian"}, or \code{"General"}. If \code{NULL},
-\code{"West"} is assumed.}
+\code{"West"} is assumed.
+Some combinations of \code{mlt_model} and \code{variant} are not possible.}
 
-\item{Sex}{Character. Sex of the child mortality estimates in the model life
-table, usually \code{"male"} or \code{"female"}. If \code{NULL},
-\code{"male"} is assumed.}
+\item{Sex}{Character. Optional filter for \code{"male"}, \code{"female"},
+or \code{"both"}. If \code{NULL}, all three are returned. Both-sex model
+life tables use a sex ratio at birth of 1.04 males per female.}
 
-\item{date_obs}{Numeric. Reference date of the census or survey. Used to
-compute \code{date_t}, the time location of each estimate.}
+\item{date_obs}{Numeric decimal year, \code{Date}, or unambiguous character
+string in the format \code{"YYYY-MM-DD"}. Reference date of the census or
+survey, converted to a decimal year to compute \code{date_t}, the time
+location of each estimate.}
+
+\item{age}{Numeric vector. Lower bounds of women's five-year age groups.
+This is a formality to keep the age reference to the user. The ages \code{seq(15, 45, 5)} are always expected.}
 
 \item{mam}{Numeric. Mean age at maternity. Used only with
 \code{variant = "palloni_helligman"}. If \code{NULL}, 27 is assumed.}
 }
 \value{
-A list with two data frames:
+A list with three data frames and a plot:
 \describe{
-\item{qx_estimate}{Estimates by women's age group, including the input
-age, estimated survivorship \code{lx}, childhood mortality age \code{x},
-time lag \code{t}, and reference date \code{date_t}.}
+\item{table_output}{Summary by women's age group, variant, model life table
+family, sex, and reference date \code{date_t}. Includes infant mortality
+\code{q0}, the probability of dying between ages 1 and 5 \code{q1_4},
+under-five mortality \code{q0_5}, and life expectancy at birth \code{e0}.}
+\item{plot_output}{A \code{ggplot} of \code{q0} against by date,
+with a series for each variant and model life table family and panels by sex.}
+\item{qx_estimate}{Results for applying the coefficients, before finding the best MLT level.}
 \item{mlts_interp}{Interpolated model life table rows matched to each
-estimate, including \code{mx_mlt}, \code{qx_mlt}, \code{lx_mlt}, and
-\code{ex_mlt}.}
+estimate. The element\code{table_output} is a summary of this.}
 }
 }
 \description{
@@ -65,27 +74,67 @@ interpolates the matching model life table level. Based on Manual X (UN, 1984)
 }
 \examples{
 \dontrun{
-# Panama example from UN Manual X (1983)
-# table 49
+# Manual X - Panama 1976 (table 49)
 panama <- data.frame(
- age = seq(15, 45, 5),
- W = c(2695, 2095, 1828, 1605, 1362, 1128, 930),
- CEB = c(278, 1380, 2395, 3097, 3444, 3274, 2682),
- CD = c(24, 77, 172, 236, 348, 394, 354)
- )
+  age = seq(15, 45, 5),
+  W = c(2695, 2095, 1828, 1605, 1362, 1128, 930),
+  CEB = c(278, 1380, 2395, 3097, 3444, 3274, 2682),
+  CD = c(24, 77, 172, 236, 348, 394, 354))
 panama_estimate <- childmort_brass(
- CEB = panama$CEB,
- CD = panama$CD,
- W = panama$W,
- age = panama$age,
- mlt_model = "West",
- Sex = "male",
- date_obs = 1976
+  CEB = panama$CEB,
+  CD = panama$CD,
+  W = panama$W,
+  age = panama$age,
+  mlt_model = "West",
+  Sex = "male",
+  date_obs = 1976
 )
-# table 53
 manual_x_rr <- c(0.0952, 0.0580, 0.0707, 0.0757, 0.1021, 0.1201, 0.1308)
-all(round(panama_estimate$qx_estimate$qx,4) == manual_x_rr)
+round(panama_estimate$qx_estimate$qx - manual_x_rr,3)
+
+# Example from mortpack template qfive.mpl
+mortpak_example <- childmort_brass(
+  CEB = c(0.154, 1.129, 2.562, 4.008, 5.237, 5.956, 6.243),
+  CS = c(0.138, 0.999, 2.240, 3.477, 4.432, 4.946, 5.013),
+  age = seq(15, 45, 5),
+  Sex = "both",mlt_model = "Latin",
+  date_obs = 1974, mam = 26)
+mortpak_example_results <- data.frame(
+  t_mortpak = c(1973, 1971.9, 1970.3, 1968.2, 1965.8, 1962.9, 1959.4),
+  q0_mortpak = c(
+    0.105830924787535, 0.0975754471500075,
+    0.0917687827207557, 0.0872981426626247, 0.092390952214435, 
+    0.0931828302627686, 0.100965457016312))
+cbind(
+  mortpak_example$table_output |> 
+    select(date_t, q0),
+  mortpak_example_results) |> 
+  mutate(
+    dif_t = round(date_t - t_mortpak, 1),
+    dif_e0 = round(q0 - q0_mortpak, 3))
+
+# IUSSP - Malawi 2008 (https://demographicestimation.iussp.org/content/indirect-estimation-child-mortality)
+iussp_malawi_2008 <- childmort_brass(
+  CEB = c(180178, 1038556, 1613374, 1697566, 1553676, 1335242, 1128423), 
+  CS = c(161541, 919584, 1398776, 1426516, 1266514, 1043357, 851048),
+  W = c(635927, 678071, 566350, 405602, 298004, 221274, 174875),
+  age = seq(15, 45, 5),
+  mlt_model = "North",Sex = "both",
+  date_obs = 2008.46, mam = 28.7
+)
+iussp_example_results <- data.frame(
+  t_iussp = c(2007.42, 2006.03, 2004.03, 2001.66, 1999.02, 1996.24, 1993.35),
+  q0_iussp = c(0.1063, 0.0918, 0.0912, 0.1004, 0.1089, 0.1203, 0.1232))
+# some difference because IUSSP adjust intercept from logit rather than interpolate linearly levels
+cbind(
+  iussp_malawi_2008$table_output |> 
+    select(date_t, q0),
+  iussp_example_results) |> 
+  mutate(
+    dif_t = round(date_t - t_iussp, 1),
+    dif_q0 = round(q0 - q0_iussp, 3))
 }
+
 }
 \references{
 United Nations. 1983. \emph{Manual X: Indirect Techniques for Demographic

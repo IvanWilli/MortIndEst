@@ -5,36 +5,43 @@
 #' Trussell or Palloni-Helligman multipliers, locates each estimate in time, and
 #' interpolates the matching model life table level. Based on Manual X (UN, 1984)
 #'
-#' @param CEB Numeric vector. Children ever born by women's age group.
-#' @param CD Numeric vector. Children dead by women's age group.
-#' @param W Numeric vector. Women by age group.
-#' @param age Numeric vector. Lower bounds of women's five-year age groups.
-#'   Default is \code{seq(15, 45, 5)}.
+#' @param CEB Numeric vector. Children ever born by women's age group. Can be a mean.
+#' @param CS Numeric vector. Children alive by women's age group. Can be a mean. 
+#' @param CD Numeric vector. Children dead by women's age group. Can be a mean.
+#' @param W Numeric vector. Women by age group. By Dfault is one, allowing mean numbers in `CEB`, `CD` or `CS`.
 #' @param variant Character. Multiplier variant to use. Options are
-#'   \code{"trussell"} and \code{"palloni_helligman"}.
-#' @param mlt_model Character. Model life table family. For \code{"trussell"},
+#'   \code{"trussell"} and \code{"palloni_helligman"}. If `NULL` return both.
+#' @param mlt_model Character. Model life table family. If `NULL` return all. For \code{"trussell"},
 #'   use one of \code{"North"}, \code{"South"}, \code{"East"}, or
 #'   \code{"West"}. For \code{"palloni_helligman"}, use one of
 #'   \code{"Latin"}, \code{"Chilean"}, \code{"South_Asian"},
 #'   \code{"Far_East_Asian"}, or \code{"General"}. If \code{NULL},
 #'   \code{"West"} is assumed.
-#' @param Sex Character. Sex of the child mortality estimates in the model life
-#'   table, usually \code{"male"} or \code{"female"}. If \code{NULL},
-#'   \code{"male"} is assumed.
-#' @param date_obs Numeric. Reference date of the census or survey. Used to
-#'   compute \code{date_t}, the time location of each estimate.
+#'   Some combinations of `mlt_model` and `variant` are not possible.
+#' @param age Numeric vector. Lower bounds of women's five-year age groups.
+#'    This is a formality to keep the age reference to the user. The ages \code{seq(15, 45, 5)} are always expected.
+#' @param Sex Character. Optional filter for \code{"male"}, \code{"female"},
+#'   or \code{"both"}. If \code{NULL}, all three are returned. Both-sex model
+#'   life tables use a sex ratio at birth of 1.04 males per female.
+#' @param date_obs Numeric decimal year, \code{Date}, or unambiguous character
+#'   string in the format \code{"YYYY-MM-DD"}. Reference date of the census or
+#'   survey, converted to a decimal year to compute \code{date_t}, the time
+#'   location of each estimate.
 #' @param mam Numeric. Mean age at maternity. Used only with
 #'   \code{variant = "palloni_helligman"}. If \code{NULL}, 27 is assumed.
 #'
 #' @return
-#' A list with two data frames:
+#' A list with three data frames and a plot:
 #' \describe{
-#'   \item{qx_estimate}{Estimates by women's age group, including the input
-#'   age, estimated survivorship \code{lx}, childhood mortality age \code{x},
-#'   time lag \code{t}, and reference date \code{date_t}.}
+#'   \item{table_output}{Summary by women's age group, variant, model life table
+#'   family, sex, and reference date \code{date_t}. Includes infant mortality
+#'   \code{q0}, the probability of dying between ages 1 and 5 \code{q1_4},
+#'   under-five mortality \code{q0_5}, and life expectancy at birth \code{e0}.}
+#'   \item{plot_output}{A \code{ggplot} of \code{q0} against by date,
+#'   with a series for each variant and model life table family and panels by sex.}
+#'   \item{qx_estimate}{Results for applying the coefficients, before finding the best MLT level.}
 #'   \item{mlts_interp}{Interpolated model life table rows matched to each
-#'   estimate, including \code{mx_mlt}, \code{qx_mlt}, \code{lx_mlt}, and
-#'   \code{ex_mlt}.}
+#'   estimate. The element`table_output` is a summary of this.}
 #' }
 #'
 #' @references
@@ -45,46 +52,86 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Panama example from UN Manual X (1983)
-#' # table 49
+#' # Manual X - Panama 1976 (table 49)
 #' panama <- data.frame(
-#'  age = seq(15, 45, 5),
-#'  W = c(2695, 2095, 1828, 1605, 1362, 1128, 930),
-#'  CEB = c(278, 1380, 2395, 3097, 3444, 3274, 2682),
-#'  CD = c(24, 77, 172, 236, 348, 394, 354)
-#'  )
+#'   age = seq(15, 45, 5),
+#'   W = c(2695, 2095, 1828, 1605, 1362, 1128, 930),
+#'   CEB = c(278, 1380, 2395, 3097, 3444, 3274, 2682),
+#'   CD = c(24, 77, 172, 236, 348, 394, 354))
 #' panama_estimate <- childmort_brass(
-#'  CEB = panama$CEB,
-#'  CD = panama$CD,
-#'  W = panama$W,
-#'  age = panama$age,
-#'  mlt_model = "West",
-#'  Sex = "male",
-#'  date_obs = 1976
-#')
-#'# table 53
+#'   CEB = panama$CEB,
+#'   CD = panama$CD,
+#'   W = panama$W,
+#'   age = panama$age,
+#'   mlt_model = "West",
+#'   Sex = "male",
+#'   date_obs = 1976
+#' )
 #' manual_x_rr <- c(0.0952, 0.0580, 0.0707, 0.0757, 0.1021, 0.1201, 0.1308)
-#' all(round(panama_estimate$qx_estimate$qx,4) == manual_x_rr)
+#' round(panama_estimate$qx_estimate$qx - manual_x_rr,3)
+#' 
+#' # Example from mortpack template qfive.mpl
+#' mortpak_example <- childmort_brass(
+#'   CEB = c(0.154, 1.129, 2.562, 4.008, 5.237, 5.956, 6.243),
+#'   CS = c(0.138, 0.999, 2.240, 3.477, 4.432, 4.946, 5.013),
+#'   age = seq(15, 45, 5),
+#'   Sex = "both",mlt_model = "Latin",
+#'   date_obs = 1974, mam = 26)
+#' mortpak_example_results <- data.frame(
+#'   t_mortpak = c(1973, 1971.9, 1970.3, 1968.2, 1965.8, 1962.9, 1959.4),
+#'   q0_mortpak = c(
+#'     0.105830924787535, 0.0975754471500075,
+#'     0.0917687827207557, 0.0872981426626247, 0.092390952214435, 
+#'     0.0931828302627686, 0.100965457016312))
+#' cbind(
+#'   mortpak_example$table_output |> 
+#'     select(date_t, q0),
+#'   mortpak_example_results) |> 
+#'   mutate(
+#'     dif_t = round(date_t - t_mortpak, 1),
+#'     dif_e0 = round(q0 - q0_mortpak, 3))
+#' 
+#' # IUSSP - Malawi 2008 (https://demographicestimation.iussp.org/content/indirect-estimation-child-mortality)
+#' iussp_malawi_2008 <- childmort_brass(
+#'   CEB = c(180178, 1038556, 1613374, 1697566, 1553676, 1335242, 1128423), 
+#'   CS = c(161541, 919584, 1398776, 1426516, 1266514, 1043357, 851048),
+#'   W = c(635927, 678071, 566350, 405602, 298004, 221274, 174875),
+#'   age = seq(15, 45, 5),
+#'   mlt_model = "North",Sex = "both",
+#'   date_obs = 2008.46, mam = 28.7
+#' )
+#' iussp_example_results <- data.frame(
+#'   t_iussp = c(2007.42, 2006.03, 2004.03, 2001.66, 1999.02, 1996.24, 1993.35),
+#'   q0_iussp = c(0.1063, 0.0918, 0.0912, 0.1004, 0.1089, 0.1203, 0.1232))
+#' # some difference because IUSSP adjust intercept from logit rather than interpolate linearly levels
+#' cbind(
+#'   iussp_malawi_2008$table_output |> 
+#'     select(date_t, q0),
+#'   iussp_example_results) |> 
+#'   mutate(
+#'     dif_t = round(date_t - t_iussp, 1),
+#'     dif_q0 = round(q0 - q0_iussp, 3))
 #' }
-childmort_brass <- function (CEB, CD, W,
-                      age = seq(15, 45, 5),
-                      variant = "trussell",
+#' 
+childmort_brass <- function (CEB, 
+                      CS = NULL, CD = NULL, W = 1,
+                      variant = NULL,
                       mlt_model = NULL,
                       Sex = NULL,
                       date_obs = 0,
+                      age = seq(15, 45, 5),
                       mam = NULL){
-  if(is.null(Sex)) {Sex <- "male"; message("male assumed")}
-  if(is.null(mlt_model)) {mlt_model <- "West"; message("west assumed")}
-  coef_trussell <- data.frame(
-    model = c(rep("North", 7), rep("South", 7), rep("East", 7), rep("West", 7)),
-    age = rep(c("15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49"), 4),
-    ai = c(1.1119, 1.239, 1.1884, 1.2046, 1.2586, 1.224, 1.1772, 1.0819, 1.2846, 1.2223, 1.1905, 1.1911, 1.1564, 1.1307, 1.1461, 1.2231, 1.1593, 1.1404, 1.154, 1.1336, 1.1201,1.1415, 1.2563, 1.1851, 1.172, 1.1865, 1.1746, 1.1639),
-    bi = c(-2.9287,-0.6865, 0.0421, 0.3037, 0.4236, 0.4222, 0.3486, -3.0005, -0.6181, 0.0851,0.2631, 0.3152, 0.3017, 0.2596, -2.2536, -0.4301, 0.0581, 0.1991, 0.2511, 0.2556, 0.2362, -2.707, -0.5381, 0.0633, 0.2341, 0.308, 0.3314, 0.319),
-    ci = c(0.8507, -0.2745, -0.5156, -0.5656, -0.5898, -0.5456, -0.4624, 0.8689, -0.3024, -0.4704, -0.4487, -0.4291, -0.3958, -0.3538, 0.6259, -0.2245, -0.3479, -0.3487, -0.3506, -0.3428, -0.3268, 0.7663, -0.2637, -0.4177, -0.4272, -0.4452, -0.4537, -0.4435),
-    di = c(1.0921, 1.3207, 1.5996, 2.0779, 2.7705, 4.152, 6.965, 1.09, 1.3079, 1.5173, 1.9399, 2.6157, 4.0794, 7.1796, 1.0959, 1.2921, 1.5021, 1.9347, 2.6197, 4.1317, 7.3657, 1.097, 1.3062, 1.5305, 1.9991, 2.7632, 4.3468, 7.5242),
-    ei = c(5.4732, 5.3751, 2.6268, -1.7908, -7.3403, -12.2448, -13.916, 5.4443, 5.5568, 2.6755, -2.2739, -8.4819, -13.8308, -15.388, 5.5864, 5.5897, 2.4692, -2.6419, -8.9693, -14.355, -15.8083, 5.5628, 5.5677, 2.5528, -2.4261, -8.4065, -13.2436, -14.2013),
-    fi = c(-1.9672, 0.2133, 4.3701, 9.4126, 14.9352, 19.2349, 19.9542, -1.9721, 0.2021, 4.7471, 10.3876, 16.5153, 21.1866, 21.7892, -1.9949, 0.3631, 5.0927, 10.8533, 17.0981, 21.8247, 22.3005, -1.9956, 0.2962,4.8962, 10.4282, 16.1787, 20.199, 20.0162)
-  )
+
+  # coefficients
+  coef_trussell <- data.frame(model = c(rep("North", 7), rep("South", 7), rep("East", 7), rep("West", 7)),
+                              age = rep(c("15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49"), 4),
+                              ai = c(1.1119, 1.239, 1.1884, 1.2046, 1.2586, 1.224, 1.1772, 1.0819, 1.2846, 1.2223, 1.1905, 1.1911, 1.1564, 1.1307, 1.1461, 1.2231, 1.1593, 1.1404, 1.154, 1.1336, 1.1201,1.1415, 1.2563, 1.1851, 1.172, 1.1865, 1.1746, 1.1639),
+                              bi = c(-2.9287,-0.6865, 0.0421, 0.3037, 0.4236, 0.4222, 0.3486, -3.0005, -0.6181, 0.0851,0.2631, 0.3152, 0.3017, 0.2596, -2.2536, -0.4301, 0.0581, 0.1991, 0.2511, 0.2556, 0.2362, -2.707, -0.5381, 0.0633, 0.2341, 0.308, 0.3314, 0.319),
+                              ci = c(0.8507, -0.2745, -0.5156, -0.5656, -0.5898, -0.5456, -0.4624, 0.8689, -0.3024, -0.4704, -0.4487, -0.4291, -0.3958, -0.3538, 0.6259, -0.2245, -0.3479, -0.3487, -0.3506, -0.3428, -0.3268, 0.7663, -0.2637, -0.4177, -0.4272, -0.4452, -0.4537, -0.4435),
+                              di = c(1.0921, 1.3207, 1.5996, 2.0779, 2.7705, 4.152, 6.965, 1.09, 1.3079, 1.5173, 1.9399, 2.6157, 4.0794, 7.1796, 1.0959, 1.2921, 1.5021, 1.9347, 2.6197, 4.1317, 7.3657, 1.097, 1.3062, 1.5305, 1.9991, 2.7632, 4.3468, 7.5242),
+                              ei = c(5.4732, 5.3751, 2.6268, -1.7908, -7.3403, -12.2448, -13.916, 5.4443, 5.5568, 2.6755, -2.2739, -8.4819, -13.8308, -15.388, 5.5864, 5.5897, 2.4692, -2.6419, -8.9693, -14.355, -15.8083, 5.5628, 5.5677, 2.5528, -2.4261, -8.4065, -13.2436, -14.2013),
+                              fi = c(-1.9672, 0.2133, 4.3701, 9.4126, 14.9352, 19.2349, 19.9542, -1.9721, 0.2021, 4.7471, 10.3876, 16.5153, 21.1866, 21.7892, -1.9949, 0.3631, 5.0927, 10.8533, 17.0981, 21.8247, 22.3005, -1.9956, 0.2962,4.8962, 10.4282, 16.1787, 20.199, 20.0162)
+                            )
   coef_palloni_helligman <- data.frame(model = c(rep("Latin", 7), rep("Chilean", 7), rep("South_Asian", 7), rep("Far_East_Asian", 7), rep("General", 7)),
                                        age = rep(c("15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49"), 5),
                                        ai = c(0.6892, 1.3625, 1.0877, 0.75, 0.5605, 0.5024, 0.5326, 0.8274, 1.3129, 1.0632, 0.8236, 0.6895, 0.6098, 0.5615, 0.6749, 1.3716, 1.0899, 0.7694, 0.6156, 0.6077, 0.6952, 0.7194, 1.2671, 1.0668, 0.7833, 0.5765, 0.4115, 0.3071, 0.721, 1.3115, 1.0768, 0.7682, 0.5769, 0.4845, 0.476),
@@ -96,53 +143,126 @@ childmort_brass <- function (CEB, CD, W,
                                        gi = c(-0.385, -0.1635, 3.4707, 9.0883, 15.4301, 20.4296, 23.4007, -0.7982, -0.0173, 4.0305, 9.9233, 16.3441, 20.8883, 23.0529, -0.5425, -0.1653, 3.5848, 9.3705, 16.2255, 22.239, 26.4911, -0.6994, -0.0752, 3.5881, 9.0238, 14.7339, 18.2507, 19.7669, -0.5247, -0.1232, 3.522, 9.1961, 15.3161, 19.8534, 22.4168)
   )
 
+  # argument checks
+  if(missing(CEB)) stop("CEB is required")
+  if(is.null(CD) & is.null(CS)) stop("You need CD or CS")
+  if(!is.null(CD) & !is.null(CS)) {
+    CD <- NULL
+    message("both CD and CS are not needed. CS was prioritized")
+  }
+  if(length(CEB) != 7 || any(CEB <= 0)) stop("CEB must have seven positive values")
+  if(!length(W) %in% c(1, 7) || any(W <= 0)) stop("W must have one or seven positive values")
+  if(length(age) != 7 || any(age != seq(15, 45, 5))) stop("age must be seq(15, 45, 5), in that order")
+  if(!is.null(CD)){
+    if(length(CD) != 7 || any(CD < 0 | CD > CEB)) stop("CD must have seven values between zero and CEB")}
+  if(!is.null(CS)){
+    if(length(CS) != 7 || any(CS < 0 | CS > CEB)) stop("CS must have seven values between zero and CEB")}
+  if(!is.null(CD) & !is.null(CS)){
+    if(!isTRUE(all.equal(CD + CS, CEB, check.attributes = FALSE))) stop("CD + CS must equal CEB")}
+
+  # convert reference date as decimal year
+  if(!is.numeric(date_obs)) date_obs <- DemoTools::dec.date(date_obs)
+  if(length(date_obs) != 1 || !is.finite(date_obs)) stop("date_obs must be a single valid date or finite decimal year")
+
+  # survived or death?
+  if(is.null(CD)) CD <- CEB - CS
   # parity
   Px <- CEB/W
   # death proportion
   Dx <- CD/CEB
+
   # multipliers
-  if(variant == "trussell"){
-    if(!mlt_model %in% c("North", "South", "West", "East")) {mlt_model = "West"; message("model was assumed West")}
-    k <- as.matrix(coef_trussell[coef_trussell$model == mlt_model, c("ai", "bi", "ci")]) %*% c(1, Px[1]/Px[2], Px[2]/Px[3])
-    t <- as.matrix(coef_trussell[coef_trussell$model == mlt_model, c("di", "ei", "fi")]) %*% c(1, Px[1]/Px[2], Px[2]/Px[3])
-  }else if(variant == "palloni_helligman"){
-    if(is.null(mam)) {mam = 27; message("mam was assumed at 27")}
-    if(mlt_model %in% c("North", "South", "West", "East")) {mlt_model = "General"; message("model was assumed General")}
-    k <- as.matrix(coef_palloni_helligman[coef_palloni_helligman$model == mlt_model, c("ai", "bi", "ci", "di")]) %*% c(1, Px[1]/Px[2], Px[2]/Px[3], mam)
-    t <- as.matrix(coef_palloni_helligman[coef_palloni_helligman$model == mlt_model, c("ei", "fi", "gi")]) %*% c(1, Px[1]/Px[2], Px[2]/Px[3])
-  }else{
-    stop("variant should be trussell or palloni_helligman")
-  }
+  if(is.null(mam)) {mam = 27; message("mam was assumed at 27")}
+  multipliers <- lapply(c("trussell", "palloni_helligman"), function(variant){
+    coef <- if(variant == "trussell") coef_trussell else coef_palloni_helligman
+    lapply(unique(coef$model), function(mlt_model){
+      if(variant == "trussell"){
+        k <- as.matrix(coef[coef$model == mlt_model, c("ai", "bi", "ci")]) %*% c(1, Px[1]/Px[2], Px[2]/Px[3])
+        t <- as.matrix(coef[coef$model == mlt_model, c("di", "ei", "fi")]) %*% c(1, Px[1]/Px[2], Px[2]/Px[3])
+      }else{
+        k <- as.matrix(coef[coef$model == mlt_model, c("ai", "bi", "ci", "di")]) %*% c(1, Px[1]/Px[2], Px[2]/Px[3], mam)
+        t <- as.matrix(coef[coef$model == mlt_model, c("ei", "fi", "gi")]) %*% c(1, Px[1]/Px[2], Px[2]/Px[3])
+      }
+      data.frame(mlt_model = mlt_model, variant = variant, age = age, k = k, t = t)
+    }) %>% dplyr::bind_rows()
+  }) %>% dplyr::bind_rows()
 
   # q estimate
-  qx <- k * Dx
-  lx_out <- data.frame(
-    age = age, 
-    lx = 1 - qx, 
-    qx = qx,
-    x = c(1, 2, 3, 5, 10, 15, 20), 
-    t, date_t = date_obs - t)
-  # what mlt to use
-  mlt <- subset(DemoToolsData::modelLTx1, family == mlt_model & sex == Sex) %>%
-    dplyr::mutate(lx = lx1/lx1[1], .by = c(source, family, sex, e0))
+  lx_out <- multipliers %>%
+    dplyr::mutate(qx = k * Dx, lx = 1 - qx,
+                  x = c(1, 2, 3, 5, 10, 15, 20), date_t = date_obs - t,
+                  .by = c(mlt_model, variant)) %>%
+    dplyr::select(mlt_model, variant, age, lx, qx, x, t, date_t)
+  
+  # mlt to use
+  mlt <- modelLTx1_both
+  
   # interpolate for each census age
-  mlts_interp <- purrr::map_df(1:nrow(lx_out), function(i){
+  mlts_interp <- lapply(1:nrow(lx_out), function(i){
     la <- lx_out[i,]
-    distances <- mlt$lx[mlt$age==la$x]-la$lx
-    best_dist <- distances[abs(distances) %in% sort(abs(mlt$lx[mlt$age==la$x]-la$lx))[1:2]]
-    w <- abs(best_dist)/sum(abs(best_dist))
-    levels <- (mlt[mlt$age == la$x, ] %>% dplyr::mutate(dist = lx-la$lx) %>% dplyr::filter(dist %in% best_dist))$e0
-    mlt_interp <- mlt %>%
-      dplyr::summarise(mx_mlt = mx1[e0==levels[1]]*(1-w[1]) + mx1[e0==levels[2]]*w[1],
-                qx_mlt = qx1[e0==levels[1]]*(1-w[1]) + qx1[e0==levels[2]]*w[1],
-                lx_mlt = lx[e0==levels[1]]*(1-w[1])  + lx[e0==levels[2]]*w[1],
-                ex_mlt = ex1[e0==levels[1]]*(1-w[1]) + ex1[e0==levels[2]]*w[1], .by = age) %>%
-      dplyr::rename(age_mlt = age) %>%
-      dplyr::mutate(sex = Sex, x = la$x, lx = la$lx, date_t = la$date_t, .before = 1) %>%
-      dplyr::mutate(age = la$age, .before = 1)
-    return(mlt_interp)
-  })
-  return(list(qx_estimate = lx_out, mlts_interp = mlts_interp))
+    lapply(c("female", "male", "both"), function(Sex){
+      mlt <- mlt[mlt$family == la$mlt_model & mlt$sex == Sex, ]
+      mlt_age <- mlt[mlt$age == la$x, ]
+      distances <- mlt_age$lx - la$lx
+      lower <- which(distances <= 0)
+      higher <- which(distances >= 0)
+      if(length(lower) == 0 || length(higher) == 0){
+        message("estimated lx is outside the model life table range; nearest level was used")
+        lower <- higher <- which.min(abs(distances))
+      }else{
+        lower <- lower[which.max(distances[lower])]
+        higher <- higher[which.min(distances[higher])]
+      }
+      levels <- mlt_age$e0[c(lower, higher)]
+      best_dist <- distances[c(lower, higher)]
+      w <- if(sum(abs(best_dist)) == 0) c(0.5, 0.5) else abs(best_dist)/sum(abs(best_dist))
+      mlt_interp <- mlt %>%
+        dplyr::summarise(mx_mlt = mx1[e0==levels[1]]*(1-w[1]) + mx1[e0==levels[2]]*w[1],
+            qx_mlt = qx1[e0==levels[1]]*(1-w[1]) + qx1[e0==levels[2]]*w[1],
+            lx_mlt = lx[e0==levels[1]]*(1-w[1])  + lx[e0==levels[2]]*w[1],
+            ex_mlt = ex1[e0==levels[1]]*(1-w[1]) + ex1[e0==levels[2]]*w[1], .by = age) %>%
+        dplyr::rename(age_mlt = age) %>%
+        dplyr::mutate(sex = Sex, x = la$x, lx = la$lx, date_t = la$date_t, .before = 1) %>%
+        dplyr::mutate(mlt_model = la$mlt_model, variant = la$variant, age = la$age, .before = 1)
+      return(mlt_interp)
+    }) %>% dplyr::bind_rows()
+  }) %>% dplyr::bind_rows()
+
+  # chosen some sex variant, or model?
+  if(!is.null(Sex)){
+    mlts_interp <- mlts_interp[mlts_interp$sex == Sex, ]
+  }
+  if(!is.null(variant)){
+    mlts_interp <- mlts_interp[mlts_interp$variant == variant, ]
+    lx_out <- lx_out[lx_out$variant == variant, ]
+  }
+  if(!is.null(mlt_model)){
+    mlts_interp <- mlts_interp[mlts_interp$mlt_model == mlt_model, ]
+    lx_out <- lx_out[lx_out$mlt_model == mlt_model, ]
+  }
+
+  # return summary table focused in q0, 4q1, 5q0 and e0 (as mortpak)
+  table_output <- mlts_interp |> 
+    summarise(
+      q0 = 1 - lx_mlt[age_mlt == 1],
+      q1_4 = 1 - lx_mlt[age_mlt == 5]/lx_mlt[age_mlt == 1],
+      q0_5 = 1 - lx_mlt[age_mlt == 5],
+      e0 = ex_mlt[age_mlt == 0],
+      .by = c(age, variant, mlt_model, sex, date_t))
+  
+  # plot q0 results for every combination of family and variant 
+  plot_output <- table_output |> 
+    mutate(model = paste0(variant, "-", mlt_model)) |> 
+    ggplot(aes(date_t, q0, col = model)) +
+    geom_line() + geom_point() +
+    facet_wrap(~sex) +
+    labs(
+      x = "Date", col = "Variant and MLT family",
+      title = "Indirect estimates of q0 by variant and MLT family") +
+    theme_bw(base_size = 13)
+
+  # return a list
+  return(list(table_output = table_output, plot_output = plot_output, qx_estimate = lx_out, mlts_interp = mlts_interp))
 }
 
 

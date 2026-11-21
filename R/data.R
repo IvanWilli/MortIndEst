@@ -22,6 +22,26 @@
 #' @source United Nations structured demographic data extract.
 "all_censuses"
 
+#' Model life tables including both sexes
+#'
+#' Female and male model life tables from DemoToolsData, with both-sex tables
+#' constructed using a sex ratio at birth of 1.04 males per female. Both-sex
+#' survivorship, deaths, and person-years are birth-weighted before deriving
+#' mortality rates and life expectancy.
+#'
+#' @format A data frame with 16 columns:
+#' \describe{
+#'   \item{source, family, type_mlt}{Model life table source and family.}
+#'   \item{sex}{Sex: female, male, or both.}
+#'   \item{e0}{Model life expectancy level used to pair female and male tables.}
+#'   \item{age}{Exact age at the start of each interval.}
+#'   \item{mx1, qx1, lx1, dx1, Lx1, Tx1, sx1, ex1, ax1}{Original life table
+#'   columns, with the source radix retained in count and person-year columns.}
+#'   \item{lx}{Survivorship normalized to 1 at birth within each table.}
+#' }
+#' @source DemoToolsData::modelLTx1; both-sex tables derived with SRB 1.04.
+"modelLTx1_both"
+
 #' WPP 2024 five-year life tables for Brazil
 #'
 #' Brazil Country-level five-year life table values from the 2024 World Population
