@@ -14,7 +14,8 @@ childmort_brass(
   Sex = NULL,
   date_obs = 0,
   age = seq(15, 45, 5),
-  mam = NULL
+  mam = NULL,
+  srb = 1.04
 )
 }
 \arguments{
@@ -38,8 +39,8 @@ use one of \code{"North"}, \code{"South"}, \code{"East"}, or
 Some combinations of \code{mlt_model} and \code{variant} are not possible.}
 
 \item{Sex}{Character. Optional filter for \code{"male"}, \code{"female"},
-or \code{"both"}. If \code{NULL}, all three are returned. Both-sex model
-life tables use a sex ratio at birth of 1.04 males per female.}
+or \code{"both"}. If \code{NULL}, all three are returned. Both-sex life
+tables combine the separately interpolated female and male tables.}
 
 \item{date_obs}{Numeric decimal year, \code{Date}, or unambiguous character
 string in the format \code{"YYYY-MM-DD"}. Reference date of the census or
@@ -51,6 +52,9 @@ This is a formality to keep the age reference to the user. The ages \code{seq(15
 
 \item{mam}{Numeric. Mean age at maternity. Used only with
 \code{variant = "palloni_helligman"}. If \code{NULL}, 27 is assumed.}
+
+\item{srb}{Numeric. Sex ratio at birth (males per female), used to combine
+the interpolated tables for both sexes. Defaults to 1.04.}
 }
 \value{
 A list with three data frames and a plot:
@@ -87,6 +91,7 @@ panama_estimate <- childmort_brass(
   age = panama$age,
   mlt_model = "West",
   Sex = "male",
+  srb = 1.04,
   date_obs = 1976
 )
 manual_x_rr <- c(0.0952, 0.0580, 0.0707, 0.0757, 0.1021, 0.1201, 0.1308)

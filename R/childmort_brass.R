@@ -21,8 +21,10 @@
 #' @param age Numeric vector. Lower bounds of women's five-year age groups.
 #'    This is a formality to keep the age reference to the user. The ages \code{seq(15, 45, 5)} are always expected.
 #' @param Sex Character. Optional filter for \code{"male"}, \code{"female"},
-#'   or \code{"both"}. If \code{NULL}, all three are returned. Both-sex model
-#'   life tables use a sex ratio at birth of 1.04 males per female.
+#'   or \code{"both"}. If \code{NULL}, all three are returned. Both-sex life
+#'   tables combine the separately interpolated female and male tables.
+#' @param srb Numeric. Sex ratio at birth (males per female), used to combine
+#'   the interpolated tables for both sexes. Defaults to 1.04.
 #' @param date_obs Numeric decimal year, \code{Date}, or unambiguous character
 #'   string in the format \code{"YYYY-MM-DD"}. Reference date of the census or
 #'   survey, converted to a decimal year to compute \code{date_t}, the time
@@ -65,6 +67,7 @@
 #'   age = panama$age,
 #'   mlt_model = "West",
 #'   Sex = "male",
+#'   srb = 1.04,
 #'   date_obs = 1976
 #' )
 #' manual_x_rr <- c(0.0952, 0.0580, 0.0707, 0.0757, 0.1021, 0.1201, 0.1308)
@@ -120,7 +123,8 @@ childmort_brass <- function (CEB,
                       Sex = NULL,
                       date_obs = 0,
                       age = seq(15, 45, 5),
-                      mam = NULL){
+                      mam = NULL,
+                      srb = 1.04){
 
   # coefficients
   coef_trussell <- data.frame(model = c(rep("North", 7), rep("South", 7), rep("East", 7), rep("West", 7)),
@@ -145,6 +149,8 @@ childmort_brass <- function (CEB,
 
   # argument checks
   if(missing(CEB)) stop("CEB is required")
+  if(!is.numeric(srb) || length(srb) != 1 || !is.finite(srb) || srb <= 0)
+    stop("srb must be a single positive finite number")
   if(is.null(CD) & is.null(CS)) stop("You need CD or CS")
   if(!is.null(CD) & !is.null(CS)) {
     CD <- NULL
@@ -195,12 +201,16 @@ childmort_brass <- function (CEB,
     dplyr::select(mlt_model, variant, age, lx, qx, x, t, date_t)
   
   # mlt to use
-  mlt <- modelLTx1_both
+  mlt <- DemoToolsData::modelLTx1 %>%
+    dplyr::mutate(lx = lx1/lx1[age == 0],
+                  dx = dx1/lx1[age == 0],
+                  Lx = Lx1/lx1[age == 0],
+                  .by = c(source, family, sex, e0))
   
   # interpolate for each census age
   mlts_interp <- lapply(1:nrow(lx_out), function(i){
     la <- lx_out[i,]
-    lapply(c("female", "male", "both"), function(Sex){
+    lapply(c("female", "male"), function(Sex){
       mlt <- mlt[mlt$family == la$mlt_model & mlt$sex == Sex, ]
       mlt_age <- mlt[mlt$age == la$x, ]
       distances <- mlt_age$lx - la$lx
@@ -220,6 +230,8 @@ childmort_brass <- function (CEB,
         dplyr::summarise(mx_mlt = mx1[e0==levels[1]]*(1-w[1]) + mx1[e0==levels[2]]*w[1],
             qx_mlt = qx1[e0==levels[1]]*(1-w[1]) + qx1[e0==levels[2]]*w[1],
             lx_mlt = lx[e0==levels[1]]*(1-w[1])  + lx[e0==levels[2]]*w[1],
+            dx_mlt = dx[e0==levels[1]]*(1-w[1]) + dx[e0==levels[2]]*w[1],
+            Lx_mlt = Lx[e0==levels[1]]*(1-w[1]) + Lx[e0==levels[2]]*w[1],
             ex_mlt = ex1[e0==levels[1]]*(1-w[1]) + ex1[e0==levels[2]]*w[1], .by = age) %>%
         dplyr::rename(age_mlt = age) %>%
         dplyr::mutate(sex = Sex, x = la$x, lx = la$lx, date_t = la$date_t, .before = 1) %>%
@@ -227,6 +239,20 @@ childmort_brass <- function (CEB,
       return(mlt_interp)
     }) %>% dplyr::bind_rows()
   }) %>% dplyr::bind_rows()
+
+  # Combine interpolated tables using births, survivors, and person-years.
+  if(is.null(Sex) || Sex == "both"){
+    mlts_both <- mlts_interp %>%
+      dplyr::summarise(
+        ex_mlt = weighted.mean(ex_mlt, lx_mlt * ifelse(sex == "male", srb, 1)),
+        dplyr::across(c(lx_mlt, dx_mlt, Lx_mlt),
+                      ~ weighted.mean(.x, ifelse(sex == "male", srb, 1))),
+        .by = c(mlt_model, variant, age, x, lx, date_t, age_mlt)) %>%
+      dplyr::mutate(sex = "both", qx_mlt = dx_mlt/lx_mlt,
+                    mx_mlt = dx_mlt/Lx_mlt)
+    mlts_interp <- dplyr::bind_rows(mlts_interp, mlts_both)
+  }
+  mlts_interp <- dplyr::select(mlts_interp, -dx_mlt, -Lx_mlt)
 
   # chosen some sex variant, or model?
   if(!is.null(Sex)){
@@ -243,7 +269,7 @@ childmort_brass <- function (CEB,
 
   # return summary table focused in q0, 4q1, 5q0 and e0 (as mortpak)
   table_output <- mlts_interp |> 
-    summarise(
+    dplyr::summarise(
       q0 = 1 - lx_mlt[age_mlt == 1],
       q1_4 = 1 - lx_mlt[age_mlt == 5]/lx_mlt[age_mlt == 1],
       q0_5 = 1 - lx_mlt[age_mlt == 5],
