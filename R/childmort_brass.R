@@ -278,14 +278,14 @@ childmort_brass <- function (CEB,
   
   # plot q0 results for every combination of family and variant 
   plot_output <- table_output |> 
-    mutate(model = paste0(variant, "-", mlt_model)) |> 
-    ggplot(aes(date_t, q0, col = model)) +
-    geom_line() + geom_point() +
-    facet_wrap(~sex) +
-    labs(
+    dplyr::mutate(model = paste0(variant, "-", mlt_model)) |> 
+    ggplot2::ggplot(aes(date_t, q0, col = model)) +
+    ggplot2::geom_line() + ggplot2::geom_point() +
+    ggplot2::facet_wrap(~sex) +
+    ggplot2::labs(
       x = "Date", col = "Variant and MLT family",
       title = "Indirect estimates of q0 by variant and MLT family") +
-    theme_bw(base_size = 13)
+    ggplot2::theme_bw(base_size = 13)
 
   # return a list
   return(list(table_output = table_output, plot_output = plot_output, qx_estimate = lx_out, mlts_interp = mlts_interp))
